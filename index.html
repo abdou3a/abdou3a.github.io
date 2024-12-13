@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Portfolio</title>
+  <title>My Modern Portfolio</title>
   <link rel="stylesheet" href="styles.css">
   <style>
     /* Basic Reset */
@@ -15,9 +15,9 @@
 
     /* Body */
     body {
-      font-family: 'Arial', sans-serif;
-      background-color: #111;
-      color: #fff;
+      font-family: 'Helvetica Neue', sans-serif;
+      background-color: #f0f0f0; /* Light background */
+      color: #333; /* Dark text for contrast */
     }
 
     /* Header */
@@ -26,81 +26,112 @@
       top: 0;
       width: 100%;
       padding: 20px 0;
-      background-color: rgba(0, 0, 0, 0.8);
+      background-color: #333; /* Dark background for header */
       text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 999;
     }
 
     header a {
       color: #fff;
       text-decoration: none;
-      margin: 0 15px;
-      font-size: 18px;
+      margin: 0 20px;
+      font-size: 20px;
+      font-weight: bold;
     }
 
-    /* Main Section (Hero) */
+    /* Hero Section (Main Intro) */
     .hero {
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #222;
+      background-color: #ff7f50; /* Warm coral background */
       color: #fff;
       text-align: center;
       flex-direction: column;
     }
 
     .hero h1 {
-      font-size: 50px;
-      font-weight: bold;
+      font-size: 60px;
+      font-weight: 800;
     }
 
     .hero p {
-      font-size: 20px;
-      margin-top: 10px;
+      font-size: 22px;
+      margin-top: 15px;
     }
 
     /* Portfolio Section */
     .portfolio {
-      padding: 100px 0;
-      background-color: #333;
+      padding: 100px 20px;
+      background-color: #fff; /* White background for contrast */
       text-align: center;
     }
 
     .portfolio h2 {
-      font-size: 40px;
+      font-size: 45px;
       margin-bottom: 40px;
+      color: #333; /* Dark color for title */
     }
 
     .portfolio .project {
       display: inline-block;
       width: 250px;
       height: 200px;
-      margin: 10px;
-      background-color: #444;
-      position: relative;
+      margin: 15px;
+      background-color: #f8f8f8;
+      border-radius: 10px;
       overflow: hidden;
-      border-radius: 8px;
-      transition: all 0.3s ease;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      position: relative;
+      transition: all 0.4s ease;
     }
 
     .portfolio .project:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     }
 
     .portfolio img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: all 0.3s ease;
+    }
+
+    .portfolio .project:hover img {
+      opacity: 0.8;
     }
 
     /* Footer */
     footer {
-      padding: 20px;
-      background-color: #111;
-      text-align: center;
+      padding: 40px;
+      background-color: #333;
       color: #fff;
+      text-align: center;
     }
+
+    footer p {
+      font-size: 18px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .portfolio .project {
+        width: 100%;
+        margin: 20px 0;
+      }
+
+      .hero h1 {
+        font-size: 50px;
+      }
+
+      .hero p {
+        font-size: 18px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -115,27 +146,27 @@
 
   <!-- Hero Section -->
   <section class="hero">
-    <h1>Welcome to My Portfolio</h1>
-    <p>Crafting beautiful digital experiences</p>
+    <h1>Hello, I'm John Doe</h1>
+    <p>Creative Web Developer & Designer</p>
   </section>
 
   <!-- Portfolio Section -->
   <section id="portfolio" class="portfolio">
     <h2>My Projects</h2>
     <div class="project">
-      <img src="your-image.jpg" alt="Project 1">
+      <img src="your-image1.jpg" alt="Project 1">
     </div>
     <div class="project">
-      <img src="your-image.jpg" alt="Project 2">
+      <img src="your-image2.jpg" alt="Project 2">
     </div>
     <div class="project">
-      <img src="your-image.jpg" alt="Project 3">
+      <img src="your-image3.jpg" alt="Project 3">
     </div>
   </section>
 
   <!-- Footer -->
   <footer>
-    <p>&copy; 2024 My Portfolio</p>
+    <p>&copy; 2024 John Doe</p>
   </footer>
 
 </body>
