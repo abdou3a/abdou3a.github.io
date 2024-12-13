@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cybersecurity Portfolio</title>
+    <title>Abdelilah Abdellaoui - Cybersecurity Portfolio</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css">
@@ -14,6 +14,7 @@
             padding: 0;
             background-color: #121212;
             color: #f4f4f4;
+            overflow-x: hidden;
         }
 
         header {
@@ -57,6 +58,7 @@
             background: url('https://via.placeholder.com/1920x1080') no-repeat center center/cover;
             color: #fff;
             padding: 6em 2em;
+            animation: fadeIn 2s ease-in-out;
         }
 
         .welcome-section h1 {
@@ -98,6 +100,21 @@
             color: #1de9b6;
             text-decoration: none;
         }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .experience {
+            text-align: left;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .experience h3 {
+            color: #1de9b6;
+        }
     </style>
 </head>
 <body>
@@ -108,19 +125,20 @@
                 <li><a href="#about">About</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#skills">Skills</a></li>
+                <li><a href="#experience">Experience</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
         </nav>
     </header>
 
     <section id="welcome" class="welcome-section" data-aos="fade-up">
-        <h1>Hi, I'm [Your Name]</h1>
+        <h1>Hi, I'm Abdelilah Abdellaoui</h1>
         <p>A cybersecurity enthusiast passionate about securing digital landscapes and innovating solutions for a safer internet.</p>
     </section>
 
     <section id="about" class="about-section" data-aos="fade-right">
         <h2>About</h2>
-        <p>I am a student pursuing a degree in cybersecurity, blending technical expertise with creativity to solve complex challenges. My focus lies in scripting, network security, and developing innovative strategies to safeguard systems and data.</p>
+        <p>I am a student pursuing a degree in cybersecurity at FSJES UMI, blending technical expertise with creativity to solve complex challenges. I also have a background in law, giving me a unique perspective on legal and compliance aspects of cybersecurity.</p>
     </section>
 
     <section id="projects" class="projects-section" data-aos="fade-left">
@@ -151,19 +169,33 @@
         </ul>
     </section>
 
+    <section id="experience" class="experience-section" data-aos="fade-up">
+        <h2>Experience</h2>
+        <div class="experience">
+            <h3>Law Background</h3>
+            <p>Studied law at FSJES UMI, gaining expertise in legal frameworks, compliance, and policies relevant to cybersecurity.</p>
+            <h3>Ransomware Analysis</h3>
+            <p>Conducted in-depth analysis of ransomware behavior and its mitigation strategies, enhancing my ability to identify and counter cyber threats.</p>
+        </div>
+    </section>
+
     <section id="contact" class="contact-section" data-aos="fade-right">
         <h2>Contact</h2>
-        <p>📧 <strong>Email:</strong> [YourEmail@example.com]</p>
-        <p>💼 <strong>LinkedIn:</strong> <a href="#">[YourLinkedInProfile]</a></p>
-        <p>🐙 <strong>GitHub:</strong> <a href="#">[YourGitHubProfile]</a></p>
+        <p>📧 <strong>Email:</strong> <a href="mailto:abdelil.abdellaoui@edu.umi.ac.ma">abdelil.abdellaoui@edu.umi.ac.ma</a></p>
+        <p>💼 <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/abdelilah-abdellaoui">Abdelilah Abdellaoui</a></p>
+        <p>🐙 <strong>GitHub:</strong> <a href="https://github.com/abdou3a">abdou3a</a></p>
     </section>
 
     <footer>
-        <p>&copy; 2024 [Your Name]. All Rights Reserved. | <a href="#welcome">Back to top</a></p>
+        <p>&copy; 2024 Abdelilah Abdellaoui. All Rights Reserved. | <a href="#welcome">Back to top</a></p>
     </footer>
 
     <script>
-        AOS.init();
+        AOS.init({
+            duration: 1200,
+            easing: "ease-in-out",
+            once: true,
+        });
     </script>
 </body>
 </html>
