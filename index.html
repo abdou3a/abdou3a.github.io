@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Modern Portfolio</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>My Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     /* Basic Reset */
     * {
@@ -15,9 +15,10 @@
 
     /* Body */
     body {
-      font-family: 'Helvetica Neue', sans-serif;
-      background-color: #f0f0f0; /* Light background */
-      color: #333; /* Dark text for contrast */
+      font-family: 'Inter', sans-serif;
+      background-color: #121212; /* Dark background */
+      color: #f5f5f5; /* Light text */
+      overflow-x: hidden;
     }
 
     /* Header */
@@ -25,148 +26,172 @@
       position: fixed;
       top: 0;
       width: 100%;
-      padding: 20px 0;
-      background-color: #333; /* Dark background for header */
+      padding: 30px 10%;
       text-align: center;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       z-index: 999;
     }
 
     header a {
-      color: #fff;
+      color: #f5f5f5;
       text-decoration: none;
-      margin: 0 20px;
-      font-size: 20px;
-      font-weight: bold;
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 30px;
     }
 
-    /* Hero Section (Main Intro) */
+    /* Hero Section */
     .hero {
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #ff7f50; /* Warm coral background */
-      color: #fff;
       text-align: center;
+      background-color: #2C3E50; /* Accent Color */
       flex-direction: column;
+      padding: 0 5%;
     }
 
     .hero h1 {
-      font-size: 60px;
-      font-weight: 800;
+      font-size: 80px;
+      font-weight: 700;
+      letter-spacing: 5px;
     }
 
     .hero p {
       font-size: 22px;
-      margin-top: 15px;
+      font-weight: 300;
+      margin-top: 20px;
+      letter-spacing: 2px;
     }
 
     /* Portfolio Section */
-    .portfolio {
-      padding: 100px 20px;
-      background-color: #fff; /* White background for contrast */
+    #portfolio {
+      padding: 100px 0;
+      background-color: #1A1A1A; /* Dark section for portfolio */
       text-align: center;
     }
 
-    .portfolio h2 {
-      font-size: 45px;
+    #portfolio h2 {
+      font-size: 40px;
       margin-bottom: 40px;
-      color: #333; /* Dark color for title */
     }
 
-    .portfolio .project {
-      display: inline-block;
-      width: 250px;
-      height: 200px;
-      margin: 15px;
-      background-color: #f8f8f8;
+    .portfolio-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 30px;
+      padding: 0 5%;
+    }
+
+    .portfolio-item {
+      position: relative;
+      background-color: #34495E; /* Accent color for projects */
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-      position: relative;
-      transition: all 0.4s ease;
-    }
-
-    .portfolio .project:hover {
-      transform: scale(1.05);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    }
-
-    .portfolio img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
       transition: all 0.3s ease;
     }
 
-    .portfolio .project:hover img {
+    .portfolio-item:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .portfolio-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.3s ease;
+    }
+
+    .portfolio-item:hover img {
       opacity: 0.8;
     }
 
-    /* Footer */
-    footer {
-      padding: 40px;
-      background-color: #333;
+    .portfolio-item::after {
+      content: "View Project";
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 18px;
+      font-weight: 600;
       color: #fff;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .portfolio-item:hover::after {
+      opacity: 1;
+    }
+
+    /* Footer Section */
+    footer {
+      background-color: #2C3E50;
+      padding: 40px;
       text-align: center;
+      color: #fff;
     }
 
     footer p {
       font-size: 18px;
+      font-weight: 300;
+    }
+
+    /* Smooth Scroll */
+    html {
+      scroll-behavior: smooth;
     }
 
     /* Responsive Design */
     @media (max-width: 768px) {
-      .portfolio .project {
-        width: 100%;
-        margin: 20px 0;
-      }
-
       .hero h1 {
-        font-size: 50px;
+        font-size: 60px;
       }
 
       .hero p {
         font-size: 18px;
       }
-    }
 
+      .portfolio-container {
+        padding: 0;
+      }
+    }
   </style>
 </head>
 <body>
 
   <!-- Header -->
   <header>
-    <a href="#">Home</a>
+    <a href="#home">Home</a>
     <a href="#portfolio">Portfolio</a>
-    <a href="#about">About</a>
     <a href="#contact">Contact</a>
   </header>
 
   <!-- Hero Section -->
-  <section class="hero">
-    <h1>Hello, I'm John Doe</h1>
-    <p>Creative Web Developer & Designer</p>
+  <section class="hero" id="home">
+    <h1>I'm Jane Doe</h1>
+    <p>Creative Developer & Designer</p>
   </section>
 
   <!-- Portfolio Section -->
-  <section id="portfolio" class="portfolio">
-    <h2>My Projects</h2>
-    <div class="project">
-      <img src="your-image1.jpg" alt="Project 1">
-    </div>
-    <div class="project">
-      <img src="your-image2.jpg" alt="Project 2">
-    </div>
-    <div class="project">
-      <img src="your-image3.jpg" alt="Project 3">
+  <section id="portfolio">
+    <h2>My Work</h2>
+    <div class="portfolio-container">
+      <div class="portfolio-item">
+        <img src="project1.jpg" alt="Project 1">
+      </div>
+      <div class="portfolio-item">
+        <img src="project2.jpg" alt="Project 2">
+      </div>
+      <div class="portfolio-item">
+        <img src="project3.jpg" alt="Project 3">
+      </div>
     </div>
   </section>
 
   <!-- Footer -->
   <footer>
-    <p>&copy; 2024 John Doe</p>
+    <p>&copy; 2024 Jane Doe</p>
   </footer>
 
 </body>
