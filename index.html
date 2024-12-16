@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abdelilah Abdellaoui - Cybersecurity Portfolio</title>
+    <title>Abdelilah Abdellaoui | Cybersecurity Portfolio</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css">
     <style>
         body {
-            font-family: 'Arial Black', Gadget, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #0a0a0a;
-            color: #ffffff;
-            overflow-x: hidden;
+            background-color: #121212;
+            color: #f4f4f4;
+            scroll-behavior: smooth;
         }
 
         header {
-            background: linear-gradient(90deg, #ff0000, #8b0000);
+            background: linear-gradient(90deg, #1c1c1c, #292929);
             padding: 1em 0;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .navbar {
@@ -40,15 +40,13 @@
 
         .navbar a {
             text-decoration: none;
-            color: #ffffff;
+            color: #f4f4f4;
             font-weight: bold;
-            text-transform: uppercase;
-            transition: color 0.3s, transform 0.3s;
+            transition: color 0.3s;
         }
 
         .navbar a:hover {
-            color: #ff4500;
-            transform: scale(1.1);
+            color: #1de9b6;
         }
 
         section {
@@ -58,26 +56,32 @@
 
         .welcome-section {
             background: url('https://via.placeholder.com/1920x1080') no-repeat center center/cover;
-            color: #ffffff;
+            color: #fff;
             padding: 6em 2em;
-            animation: fadeIn 2s ease-in-out;
         }
 
         .welcome-section h1 {
-            font-size: 3em;
+            font-size: 2.5em;
             margin-bottom: 0.5em;
-            text-shadow: 3px 3px 15px rgba(255, 0, 0, 0.8);
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+            animation: slideIn 1s ease-in-out;
         }
 
-        .welcome-section p {
-            font-size: 1.3em;
-            font-style: italic;
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         h2 {
-            font-size: 2.5em;
+            font-size: 2em;
             margin-bottom: 0.5em;
-            border-bottom: 5px solid #ff4500;
+            border-bottom: 3px solid #1de9b6;
             display: inline-block;
         }
 
@@ -87,68 +91,52 @@
         }
 
         ul li {
-            margin: 15px 0;
-            font-size: 1.2em;
+            margin: 10px 0;
+            font-size: 1.1em;
         }
 
-        footer {
-            background: #111;
-            color: #888;
-            padding: 1.5em 0;
-            text-align: center;
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        form input, form textarea {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
             font-size: 1em;
         }
 
-        footer a {
-            color: #ff4500;
-            text-decoration: none;
-        }
-
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(-20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .experience {
-            text-align: left;
-            max-width: 800px;
-            margin: 0 auto;
-            border-left: 5px solid #ff4500;
-            padding-left: 20px;
-        }
-
-        .experience h3 {
-            color: #ff4500;
-        }
-
-        .contact-section a {
-            font-size: 1.2em;
+        form button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #1de9b6;
+            color: #121212;
             font-weight: bold;
-            color: #ff4500;
-            text-decoration: none;
-            transition: color 0.3s, transform 0.3s;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
 
-        .contact-section a:hover {
-            color: #ffffff;
-            transform: scale(1.1);
+        form button:hover {
+            background-color: #13c8a1;
         }
 
-        .project {
+        footer {
             background: #1c1c1c;
-            border: 2px solid #ff4500;
-            margin: 20px auto;
-            padding: 15px;
-            max-width: 800px;
-            border-radius: 10px;
-            transition: transform 0.3s, box-shadow 0.3s;
+            color: #888;
+            padding: 1em 0;
+            text-align: center;
+            font-size: 0.9em;
         }
 
-        .project:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(255, 0, 0, 0.5);
+        footer a {
+            color: #1de9b6;
+            text-decoration: none;
         }
-
     </style>
 </head>
 <body>
@@ -159,7 +147,6 @@
                 <li><a href="#about">About</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#skills">Skills</a></li>
-                <li><a href="#experience">Experience</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
         </nav>
@@ -167,12 +154,13 @@
 
     <section id="welcome" class="welcome-section" data-aos="fade-up">
         <h1>Hi, I'm Abdelilah Abdellaoui</h1>
-        <p>A cybersecurity enthusiast passionate about securing digital landscapes and innovating solutions for a safer internet.</p>
+        <p>A cybersecurity and law enthusiast passionate about securing systems and innovating digital solutions.</p>
     </section>
 
     <section id="about" class="about-section" data-aos="fade-right">
         <h2>About</h2>
-        <p>I am a student pursuing a degree in cybersecurity at FSJES UMI, blending technical expertise with creativity to solve complex challenges. I also have a background in law, giving me a unique perspective on legal and compliance aspects of cybersecurity.</p>
+        <p>I am a cybersecurity student and a law scholar at FSJES UMI, combining my technical expertise with legal knowledge to tackle ransomware and security issues efficiently.</p>
+        <p>My ransomware experience involves analyzing threats, creating preventive strategies, and testing secure environments to defend against malicious attacks.</p>
     </section>
 
     <section id="projects" class="projects-section" data-aos="fade-left">
@@ -197,24 +185,31 @@
         <h2>Skills</h2>
         <ul>
             <li><strong>Programming:</strong> Batch scripting, Python, Bash</li>
-            <li><strong>Network Security:</strong> FTP Configuration, Network Traffic Analysis, Firewalls</li>
+            <li><strong>Network Security:</strong> FTP Configuration, Ransomware Analysis, Traffic Analysis</li>
+            <li><strong>Legal Knowledge:</strong> Studying Law at FSJES UMI</li>
             <li><strong>Tools:</strong> Wireshark, Metasploit, nmap, Burp Suite</li>
-            <li><strong>Strengths:</strong> Problem-solving mindset, Detail-oriented, Effective communicator</li>
         </ul>
-    </section>
-
-    <section id="experience" class="experience-section" data-aos="fade-up">
-        <h2>Experience</h2>
-        <div class="experience">
-            <h3>Law Background</h3>
-            <p>Studied law at FSJES UMI, gaining expertise in legal frameworks, compliance, and policies relevant to cybersecurity.</p>
-            <h3>Ransomware Analysis</h3>
-            <p>Conducted in-depth analysis of ransomware behavior and its mitigation strategies, enhancing my ability to identify and counter cyber threats.</p>
-        </div>
     </section>
 
     <section id="contact" class="contact-section" data-aos="fade-right">
         <h2>Contact</h2>
-        <p>📧 <strong>Email:</strong> <a href="mailto:abdelil.abdellaoui@edu.umi.ac.ma">abdelil.abdellaoui@edu.umi.ac.ma</a></p>
-        <p>💼 <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/abdelilah-abdellaoui">Abdelilah Abdellaoui</a></p>
-        <p>🐙
+        <p>📧 <strong>Email:</strong> abdelil.abdellaoui@edu.umi.ac.ma</p>
+        <p>💼 <strong>LinkedIn:</strong> <a href="https://linkedin.com/in/abdelilah-abdellaoui" target="_blank">Abdelilah Abdellaoui</a></p>
+        <p>🐙 <strong>GitHub:</strong> <a href="https://github.com/abdou3a" target="_blank">abdou3a</a></p>
+        <form action="https://formspree.io/f/your-form-endpoint" method="POST">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Abdelilah Abdellaoui. All Rights Reserved. | <a href="#welcome">Back to top</a></p>
+    </footer>
+
+    <script>
+        AOS.init();
+    </script>
+</body>
+</html>
