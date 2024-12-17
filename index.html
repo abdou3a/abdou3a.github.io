@@ -3,223 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abdelilah Abdellaoui - Portfolio</title>
-    <!-- External Stylesheets -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Abdelilah Abdellaoui | Cybersecurity Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        /* General Reset */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
         }
 
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #0a0a0a;
-            color: #fff;
-            overflow-x: hidden;
+            background: #121212;
+            color: #e0e0e0;
         }
 
+        /* Header Section */
         header {
-            background: linear-gradient(135deg, #0a0a0a, #0f4c75);
-            padding: 20px;
+            height: 100vh;
+            background: linear-gradient(to bottom, #181818, #202020);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at center, #00b4d8 0%, transparent 70%);
+            animation: electric 6s infinite;
+            z-index: -1;
+        }
+        @keyframes electric {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            50% {
+                transform: rotate(45deg);
+            }
+        }
+
+        .header-content {
             text-align: center;
-            animation: fadeIn 2s;
+            animation: fadeIn 2s ease;
         }
 
-        header h1 {
-            margin-bottom: 10px;
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-content img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 3px solid #00b4d8;
+            margin-bottom: 20px;
+        }
+
+        h1 {
             font-size: 2.5rem;
-            color: #f9b208;
+            font-weight: 600;
+            color: #00b4d8;
         }
-
-        header p {
-            font-size: 1.1rem;
+        p {
+            font-size: 1.2rem;
+            color: #c0c0c0;
         }
 
         /* Navigation */
         nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: #181818;
             display: flex;
             justify-content: center;
-            background: #0f4c75;
             padding: 10px 0;
+            z-index: 10;
         }
 
         nav a {
-            color: #fff;
             text-decoration: none;
+            color: #e0e0e0;
             margin: 0 15px;
-            transition: color 0.3s ease;
+            font-weight: 400;
+            transition: color 0.3s;
         }
-
         nav a:hover {
-            color: #f9b208;
+            color: #00b4d8;
         }
 
-        /* Hero Section */
-        .hero {
+        /* About Section */
+        .section {
+            padding: 60px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .section h2 {
+            font-size: 2rem;
+            color: #00b4d8;
+            margin-bottom: 20px;
+        }
+
+        /* Work Experience */
+        .work-exp {
+            margin: 20px 0;
+            background: #1e1e1e;
+            padding: 20px;
+            border-left: 5px solid #00b4d8;
+            transition: transform 0.3s;
+        }
+        .work-exp:hover {
+            transform: translateY(-5px);
+        }
+        .work-exp h3 {
+            font-size: 1.5rem;
+            color: #e0e0e0;
+        }
+        .work-exp span {
+            color: #00b4d8;
+            font-weight: 600;
+        }
+        .work-exp p {
+            font-size: 1rem;
+            color: #c0c0c0;
+            margin-top: 10px;
+        }
+
+        /* Contact Section */
+        form {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 40px 20px;
-            background: #1b262c;
-        }
-
-        .profile-img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            margin-bottom: 20px;
-            object-fit: cover;
-            border: 3px solid #f9b208;
-        }
-
-        /* Section Styling */
-        section {
-            padding: 50px 20px;
-            text-align: center;
-            animation: slideInUp 2s;
-        }
-
-        section h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #f9b208;
-        }
-
-        section p {
-            max-width: 800px;
-            margin: 0 auto 20px;
-            font-size: 1.1rem;
-        }
-
-        /* Skills Section */
-        .skills {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
             gap: 15px;
+            max-width: 500px;
+            margin: 0 auto;
         }
-
-        .skill-item {
-            background: #3282b8;
-            padding: 10px 15px;
+        input, textarea, button {
+            padding: 10px;
+            border: none;
             border-radius: 5px;
-            color: #fff;
-            font-weight: bold;
+            font-size: 1rem;
+        }
+        input, textarea {
+            background: #1e1e1e;
+            color: #e0e0e0;
+        }
+        button {
+            background: #00b4d8;
+            color: #121212;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #0096c7;
         }
 
-        /* Footer */
         footer {
             text-align: center;
             padding: 20px 0;
-            background: #0f4c75;
-            color: #fff;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideInUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            background: #181818;
+            color: #c0c0c0;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <h1>Abdelilah Abdellaoui</h1>
-        <p>Cybersecurity Student | Developer | Law Enthusiast</p>
-    </header>
-
     <!-- Navigation -->
     <nav>
         <a href="#about">About</a>
-        <a href="#skills">Skills</a>
-        <a href="#education">Education</a>
-        <a href="#projects">Projects</a>
+        <a href="#experience">Experience</a>
         <a href="#contact">Contact</a>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero" id="about" data-aos="fade-up">
-        <img src="profile.jpg" alt="Profile Picture" class="profile-img">
-        <h2>About Me</h2>
-        <p>
-            I am a passionate cybersecurity student with a strong interest in scripting, network security, and law studies. 
-            My experience spans creating automation scripts, ransomware analysis, and enhancing system security.
-        </p>
-    </section>
-
-    <!-- Skills Section -->
-    <section id="skills" data-aos="fade-up">
-        <h2>Skills</h2>
-        <div class="skills">
-            <div class="skill-item">Batch Scripting</div>
-            <div class="skill-item">Python</div>
-            <div class="skill-item">FTP Configuration</div>
-            <div class="skill-item">Network Analysis</div>
-            <div class="skill-item">Ransomware Analysis</div>
-            <div class="skill-item">Law Studies</div>
-            <div class="skill-item">Wireshark</div>
-            <div class="skill-item">Metasploit</div>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <img src="profile.jpg" alt="Profile Picture">
+            <h1>Abdelilah Abdellaoui</h1>
+            <p>Cybersecurity Enthusiast | Law Student | Creative Thinker</p>
         </div>
-    </section>
+    </header>
 
-    <!-- Education Section -->
-    <section id="education" data-aos="fade-right">
-        <h2>Education</h2>
-        <p>Bachelor's in Cybersecurity, FSJES UMI</p>
-        <p>Currently Studying Law, FSJES UMI</p>
-    </section>
+    <!-- About Section -->
+    <div class="section" id="about">
+        <h2>About Me</h2>
+        <p>I am Abdelilah Abdellaoui, a passionate cybersecurity student with a focus on scripting, network security, and ransomware analysis. I combine my technical skills with a legal background, studying law at FSJES UMI, to tackle challenges from multiple perspectives.</p>
+    </div>
 
-    <!-- Projects Section -->
-    <section id="projects" data-aos="fade-left">
-        <h2>Projects</h2>
-        <p>Developed secure chat systems and FTP automation scripts, focusing on data protection and server communication.</p>
-    </section>
+    <!-- Experience Section -->
+    <div class="section" id="experience">
+        <h2>Work Experience</h2>
+        <div class="work-exp">
+            <h3>Secure Chat System</h3>
+            <span>Custom Batch Scripting & Security</span>
+            <p>Automated file transfers securely via tailored batch scripts with encryption techniques.</p>
+        </div>
+        <div class="work-exp">
+            <h3>FTP Automation Script</h3>
+            <span>Server Communications</span>
+            <p>Created efficient file operations and hands-on server communication tools.</p>
+        </div>
+        <div class="work-exp">
+            <h3>Ransomware Analysis</h3>
+            <span>Network Security</span>
+            <p>Conducted malware analysis and implemented detection techniques to prevent threats.</p>
+        </div>
+    </div>
 
     <!-- Contact Section -->
-    <section id="contact" data-aos="fade-up">
+    <div class="section" id="contact">
         <h2>Contact Me</h2>
-        <p>Feel free to reach out for collaboration or inquiries!</p>
-        <form action="https://formspree.io/f/xdoqbpgq" method="POST">
-            <input type="text" name="name" placeholder="Your Name" required><br>
-            <input type="email" name="email" placeholder="Your Email" required><br>
-            <textarea name="message" rows="4" placeholder="Your Message" required></textarea><br>
+        <form action="https://formspree.io/f/mnqryork" method="POST">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
             <button type="submit">Send Message</button>
         </form>
-    </section>
+    </div>
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 Abdelilah Abdellaoui. All Rights Reserved.</p>
-        <p>Built with HTML, CSS, and AOS Animation.</p>
+        <p>&copy; 2024 Abdelilah Abdellaoui | All Rights Reserved</p>
     </footer>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        AOS.init(); // Initialize AOS animations
-    </script>
 </body>
 </html>
