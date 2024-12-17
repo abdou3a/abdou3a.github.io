@@ -29,7 +29,7 @@
 
         header h1 {
             margin: 0;
-            font-size: 2.5em;
+            font-size: 2.2em;
         }
 
         nav ul {
@@ -70,8 +70,8 @@
         }
 
         .profile-img {
-            width: 200px;
-            height: 200px;
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
             object-fit: cover;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
@@ -79,7 +79,7 @@
         }
 
         h2 {
-            font-size: 2.2em;
+            font-size: 2em;
             border-bottom: 3px solid #58a6ff;
             display: inline-block;
             margin-bottom: 1em;
@@ -92,7 +92,7 @@
             border: 1px solid #30363d;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-            max-width: 600px;
+            max-width: 90%;
             transition: transform 0.3s ease-in-out;
         }
 
@@ -107,7 +107,7 @@
 
         .skills li {
             margin: 10px 0;
-            font-size: 1.1em;
+            font-size: 1em;
         }
 
         footer {
@@ -127,18 +127,47 @@
             color: #1f6feb;
         }
 
-        .experience {
+        .experience, .education {
             text-align: left;
-            max-width: 800px;
+            max-width: 90%;
             margin: 2em auto;
         }
 
-        .experience h3 {
+        .experience h3, .education h3 {
             color: #58a6ff;
         }
 
-        .experience p {
+        .experience p, .education p {
             margin: 0.5em 0;
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                gap: 1em;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .project-card {
+                padding: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.5em;
+            }
+
+            nav a {
+                font-size: 1em;
+            }
         }
     </style>
 </head>
@@ -191,30 +220,17 @@
         </div>
     </section>
 
-    <section id="experience" data-aos="fade-up">
-        <h2>Experience</h2>
-        <div class="experience">
-            <h3>Cybersecurity Analyst</h3>
-            <p>Conducted in-depth ransomware analysis and reverse engineering to secure systems against attacks.</p>
-            <p>Designed automation scripts to improve system security and streamline operations.</p>
-
-            <h3>Legal Intern</h3>
-            <p>Researched and applied cybersecurity laws, focusing on data privacy regulations and digital forensics.</p>
-        </div>
-    </section>
-
-    <section id="education" data-aos="fade-up">
-        <h2>Education</h2>
-        <div class="experience">
-            <h3>FSJES UMI</h3>
-            <p>Bachelor of Law and Cybersecurity</p>
-            <p>Specialized in combining legal studies with cybersecurity practices to combat digital crimes.</p>
-        </div>
-    </section>
-
     <section id="contact" data-aos="fade-up">
         <h2>Contact</h2>
-        <p>📧 <strong>Email:</strong> <a href="mailto:abdelil.abdellaoui@edu.umi.ac.ma">abdelil.abdellaoui@edu.umi.ac.ma</a></p>
-        <p>💼 <strong>LinkedIn:</strong> <a href="https://linkedin.com/in/abdelilah-abdellaoui">Abdelilah Abdellaoui</a></p>
-        <p>🐙 <strong>GitHub:</strong> <a href="https://github.com/abdou3a">ab
+        <p><i class="fas fa-envelope"></i> <a href="mailto:abdelilah@example.com">abdelilah@example.com</a></p>
+        <p><i class="fab fa-linkedin"></i> <a href="https://linkedin.com/in/abdelilah-abdellaoui" target="_blank">LinkedIn</a></p>
+        <p><i class="fas fa-phone"></i> +212 6 1234 5678</p>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Abdelilah Abdellaoui. All Rights Reserved.</p>
+        <p>Built with HTML, CSS, and AOS Animation.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script
 
