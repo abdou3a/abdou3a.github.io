@@ -3,157 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abdelilah Abdellaoui | Cybersecurity Portfolio</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
+    <title>Cybersecurity Portfolio | [Your Name]</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css">
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #121212;
-            color: #f4f4f4;
+            background-color: #0d1117;
+            color: #c9d1d9;
             scroll-behavior: smooth;
         }
 
         header {
-            background: linear-gradient(90deg, #1c1c1c, #292929);
-            padding: 1em 0;
+            background: linear-gradient(to right, #141e30, #243b55);
+            color: #58a6ff;
+            padding: 1.5em 0;
+            text-align: center;
             position: sticky;
             top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
         }
 
-        .navbar {
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        nav ul {
             display: flex;
             justify-content: center;
+            gap: 1.5em;
             list-style: none;
             margin: 0;
             padding: 0;
         }
 
-        .navbar li {
-            margin: 0 15px;
-        }
-
-        .navbar a {
+        nav a {
+            color: #58a6ff;
             text-decoration: none;
-            color: #f4f4f4;
-            font-weight: bold;
+            font-size: 1.2em;
             transition: color 0.3s;
         }
 
-        .navbar a:hover {
-            color: #1de9b6;
+        nav a:hover {
+            color: #1f6feb;
         }
 
         section {
             padding: 4em 2em;
             text-align: center;
+            animation: fadeIn 1.5s ease-in;
         }
 
-        .welcome-section {
-            background: url('profile.jpg') no-repeat center center/cover;
-            color: #fff;
-            padding: 6em 2em;
-            position: relative;
-        }
-
-        .welcome-section::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-        }
-
-        .welcome-section h1 {
-            font-size: 2.5em;
-            margin-bottom: 0.5em;
-            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
-            position: relative;
-            animation: neonGlow 2s infinite alternate;
-        }
-
-        @keyframes neonGlow {
+        @keyframes fadeIn {
             from {
-                text-shadow: 0 0 5px #1de9b6, 0 0 10px #1de9b6, 0 0 15px #1de9b6;
+                opacity: 0;
+                transform: translateY(20px);
             }
             to {
-                text-shadow: 0 0 10px #13c8a1, 0 0 20px #13c8a1, 0 0 30px #13c8a1;
+                opacity: 1;
+                transform: translateY(0);
             }
+        }
+
+        .profile-img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            margin-bottom: 1em;
         }
 
         h2 {
-            font-size: 2em;
-            margin-bottom: 0.5em;
-            border-bottom: 3px solid #1de9b6;
+            font-size: 2.2em;
+            border-bottom: 3px solid #58a6ff;
             display: inline-block;
+            margin-bottom: 1em;
         }
 
-        ul {
+        .project-card {
+            background: #161b22;
+            padding: 1.5em;
+            margin: 1em auto;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .project-card:hover {
+            transform: scale(1.05);
+        }
+
+        .skills ul {
             list-style: none;
             padding: 0;
         }
 
-        ul li {
+        .skills li {
             margin: 10px 0;
             font-size: 1.1em;
         }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 1em;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        form input, form textarea {
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1em;
-        }
-
-        form button {
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: #1de9b6;
-            color: #121212;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        form button:hover {
-            background-color: #13c8a1;
-        }
-
         footer {
-            background: #1c1c1c;
-            color: #888;
-            padding: 1em 0;
+            background: #141e30;
+            padding: 1.5em 0;
             text-align: center;
-            font-size: 0.9em;
+            color: #8b949e;
         }
 
         footer a {
-            color: #1de9b6;
+            color: #58a6ff;
             text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: #1f6feb;
         }
     </style>
 </head>
 <body>
     <header>
+        <h1>Cybersecurity Portfolio</h1>
         <nav>
-            <ul class="navbar">
-                <li><a href="#welcome">Welcome</a></li>
+            <ul>
                 <li><a href="#about">About</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#skills">Skills</a></li>
@@ -162,61 +141,50 @@
         </nav>
     </header>
 
-    <section id="welcome" class="welcome-section" data-aos="fade-up">
-        <h1>Hi, I'm Abdelilah Abdellaoui</h1>
-        <p>A cybersecurity and law enthusiast passionate about securing systems and innovating digital solutions.</p>
+    <section id="about" data-aos="fade-up">
+        <img src="profile.jpg" alt="Profile Picture" class="profile-img">
+        <h2>About Me</h2>
+        <p>I am a cybersecurity enthusiast with hands-on experience in network security, scripting, and automation. Passionate about securing systems and innovating solutions to counter cyber threats.</p>
     </section>
 
-    <section id="about" class="about-section" data-aos="fade-right">
-        <h2>About</h2>
-        <p>I am a cybersecurity student and a law scholar at FSJES UMI, combining my technical expertise with legal knowledge to tackle ransomware and security issues efficiently.</p>
-        <p>My ransomware experience involves analyzing threats, creating preventive strategies, and testing secure environments to defend against malicious attacks.</p>
-    </section>
-
-    <section id="projects" class="projects-section" data-aos="fade-left">
+    <section id="projects" data-aos="fade-up">
         <h2>Projects</h2>
-        <div class="project">
+        <div class="project-card">
             <h3>Secure Chat System</h3>
-            <ul>
-                <li>Automated file transfers securely via custom batch scripting.</li>
-                <li>Enhanced data protection through encryption techniques.</li>
-            </ul>
+            <p>Developed a secure chat system with automated file transfers using custom batch scripts and encryption techniques.</p>
         </div>
-        <div class="project">
+        <div class="project-card">
             <h3>FTP Automation Script</h3>
+            <p>Created an FTP automation script to streamline file operations and enhance server communications securely.</p>
+        </div>
+    </section>
+
+    <section id="skills" data-aos="fade-up">
+        <h2>Skills</h2>
+        <div class="skills">
             <ul>
-                <li>Streamlined file operations with a tailored script.</li>
-                <li>Hands-on experience with server communications.</li>
+                <li><strong>Programming:</strong> Batch scripting, Python, Bash</li>
+                <li><strong>Network Security:</strong> FTP Configuration, Traffic Analysis</li>
+                <li><strong>Tools:</strong> Wireshark, Metasploit, Burp Suite</li>
             </ul>
         </div>
     </section>
 
-    <section id="skills" class="skills-section" data-aos="fade-up">
-        <h2>Skills</h2>
-        <ul>
-            <li><strong>Programming:</strong> Batch scripting, Python, Bash</li>
-            <li><strong>Network Security:</strong> FTP Configuration, Ransomware Analysis, Traffic Analysis</li>
-            <li><strong>Legal Knowledge:</strong> Studying Law at FSJES UMI</li>
-            <li><strong>Tools:</strong> Wireshark, Metasploit, nmap, Burp Suite</li>
-        </ul>
-    </section>
-
-    <section id="contact" class="contact-section" data-aos="fade-right">
+    <section id="contact" data-aos="fade-up">
         <h2>Contact</h2>
-        <form action="https://formspree.io/f/xnqednvz" method="POST">
-            <input type="text" name="name" placeholder="Your Name" required>
-            <input type="email" name="email" placeholder="Your Email" required>
-            <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
-            <button type="submit">Send Message</button>
-        </form>
+        <p>📧 <strong>Email:</strong> <a href="mailto:your.email@example.com">your.email@example.com</a></p>
+        <p>💼 <strong>LinkedIn:</strong> <a href="https://linkedin.com/in/yourprofile">Your LinkedIn</a></p>
+        <p>🐙 <strong>GitHub:</strong> <a href="https://github.com/yourgithub">Your GitHub</a></p>
     </section>
 
     <footer>
-        <p>&copy; 2024 Abdelilah Abdellaoui. All Rights Reserved. | <a href="#welcome">Back to top</a></p>
+        <p>&copy; 2024 [Your Name]. All Rights Reserved. | <a href="#">Back to Top</a></p>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init();
     </script>
 </body>
 </html>
+
