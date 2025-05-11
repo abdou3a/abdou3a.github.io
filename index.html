@@ -145,6 +145,69 @@
     <h2 class="fr">Projets</h2>
     <ul class="fr">
       <li><strong>Chat FTP (Batch Script):</strong> Création d’un système rudimentaire de messagerie en ligne de commande, utilisant un serveur FTP et des scripts batch avec gestion des identifiants utilisateurs.</li>
+      <section id="chat-simulation" class="section">
+  <h2 class="fr">Simulation de Chat</h2>
+  <h2 class="en hidden">Chat Simulation</h2>
+  <div style="border: 2px solid var(--accent); background: rgba(15, 15, 15, 0.95); padding: 1rem; max-width: 600px; margin: 2rem auto; border-radius: 8px;">
+    <div id="chatDisplay" style="background: black; color: var(--text); height: 300px; overflow-y: auto; padding: 1rem; border: 1px solid var(--accent); border-radius: 4px; margin-bottom: 1rem; font-family: var(--font-main);"></div>
+    <div style="display: flex; gap: 1rem;">
+      <input type="text" id="userMessage" placeholder="Tapez un message... / Type a message..." style="flex-grow: 1; padding: 0.5rem; border: 2px solid var(--accent); background: black; color: var(--text); font-family: var(--font-main); border-radius: 4px;" />
+      <button onclick="sendMessage()" style="background: var(--accent); color: black; font-weight: bold; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; transition: all 0.3s ease;">Envoyer / Send</button>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Predefined "hacker" responses
+  const hackerResponses = [
+    "Accessing your system...",
+    "Bypassing your firewall...",
+    "Decrypting your secrets...",
+    "Your data is now under my control!",
+    "Initiating self-destruct sequence... just kidding!",
+    "You can't hide from me!",
+    "Tracing your IP address...",
+    "Congratulations! You've been hacked... or not?",
+    "The Matrix has you...",
+  ];
+
+  // Function to send a message
+  function sendMessage() {
+    const userMessage = document.getElementById("userMessage").value.trim();
+    if (!userMessage) return; // Ignore empty messages
+
+    // Display user message
+    const chatDisplay = document.getElementById("chatDisplay");
+    const userMessageElement = document.createElement("div");
+    userMessageElement.style.color = "var(--accent)";
+    userMessageElement.style.margin = "0.5rem 0";
+    userMessageElement.textContent = `You: ${userMessage}`;
+    chatDisplay.appendChild(userMessageElement);
+
+    // Scroll to the bottom
+    chatDisplay.scrollTop = chatDisplay.scrollHeight;
+
+    // Clear input field
+    document.getElementById("userMessage").value = "";
+
+    // Respond as the "hacker" after a short delay
+    setTimeout(() => {
+      const aiMessageElement = document.createElement("div");
+      aiMessageElement.style.color = "var(--text)";
+      aiMessageElement.style.margin = "0.5rem 0";
+      aiMessageElement.style.fontStyle = "italic";
+
+      // Generate random hacker response
+      const randomResponse =
+        hackerResponses[Math.floor(Math.random() * hackerResponses.length)];
+      aiMessageElement.textContent = `Hacker: ${randomResponse}`;
+      chatDisplay.appendChild(aiMessageElement);
+
+      // Scroll to the bottom
+      chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    }, 1000); // Delay response by 1 second
+  }
+</script>
       <li><strong>Extraction OCR automatisée:</strong> Mise en œuvre d’un processus combinant OCR et base Access pour extraire des informations personnelles depuis des documents scannés.</li>
       <li><strong>Tests sécurité navigateur:</strong> Utilisation du framework Metasploit pour analyser les vulnérabilités des navigateurs web en environnement isolé.</li>
        <li>
