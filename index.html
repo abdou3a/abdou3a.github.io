@@ -147,7 +147,115 @@
       <li><strong>Chat FTP (Batch Script):</strong> Création d’un système rudimentaire de messagerie en ligne de commande, utilisant un serveur FTP et des scripts batch avec gestion des identifiants utilisateurs.</li>
       <li><strong>Extraction OCR automatisée:</strong> Mise en œuvre d’un processus combinant OCR et base Access pour extraire des informations personnelles depuis des documents scannés.</li>
       <li><strong>Tests sécurité navigateur:</strong> Utilisation du framework Metasploit pour analyser les vulnérabilités des navigateurs web en environnement isolé.</li>
-      <li><strong>Prototype Ransomware:</strong> Développement et test d’un ransomware dans un cadre éducatif, pour comprendre le chiffrement et les contre-mesures.</li>
+       <li>
+      <strong>Prototype Ransomware:</strong> 
+      Développement et test d’un ransomware dans un cadre éducatif, pour comprendre le chiffrement et les contre-mesures.
+      <div id="ransomware-simulation" class="simulation">
+        <button onclick="startRansomware()">Simuler une attaque de ransomware</button>
+        <div class="encryption-screen hidden">
+          <p>Encrypting files...</p>
+          <div class="progress-bar">
+            <div class="progress"></div>
+          </div>
+          <p class="status">File 1 of 10 encrypted</p>
+        </div>
+      </div>
+    </li>
+  </ul>
+  <h2 class="en hidden">Projects</h2>
+  <ul class="en hidden">
+    <li>
+      <strong>Ransomware Prototype:</strong> 
+      Developed an educational ransomware for studying encryption and defense strategies.
+      <div id="ransomware-simulation" class="simulation">
+        <button onclick="startRansomware()">Simulate a Ransomware Attack</button>
+        <div class="encryption-screen hidden">
+          <p>Encrypting files...</p>
+          <div class="progress-bar">
+            <div class="progress"></div>
+          </div>
+          <p class="status">File 1 of 10 encrypted</p>
+        </div>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<style>
+  /* Simulations */
+  .simulation { margin-top: 1rem; padding: 1rem; border: 1px solid var(--accent); background: #111; color: var(--text); }
+
+  /* Ransomware Simulation */
+  .encryption-screen { text-align: center; }
+  .hidden { display: none; }
+  .progress-bar { width: 100%; height: 20px; background: #333; border: 1px solid var(--accent); margin: 0.5rem 0; }
+  .progress { width: 0%; height: 100%; background: var(--accent); animation: none; }
+  .glitch-effect {
+    animation: glitch 1s infinite;
+  }
+  @keyframes glitch {
+    0% { transform: translate(2px, -2px); }
+    10% { transform: translate(-2px, 2px); }
+    20% { transform: translate(0px, 0px); }
+    30% { transform: translate(-2px, -2px); }
+    40% { transform: translate(2px, 2px); }
+    50% { transform: translate(0px, 0px); }
+    100% { transform: translate(0px, 0px); }
+  }
+  .locked-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    color: red;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+</style>
+
+<script>
+  let encryptionProgress = 0;
+
+  function startRansomware() {
+    // Hide button and show encryption screen
+    document.querySelector('#ransomware-simulation button').classList.add('hidden');
+    const encryptionScreen = document.querySelector('.encryption-screen');
+    encryptionScreen.classList.remove('hidden');
+    
+    // Start encryption progress
+    const progressBar = encryptionScreen.querySelector('.progress');
+    const status = encryptionScreen.querySelector('.status');
+    
+    const interval = setInterval(() => {
+      encryptionProgress += 10;
+      progressBar.style.width = encryptionProgress + '%';
+      status.textContent = `File ${encryptionProgress / 10} of 10 encrypted`;
+
+      // Glitch effect
+      document.body.classList.add('glitch-effect');
+      setTimeout(() => document.body.classList.remove('glitch-effect'), 100);
+
+      // Lock screen after completion
+      if (encryptionProgress >= 100) {
+        clearInterval(interval);
+        lockScreen();
+      }
+    }, 1000);
+  }
+
+  function lockScreen() {
+    // Create lock screen overlay
+    const lockScreenDiv = document.createElement('div');
+    lockScreenDiv.className = 'locked-screen';
+    lockScreenDiv.textContent = 'Your website has been locked. Pay 1 BTC to unlock!';
+    document.body.appendChild(lockScreenDiv);
+  }
+</script>
       <li><strong>Beats IA:</strong> Création expérimentale de beats musicaux avec des outils IA, mêlant créativité et technologie.</li>
     </ul>
     <h2 class="en hidden">Projects</h2>
