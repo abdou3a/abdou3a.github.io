@@ -4,345 +4,846 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Abdelilah Abdellaoui | Portfolio</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
     :root {
-      --bg: #0f0f0f;
-      --text: #33ff33;
-      --accent: #ff0033;
-      --font-main: 'Courier New', monospace;
+      --primary: #00ff88;
+      --secondary: #ff0054;
+      --dark: #0a0a0a;
+      --darker: #050505;
+      --accent: #00d4ff;
+      --text-light: #e0e0e0;
+      --text-dim: #888;
+      --glow: 0 0 20px currentColor;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+
     body {
-      font-family: var(--font-main);
-      background: url('abdelilah%20abdellaoui.PNG') no-repeat center center fixed;
-      background-size: cover;
-      color: var(--text);
-      text-shadow: 0 0 4px #0f0;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      background: var(--darker);
+      color: var(--text-light);
+      overflow-x: hidden;
+      line-height: 1.6;
     }
-    body::before {
-      content: "";
+
+    /* Animated Background */
+    .bg-animation {
       position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.9);
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: 
+        linear-gradient(45deg, transparent 24%, rgba(0, 255, 136, 0.03) 25%, rgba(0, 255, 136, 0.03) 26%, transparent 27%, transparent 74%, rgba(0, 255, 136, 0.03) 75%, rgba(0, 255, 136, 0.03) 76%, transparent 77%),
+        linear-gradient(-45deg, transparent 24%, rgba(255, 0, 84, 0.03) 25%, rgba(255, 0, 84, 0.03) 26%, transparent 27%, transparent 74%, rgba(255, 0, 84, 0.03) 75%, rgba(255, 0, 84, 0.03) 76%, transparent 77%);
+      background-size: 50px 50px;
+      animation: bgMove 20s linear infinite;
+    }
+
+    @keyframes bgMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+
+    /* Profile Image Overlay */
+    .profile-overlay {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      background: url('abdelilah%20abdellaoui.PNG') no-repeat right center;
+      background-size: contain;
+      opacity: 0.15;
+      z-index: -1;
+      filter: contrast(1.2) brightness(0.8);
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid var(--primary);
+      z-index: 1000;
+      padding: 1rem 0;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .nav-btn {
+      background: none;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      padding: 0.7rem 1.5rem;
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--primary);
+      transition: left 0.3s ease;
       z-index: -1;
     }
-    nav {
-      background: rgba(15, 15, 15, 0.95);
-      padding: 1rem;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
-      border-bottom: 2px solid var(--accent);
+
+    .nav-btn:hover::before {
+      left: 0;
     }
-    nav button, nav a {
-      background: none;
+
+    .nav-btn:hover {
+      color: var(--dark);
+      box-shadow: var(--glow);
+    }
+
+    .lang-toggle {
+      border-color: var(--secondary);
+      color: var(--secondary);
+    }
+
+    .lang-toggle::before {
+      background: var(--secondary);
+    }
+
+    /* Main Content */
+    main {
+      margin-top: 100px;
+      min-height: calc(100vh - 100px);
+    }
+
+    .section {
+      display: none;
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease;
+    }
+
+    .section.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Typography */
+    h1, h2 {
+      color: var(--primary);
+      margin-bottom: 2rem;
+      font-size: 2.5rem;
+      text-shadow: var(--glow);
+      position: relative;
+    }
+
+    h2 {
+      font-size: 2rem;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 0.5rem;
+      display: inline-block;
+    }
+
+    /* Profile Section */
+    .profile-hero {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 4rem;
+      align-items: center;
+      margin-bottom: 3rem;
+    }
+
+    .profile-image {
+      width: 250px;
+      height: 300px;
+      background: url('abdelilah%20abdellaoui.PNG') no-repeat center;
+      background-size: cover;
+      border: 3px solid var(--primary);
+      border-radius: 15px;
+      box-shadow: 
+        0 0 30px rgba(0, 255, 136, 0.3),
+        inset 0 0 20px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 30%, rgba(0, 255, 136, 0.1) 50%, transparent 70%);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { transform: translateX(-100%); }
+      50% { transform: translateX(100%); }
+    }
+
+    .profile-text {
+      font-size: 1.2rem;
+      line-height: 1.8;
+      color: var(--text-light);
+    }
+
+    /* Cards Layout */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .card {
+      background: rgba(20, 20, 20, 0.8);
       border: 2px solid var(--accent);
-      color: var(--text);
-      padding: 0.5rem 1rem;
+      border-radius: 15px;
+      padding: 2rem;
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 30px rgba(255, 0, 84, 0.3);
+      border-color: var(--primary);
+    }
+
+    .card h3 {
+      color: var(--accent);
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+
+    .card ul {
+      list-style: none;
+    }
+
+    .card li {
+      margin: 0.8rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .card li::before {
+      content: '▶';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+    }
+
+    /* Projects with Interactive Elements */
+    .project-item {
+      background: rgba(15, 15, 15, 0.9);
+      border: 2px solid var(--secondary);
+      border-radius: 10px;
+      padding: 2rem;
+      margin: 2rem 0;
+      transition: all 0.3s ease;
+    }
+
+    .project-item:hover {
+      border-color: var(--primary);
+      box-shadow: 0 5px 20px rgba(255, 0, 84, 0.2);
+    }
+
+    /* Simulation Styles */
+    .simulation {
+      background: rgba(5, 5, 5, 0.95);
+      border: 2px solid var(--secondary);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .sim-btn {
+      background: linear-gradient(45deg, var(--secondary), #ff3366);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    .sim-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(255, 0, 84, 0.4);
+    }
+
+    /* Chat Simulation */
+    .chat-container {
+      background: rgba(10, 10, 10, 0.95);
+      border: 2px solid var(--accent);
+      border-radius: 15px;
+      padding: 2rem;
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+
+    .chat-display {
+      background: var(--darker);
+      color: var(--text-light);
+      height: 400px;
+      overflow-y: auto;
+      padding: 1.5rem;
+      border: 2px solid var(--primary);
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      font-family: 'Courier New', monospace;
+    }
+
+    .chat-input-area {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: var(--dark);
+      border: 2px solid var(--accent);
+      color: var(--text-light);
+      padding: 1rem;
+      border-radius: 10px;
+      font-family: inherit;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+    }
+
+    .send-btn {
+      background: var(--primary);
+      color: var(--dark);
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 10px;
       font-weight: bold;
       cursor: pointer;
       transition: all 0.3s ease;
     }
-    nav button:hover, nav a:hover {
+
+    .send-btn:hover {
       background: var(--accent);
-      color: black;
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
     }
-    .section {
-      display: none;
-      padding: 4rem 2rem;
-      min-height: 100vh;
-      animation: fade 1s ease-in-out;
+
+    /* Progress Bar */
+    .progress-bar {
+      width: 100%;
+      height: 25px;
+      background: var(--dark);
+      border: 2px solid var(--accent);
+      border-radius: 15px;
+      margin: 1rem 0;
+      overflow: hidden;
     }
-    .section.active {
-      display: block;
+
+    .progress {
+      height: 100%;
+      background: linear-gradient(90deg, var(--secondary), var(--primary));
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 10px;
     }
-    h1, h2 {
-      margin-bottom: 1rem;
-      color: var(--accent);
-      text-shadow: 0 0 10px red;
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .profile-hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      
+      .profile-image {
+        margin: 0 auto;
+      }
+      
+      nav {
+        padding: 0 1rem;
+      }
+      
+      .nav-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+      
+      h1, h2 {
+        font-size: 1.8rem;
+      }
     }
-    ul {
-      padding-left: 1.5rem;
+
+    /* Glitch Effect */
+    .glitch {
+      animation: glitch-effect 0.5s infinite;
     }
-    li {
-      margin-bottom: 1rem;
+
+    @keyframes glitch-effect {
+      0%, 100% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
     }
-    .hidden { display: none; }
-    @keyframes fade {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+
+    /* Lock Screen */
+    .lock-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--darker);
+      color: var(--secondary);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      font-size: 2rem;
+      text-align: center;
+      animation: lockScreenPulse 2s infinite;
     }
+
+    @keyframes lockScreenPulse {
+      0%, 100% { background: var(--darker); }
+      50% { background: #1a0000; }
+    }
+
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
-  <nav>
-    <button onclick="showSection('profile')">Profil / Profile</button>
-    <button onclick="showSection('experience')">Expérience / Experience</button>
-    <button onclick="showSection('education')">Éducation / Education</button>
-    <button onclick="showSection('skills')">Compétences / Skills</button>
-    <button onclick="showSection('projects')">Projets / Projects</button>
-    <button onclick="toggleLang()">EN</button>
-  </nav>
+  <div class="bg-animation"></div>
+  <div class="profile-overlay"></div>
+  
+  <header>
+    <nav>
+      <button class="nav-btn" onclick="showSection('profile')">
+        <i class="fas fa-user"></i> Profil
+      </button>
+      <button class="nav-btn" onclick="showSection('experience')">
+        <i class="fas fa-briefcase"></i> Expérience
+      </button>
+      <button class="nav-btn" onclick="showSection('education')">
+        <i class="fas fa-graduation-cap"></i> Éducation
+      </button>
+      <button class="nav-btn" onclick="showSection('skills')">
+        <i class="fas fa-cogs"></i> Compétences
+      </button>
+      <button class="nav-btn" onclick="showSection('projects')">
+        <i class="fas fa-project-diagram"></i> Projets
+      </button>
+      <button class="nav-btn" onclick="showSection('chat-simulation')">
+        <i class="fas fa-comments"></i> Chat
+      </button>
+      <button class="nav-btn lang-toggle" onclick="toggleLang()">
+        <i class="fas fa-language"></i> EN
+      </button>
+    </nav>
+  </header>
 
-  <section id="profile" class="section active">
-    <h1 class="fr">Profil</h1>
-    <h1 class="en hidden">Profile</h1>
-    <p class="fr">Je m'appelle Abdelilah Abdellaoui, j’ai 25 ans, étudiant en droit privé (langue française) et en cybersécurité, avec des bases solides en comptabilité et en gérance. Je combine des compétences juridiques, techniques et organisationnelles, avec un intérêt marqué pour les scripts batch, les tests de sécurité des navigateurs, l’OSINT, et l’automatisation. J’ai conçu un système de chat en ligne via FTP, exploré la génération de musique avec IA, et je suis en formation continue en ingénierie sociale. Ma passion pour la cybersécurité offensive est renforcée par une approche méthodique et créative.</p>
-    <p class="en hidden">My name is Abdelilah Abdellaoui, I’m 25 years old, a student in private law (French language) and cybersecurity, with strong foundations in accounting and management. I combine legal, technical, and organizational skills with a strong interest in batch scripting, browser security testing, OSINT, and task automation. I developed a command-line chat system using FTP, explored AI music generation, and I’m continuously training in social engineering. My passion for offensive cybersecurity is driven by a methodical and creative mindset.</p>
-  </section>
+  <main>
+    <section id="profile" class="section active">
+      <div class="profile-hero">
+        <div>
+          <h1 class="fr">Abdelilah Abdellaoui</h1>
+          <h1 class="en hidden">Abdelilah Abdellaoui</h1>
+          <p class="profile-text fr">
+            Étudiant en droit privé et cybersécurité, passionné par l'offensive security, l'OSINT et l'automatisation. 
+            Je combine des compétences juridiques, techniques et créatives pour développer des solutions innovantes 
+            dans le domaine de la sécurité informatique.
+          </p>
+          <p class="profile-text en hidden">
+            Student in private law and cybersecurity, passionate about offensive security, OSINT and automation. 
+            I combine legal, technical and creative skills to develop innovative solutions in the field of cybersecurity.
+          </p>
+        </div>
+        <div class="profile-image"></div>
+      </div>
+    </section>
 
-  <section id="experience" class="section">
-    <h2 class="fr">Expérience</h2>
-    <ul class="fr">
-      <li><strong>Consultant juridique (08/2023 - présent):</strong> Travail autonome dans la rédaction de plaintes, d’éditoriaux juridiques, et de documents liés aux procès. Grâce à l’expérience familiale dans le domaine juridique, j’ai acquis des compétences solides en argumentation, rédaction légale et conseil juridique.</li>
-      <li><strong>Stage rémunéré à SOMETGARD (10/2022 - 07/2023):</strong> Participation active à la comptabilité, saisie de données, et gestion administrative au sein d’une société. Développement de rigueur professionnelle et amélioration de la communication en environnement d’entreprise.</li>
-      <li><strong>Vente et Télévente (07/2022 - 10/2022):</strong> Vente directe de produits cosmétiques sur le terrain (Midelt, Missour, Khénifra), utilisation de véhicule pour la distribution, puis télévendeur chez LBL Business à Rabat pour des services à l’étranger.</li>
-      <li><strong>Aide vendeur - NADIZ Distribution (01/2022 - 07/2022):</strong> Appui logistique, contact client, gestion des produits dans la région de Midelt.</li>
-    </ul>
-    <h2 class="en hidden">Experience</h2>
-    <ul class="en hidden">
-      <li><strong>Legal Consultant (08/2023 - present):</strong> Drafting legal complaints, trial-related editorials, and legal documentation. Gained strong legal writing and advising skills through family legal business exposure.</li>
-      <li><strong>Paid Internship at SOMETGARD (10/2022 - 07/2023):</strong> Assisted with accounting tasks, data entry, and administrative duties, improving professionalism and corporate communication.</li>
-      <li><strong>Sales & Tele-sales (07/2022 - 10/2022):</strong> Field sales of cosmetics in Midelt and surrounding areas, then phone sales for international clients at LBL Business in Rabat.</li>
-      <li><strong>Sales Assistant – NADIZ Distribution (01/2022 - 07/2022):</strong> Helped with distribution logistics and direct client service in the Midelt region.</li>
-    </ul>
-  </section>
-
-  <section id="education" class="section">
-    <h2 class="fr">Éducation</h2>
-    <ul class="fr">
-      <li><strong>2023 - présent:</strong> Licence en droit privé à la FSJES de l’Université Moulay Ismail, Meknès.</li>
-      <li><strong>2023:</strong> Baccalauréat libre en sciences humaines.</li>
-    </ul>
-    <h2 class="en hidden">Education</h2>
-    <ul class="en hidden">
-      <li><strong>2023 - Present:</strong> Bachelor's in Private Law at FSJES, Moulay Ismail University, Meknès.</li>
-      <li><strong>2023:</strong> Independent Baccalaureate in Human Sciences.</li>
-    </ul>
-  </section>
-
-  <section id="skills" class="section">
-    <h2 class="fr">Compétences</h2>
-    <ul class="fr">
-      <li><strong>Cybersécurité:</strong> Tests de sécurité via Metasploit, démonstration de ransomware, OSINT, ingénierie sociale avancée.</li>
-      <li><strong>Informatique:</strong> OCR automatisé (Adobe Acrobat, Tesseract), scripts batch, chat via FTP, base de données Access.</li>
-      <li><strong>Juridique:</strong> Droit privé en langue française, rédaction de documents juridiques, connaissances réglementaires.</li>
-      <li><strong>Comptabilité et Gérance:</strong> Expérience en gestion administrative et en aide comptable.</li>
-      <li><strong>Créatif:</strong> Génération musicale assistée par IA (FL Studio, BandLab).</li>
-    </ul>
-    <h2 class="en hidden">Skills</h2>
-    <ul class="en hidden">
-      <li><strong>Cybersecurity:</strong> Browser security tests using Metasploit, ransomware simulation, OSINT, advanced social engineering.</li>
-      <li><strong>IT:</strong> Automated OCR (Adobe Acrobat, Tesseract), batch scripting, FTP-based chat, Access database handling.</li>
-      <li><strong>Legal:</strong> Private law in French, legal writing, regulatory knowledge.</li>
-      <li><strong>Accounting & Management:</strong> Administrative and accounting experience.</li>
-      <li><strong>Creative:</strong> AI-based music generation (FL Studio, BandLab).</li>
-    </ul>
-  </section>
-
-  <section id="projects" class="section">
-    <h2 class="fr">Projets</h2>
-    <ul class="fr">
-      <li><strong>Chat FTP (Batch Script):</strong> Création d’un système rudimentaire de messagerie en ligne de commande, utilisant un serveur FTP et des scripts batch avec gestion des identifiants utilisateurs.</li>
-    
-      <li><strong>Extraction OCR automatisée:</strong> Mise en œuvre d’un processus combinant OCR et base Access pour extraire des informations personnelles depuis des documents scannés.</li>
-      <li><strong>Tests sécurité navigateur:</strong> Utilisation du framework Metasploit pour analyser les vulnérabilités des navigateurs web en environnement isolé.</li>
-       <li>
-      <strong>Prototype Ransomware:</strong> 
-      Développement et test d’un ransomware dans un cadre éducatif, pour comprendre le chiffrement et les contre-mesures.
-      <div id="ransomware-simulation" class="simulation">
-        <button onclick="startRansomware()">Simuler une attaque de ransomware</button>
-        <div class="encryption-screen hidden">
-          <p>Encrypting files...</p>
-          <div class="progress-bar">
-            <div class="progress"></div>
-          </div>
-          <p class="status">File 1 of 10 encrypted</p>
+    <section id="experience" class="section">
+      <h2 class="fr"><i class="fas fa-briefcase"></i> Expérience Professionnelle</h2>
+      <h2 class="en hidden"><i class="fas fa-briefcase"></i> Professional Experience</h2>
+      
+      <div class="cards-grid">
+        <div class="card fr">
+          <h3>Consultant Juridique</h3>
+          <p><strong>08/2023 - Présent</strong></p>
+          <p>Rédaction de plaintes, documents juridiques et conseil en droit privé.</p>
+        </div>
+        <div class="card fr">
+          <h3>SOMETGARD - Stage</h3>
+          <p><strong>10/2022 - 07/2023</strong></p>
+          <p>Comptabilité, gestion administrative et communication d'entreprise.</p>
+        </div>
+        <div class="card fr">
+          <h3>Vente et Télévente</h3>
+          <p><strong>07/2022 - 10/2022</strong></p>
+          <p>Vente directe de produits cosmétiques et télévente pour des services à l'étranger.</p>
+        </div>
+        <div class="card fr">
+          <h3>Aide Vendeur - NADIZ Distribution</h3>
+          <p><strong>01/2022 - 07/2022</strong></p>
+          <p>Appui logistique et gestion des produits dans la région de Midelt.</p>
+        </div>
+        <div class="card en hidden">
+          <h3>Legal Consultant</h3>
+          <p><strong>08/2023 - Present</strong></p>
+          <p>Drafting legal complaints, trial-related documents, and private law consulting.</p>
+        </div>
+        <div class="card en hidden">
+          <h3>SOMETGARD - Internship</h3>
+          <p><strong>10/2022 - 07/2023</strong></p>
+          <p>Accounting, administrative management, and corporate communication.</p>
+        </div>
+        <div class="card en hidden">
+          <h3>Sales & Tele-sales</h3>
+          <p><strong>07/2022 - 10/2022</strong></p>
+          <p>Field sales of cosmetics and tele-sales for international services.</p>
+        </div>
+        <div class="card en hidden">
+          <h3>Sales Assistant – NADIZ Distribution</h3>
+          <p><strong>01/2022 - 07/2022</strong></p>
+          <p>Logistical support and product management in the Midelt region.</p>
         </div>
       </div>
-    </li>
-  </ul>
-  <h2 class="en hidden">Projects</h2>
-  <ul class="en hidden">
-    <li>
-      <strong>Ransomware Prototype:</strong> 
-      Developed an educational ransomware for studying encryption and defense strategies.
-      <div id="ransomware-simulation" class="simulation">
-        <button onclick="startRansomware()">Simulate a Ransomware Attack</button>
-        <div class="encryption-screen hidden">
-          <p>Encrypting files...</p>
-          <div class="progress-bar">
-            <div class="progress"></div>
-          </div>
-          <p class="status">File 1 of 10 encrypted</p>
+    </section>
+
+    <section id="education" class="section">
+      <h2 class="fr"><i class="fas fa-graduation-cap"></i> Éducation</h2>
+      <h2 class="en hidden"><i class="fas fa-graduation-cap"></i> Education</h2>
+      
+      <div class="cards-grid">
+        <div class="card fr">
+          <h3>Licence en Droit Privé</h3>
+          <p><strong>2023 - présent</strong></p>
+          <p>FSJES, Université Moulay Ismail, Meknès.</p>
+        </div>
+        <div class="card fr">
+          <h3>Baccalauréat Libre en Sciences Humaines</h3>
+          <p><strong>2023</strong></p>
+          <p>Formation générale avec mention.</p>
+        </div>
+        <div class="card en hidden">
+          <h3>Bachelor's in Private Law</h3>
+          <p><strong>2023 - Present</strong></p>
+          <p>FSJES, Moulay Ismail University, Meknès.</p>
+        </div>
+        <div class="card en hidden">
+          <h3>Independent Baccalaureate in Human Sciences</h3>
+          <p><strong>2023</strong></p>
+          <p>General education with honors.</p>
         </div>
       </div>
-    </li>
-  </ul>
-</section>
+    </section>
 
-<style>
-  /* Simulations */
-  .simulation { margin-top: 1rem; padding: 1rem; border: 1px solid var(--accent); background: #111; color: var(--text); }
+    <section id="skills" class="section">
+      <h2 class="fr"><i class="fas fa-cogs"></i> Compétences</h2>
+      <h2 class="en hidden"><i class="fas fa-cogs"></i> Skills</h2>
+      
+      <div class="cards-grid">
+        <div class="card fr">
+          <h3>Cybersécurité</h3>
+          <ul>
+            <li>Tests de sécurité via Metasploit</li>
+            <li>Démonstration de ransomware</li>
+            <li>OSINT</li>
+            <li>Ingénierie sociale avancée</li>
+          </ul>
+        </div>
+        <div class="card fr">
+          <h3>Informatique</h3>
+          <ul>
+            <li>OCR automatisé (Adobe Acrobat, Tesseract)</li>
+            <li>Scripts batch</li>
+            <li>Chat via FTP</li>
+            <li>Base de données Access</li>
+          </ul>
+        </div>
+        <div class="card fr">
+          <h3>Juridique</h3>
+          <ul>
+            <li>Droit privé en langue française</li>
+            <li>Rédaction de documents juridiques</li>
+            <li>Connaissances réglementaires</li>
+          </ul>
+        </div>
+        <div class="card fr">
+          <h3>Comptabilité et Gérance</h3>
+          <ul>
+            <li>Expérience en gestion administrative</li>
+            <li>Aide comptable</li>
+          </ul>
+        </div>
+        <div class="card fr">
+          <h3>Créatif</h3>
+          <ul>
+            <li>Génération musicale assistée par IA (FL Studio, BandLab)</li>
+          </ul>
+        </div>
+        <div class="card en hidden">
+          <h3>Cybersecurity</h3>
+          <ul>
+            <li>Browser security tests using Metasploit</li>
+            <li>Ransomware simulation</li>
+            <li>OSINT</li>
+            <li>Advanced social engineering</li>
+          </ul>
+        </div>
+        <div class="card en hidden">
+          <h3>IT</h3>
+          <ul>
+            <li>Automated OCR (Adobe Acrobat, Tesseract)</li>
+            <li>Batch scripting</li>
+            <li>FTP-based chat</li>
+            <li>Access database handling</li>
+          </ul>
+        </div>
+        <div class="card en hidden">
+          <h3>Legal</h3>
+          <ul>
+            <li>Private law in French</li>
+            <li>Legal writing</li>
+            <li>Regulatory knowledge</li>
+          </ul>
+        </div>
+        <div class="card en hidden">
+          <h3>Accounting & Management</h3>
+          <ul>
+            <li>Administrative and accounting experience</li>
+          </ul>
+        </div>
+        <div class="card en hidden">
+          <h3>Creative</h3>
+          <ul>
+            <li>AI-based music generation (FL Studio, BandLab)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-  /* Ransomware Simulation */
-  .encryption-screen { text-align: center; }
-  .hidden { display: none; }
-  .progress-bar { width: 100%; height: 20px; background: #333; border: 1px solid var(--accent); margin: 0.5rem 0; }
-  .progress { width: 0%; height: 100%; background: var(--accent); animation: none; }
-  .glitch-effect {
-    animation: glitch 1s infinite;
-  }
-  @keyframes glitch {
-    0% { transform: translate(2px, -2px); }
-    10% { transform: translate(-2px, 2px); }
-    20% { transform: translate(0px, 0px); }
-    30% { transform: translate(-2px, -2px); }
-    40% { transform: translate(2px, 2px); }
-    50% { transform: translate(0px, 0px); }
-    100% { transform: translate(0px, 0px); }
-  }
-  .locked-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: black;
-    color: red;
-    font-size: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-  }
-</style>
+    <section id="projects" class="section">
+      <h2 class="fr"><i class="fas fa-project-diagram"></i> Projets Techniques</h2>
+      <h2 class="en hidden"><i class="fas fa-project-diagram"></i> Technical Projects</h2>
+      
+      <div class="project-item">
+        <h3 class="fr">🔒 Prototype Ransomware Éducatif</h3>
+        <h3 class="en hidden">🔒 Educational Ransomware Prototype</h3>
+        <p class="fr">Développement d'un ransomware à des fins éducatives pour comprendre les techniques de chiffrement.</p>
+        <p class="en hidden">Educational ransomware development to understand encryption techniques.</p>
+        
+        <div class="simulation">
+          <button class="sim-btn" onclick="startRansomware()">
+            <i class="fas fa-play"></i> Démarrer la Simulation
+          </button>
+          <div class="encryption-screen hidden">
+            <p>🔒 Chiffrement en cours...</p>
+            <div class="progress-bar">
+              <div class="progress"></div>
+            </div>
+            <p class="status">Fichier 1 sur 10</p>
+          </div>
+        </div>
+      </div>
 
-<script>
-  let encryptionProgress = 0;
+      <div class="project-item">
+        <h3 class="fr">📂 Chat FTP (Batch Script)</h3>
+        <h3 class="en hidden">📂 FTP Chat (Batch Script)</h3>
+        <p class="fr">Création d'un système rudimentaire de messagerie en ligne de commande, utilisant un serveur FTP et des scripts batch.</p>
+        <p class="en hidden">Built a simple command-line chat system using FTP for message exchange and batch scripts.</p>
+      </div>
 
-  function startRansomware() {
-    // Hide button and show encryption screen
-    document.querySelector('#ransomware-simulation button').classList.add('hidden');
-    const encryptionScreen = document.querySelector('.encryption-screen');
-    encryptionScreen.classList.remove('hidden');
-    
-    // Start encryption progress
-    const progressBar = encryptionScreen.querySelector('.progress');
-    const status = encryptionScreen.querySelector('.status');
-    
-    const interval = setInterval(() => {
-      encryptionProgress += 10;
-      progressBar.style.width = encryptionProgress + '%';
-      status.textContent = `File ${encryptionProgress / 10} of 10 encrypted`;
+      <div class="project-item">
+        <h3 class="fr">📄 Extraction OCR Automatisée</h3>
+        <h3 class="en hidden">📄 Automated OCR Extraction</h3>
+        <p class="fr">Mise en œuvre d'un processus combinant OCR et base Access pour extraire des informations depuis des documents scannés.</p>
+        <p class="en hidden">Designed a workflow combining OCR and Access database to extract data from scanned documents.</p>
+      </div>
 
-      // Glitch effect
-      document.body.classList.add('glitch-effect');
-      setTimeout(() => document.body.classList.remove('glitch-effect'), 100);
+      <div class="project-item">
+        <h3 class="fr">🔍 Tests Sécurité Navigateur</h3>
+        <h3 class="en hidden">🔍 Browser Security Testing</h3>
+        <p class="fr">Utilisation du framework Metasploit pour analyser les vulnérabilités des navigateurs web en environnement isolé.</p>
+        <p class="en hidden">Used Metasploit in a sandbox environment to detect web browser vulnerabilities.</p>
+      </div>
+    </section>
 
-      // Lock screen after completion
-      if (encryptionProgress >= 100) {
-        clearInterval(interval);
-        lockScreen();
-      }
-    }, 1000);
-  }
-
-  function lockScreen() {
-    // Create lock screen overlay
-    const lockScreenDiv = document.createElement('div');
-    lockScreenDiv.className = 'locked-screen';
-    lockScreenDiv.textContent = 'Your website has been locked. Pay 1 BTC to unlock!';
-    document.body.appendChild(lockScreenDiv);
-  }
-</script>
-      <li><strong>Beats IA:</strong> Création expérimentale de beats musicaux avec des outils IA, mêlant créativité et technologie.</li>
-    </ul>
-    <h2 class="en hidden">Projects</h2>
-    <ul class="en hidden">
-      <li><strong>FTP Chat (Batch Script):</strong> Built a simple command-line chat system using FTP for message exchange and batch scripts for user login and file handling.</li>
-      <li><strong>Automated OCR Extraction:</strong> Designed a workflow combining OCR and Access database to extract identity data from scanned documents.</li>
-      <li><strong>Browser Security Testing:</strong> Used Metasploit in a sandbox environment to detect web browser vulnerabilities.</li>
-      <li><strong>Ransomware Prototype:</strong> Developed an educational ransomware for studying encryption and defense strategies.</li>
-      <li><strong>AI Beats:</strong> Experimental music generation using AI tools, blending technology with musical creativity.</li>
-    </ul>
-  </section>
+    <section id="chat-simulation" class="section">
+      <h2 class="fr"><i class="fas fa-comments"></i> Simulation de Chat Sécurisé</h2>
+      <h2 class="en hidden"><i class="fas fa-comments"></i> Secure Chat Simulation</h2>
+      
+      <div class="chat-container">
+        <div id="chatDisplay" class="chat-display"></div>
+        <div class="chat-input-area">
+          <input 
+            type="text" 
+            id="userMessage" 
+            class="chat-input"
+            placeholder="Tapez votre message..."
+            onkeypress="if(event.key==='Enter') sendMessage()"
+          />
+          <button class="send-btn" onclick="sendMessage()">
+            <i class="fas fa-paper-plane"></i> Envoyer
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <script>
+    let encryptionProgress = 0;
+    
+    const hackerResponses = [
+      "🔍 Scanning your network...",
+      "🛡️ Firewall bypassed successfully",
+      "🔓 Accessing encrypted files...",
+      "⚡ Running exploit modules...",
+      "🎯 Target acquired, initiating...",
+      "🔥 System compromised! Just kidding 😄",
+      "🕵️ OSINT gathering complete",
+      "💀 Welcome to the dark side...",
+      "🌐 Tracing IP... 127.0.0.1 found!"
+    ];
+
     function showSection(id) {
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
+      document.querySelectorAll('.section').forEach(s => {
+        s.classList.remove('active');
+      });
+      
+      setTimeout(() => {
+        document.getElementById(id).classList.add('active');
+      }, 150);
     }
+    
     function toggleLang() {
       document.querySelectorAll('.fr').forEach(e => e.classList.toggle('hidden'));
       document.querySelectorAll('.en').forEach(e => e.classList.toggle('hidden'));
-      const btn = document.querySelector('nav button:last-child');
-      btn.textContent = btn.textContent === 'EN' ? 'FR' : 'EN';
+      const btn = document.querySelector('.lang-toggle');
+      btn.innerHTML = btn.innerHTML.includes('EN') ? 
+        '<i class="fas fa-language"></i> FR' : 
+        '<i class="fas fa-language"></i> EN';
     }
-  </script>
-    <section id="chat-simulation" class="section">
-  <h2 class="fr">Simulation de Chat</h2>
-  <h2 class="en hidden">Chat Simulation</h2>
-  <div style="border: 2px solid var(--accent); background: rgba(15, 15, 15, 0.95); padding: 1rem; max-width: 600px; margin: 2rem auto; border-radius: 8px;">
-    <div id="chatDisplay" style="background: black; color: var(--text); height: 300px; overflow-y: auto; padding: 1rem; border: 1px solid var(--accent); border-radius: 4px; margin-bottom: 1rem; font-family: var(--font-main);"></div>
-    <div style="display: flex; gap: 1rem;">
-      <input type="text" id="userMessage" placeholder="Tapez un message... / Type a message..." style="flex-grow: 1; padding: 0.5rem; border: 2px solid var(--accent); background: black; color: var(--text); font-family: var(--font-main); border-radius: 4px;" />
-      <button onclick="sendMessage()" style="background: var(--accent); color: black; font-weight: bold; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; transition: all 0.3s ease;">Envoyer / Send</button>
-    </div>
-  </div>
-</section>
 
-<script>
-  // Predefined "hacker" responses
-  const hackerResponses = [
-    "Accessing your system...",
-    "Bypassing your firewall...",
-    "Decrypting your secrets...",
-    "Your data is now under my control!",
-    "Initiating self-destruct sequence... just kidding!",
-    "You can't hide from me!",
-    "Tracing your IP address...",
-    "Congratulations! You've been hacked... or not?",
-    "The Matrix has you...",
-  ];
+    function startRansomware() {
+      const simulation = event.target.closest('.simulation');
+      const button = simulation.querySelector('.sim-btn');
+      const encryptionScreen = simulation.querySelector('.encryption-screen');
+      
+      button.classList.add('hidden');
+      encryptionScreen.classList.remove('hidden');
+      
+      const progressBar = encryptionScreen.querySelector('.progress');
+      const status = encryptionScreen.querySelector('.status');
+      encryptionProgress = 0;
+      
+      const interval = setInterval(() => {
+        encryptionProgress += 10;
+        progressBar.style.width = encryptionProgress + '%';
+        status.textContent = `Fichier ${encryptionProgress / 10} sur 10`;
 
-  // Function to send a message
-  function sendMessage() {
-    const userMessage = document.getElementById("userMessage").value.trim();
-    if (!userMessage) return; // Ignore empty messages
+        document.body.classList.add('glitch');
+        setTimeout(() => document.body.classList.remove('glitch'), 200);
 
-    // Display user message
-    const chatDisplay = document.getElementById("chatDisplay");
-    const userMessageElement = document.createElement("div");
-    userMessageElement.style.color = "var(--accent)";
-    userMessageElement.style.margin = "0.5rem 0";
-    userMessageElement.textContent = `You: ${userMessage}`;
-    chatDisplay.appendChild(userMessageElement);
+        if (encryptionProgress >= 100) {
+          clearInterval(interval);
+          showLockScreen();
+        }
+      }, 800);
+    }
 
-    // Scroll to the bottom
-    chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    function showLockScreen() {
+      const lockScreen = document.createElement('div');
+      lockScreen.className = 'lock-screen';
+      lockScreen.innerHTML = `
+        <div>
+          <i class="fas fa-skull" style="font-size: 4rem; margin-bottom: 2rem;"></i>
+          <h2>🔒 SYSTÈME VERROUILLÉ</h2>
+          <p>Payer 1 BTC pour déverrouiller!</p>
+          <small style="margin-top: 2rem; opacity: 0.7;">
+            (Cliquez n'importe où pour déverrouiller)
+          </small>
+        </div>
+      `;
+      lockScreen.onclick = () => lockScreen.remove();
+      document.body.appendChild(lockScreen);
+    }
 
-    // Clear input field
-    document.getElementById("userMessage").value = "";
+    function sendMessage() {
+      const userMessage = document.getElementById("userMessage").value.trim();
+      if (!userMessage) return;
 
-    // Respond as the "hacker" after a short delay
-    setTimeout(() => {
-      const aiMessageElement = document.createElement("div");
-      aiMessageElement.style.color = "var(--text)";
-      aiMessageElement.style.margin = "0.5rem 0";
-      aiMessageElement.style.fontStyle = "italic";
+      const chatDisplay = document.getElementById("chatDisplay");
+      
+      // User message
+      const userDiv = document.createElement("div");
+      userDiv.style.cssText = "color: var(--accent); margin: 1rem 0; padding: 0.5rem; border-left: 3px solid var(--accent);";
+      userDiv.innerHTML = `<strong>👤 Vous:</strong> ${userMessage}`;
+      chatDisplay.appendChild(userDiv);
 
-      // Generate random hacker response
-      const randomResponse =
-        hackerResponses[Math.floor(Math.random() * hackerResponses.length)];
-      aiMessageElement.textContent = `Hacker: ${randomResponse}`;
-      chatDisplay.appendChild(aiMessageElement);
-
-      // Scroll to the bottom
       chatDisplay.scrollTop = chatDisplay.scrollHeight;
-    }, 1000); // Delay response by 1 second
-  }
-</script>
+      document.getElementById("userMessage").value = "";
+
+      // Typing indicator
+      const typingDiv = document.createElement("div");
+      typingDiv.style.cssText = "color: var(--text-dim); margin: 1rem 0; font-style: italic;";
+      typingDiv.innerHTML = `🤖 Hacker frappe...`;
+      chatDisplay.appendChild(typingDiv);
+      chatDisplay.scrollTop = chatDisplay.scrollHeight;
+
+      setTimeout(() => {
+        typingDiv.remove();
+        
+        const hackerDiv = document.createElement("div");
+        hackerDiv.style.cssText = "color: var(--primary); margin: 1rem 0; padding: 0.5rem; border-left: 3px solid var(--primary); background: rgba(0, 255, 136, 0.1);";
+        
+        const randomResponse = hackerResponses[Math.floor(Math.random() * hackerResponses.length)];
+        hackerDiv.innerHTML = `<strong>🕶️ Hacker:</strong> ${randomResponse}`;
+        chatDisplay.appendChild(hackerDiv);
+
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+      }, 1500);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      showSection('profile');
+    });
+  </script>
 </body>
 </html>
