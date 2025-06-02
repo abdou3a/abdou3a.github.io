@@ -58,11 +58,16 @@
       right: 0;
       width: 100%;
       height: 100%;
-      background: url('abdelilah%20abdellaoui.PNG') no-repeat right center;
+      background: url('profile.jpg') no-repeat right center;
       background-size: contain;
       opacity: 0.15;
       z-index: -1;
       filter: contrast(1.2) brightness(0.8);
+    }
+    
+    /* Fallback for profile overlay if profile.jpg doesn't exist */
+    .profile-overlay.fallback {
+      background: url('abdelilah%20abdellaoui.PNG') no-repeat right center;
     }
 
     /* Header */
@@ -184,7 +189,7 @@
     .profile-image {
       width: 250px;
       height: 300px;
-      background: url('abdelilah%20abdellaoui.PNG') no-repeat center;
+      background: url('profile.jpg') no-repeat center;
       background-size: cover;
       border: 3px solid var(--primary);
       border-radius: 15px;
@@ -193,6 +198,12 @@
         inset 0 0 20px rgba(0, 0, 0, 0.5);
       position: relative;
       overflow: hidden;
+    }
+    
+    /* Fallback for profile image if profile.jpg doesn't exist */
+    .profile-image.fallback {
+      background: url('abdelilah%20abdellaoui.PNG') no-repeat center;
+      background-size: cover;
     }
 
     .profile-image::before {
@@ -843,6 +854,23 @@
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
       showSection('profile');
+      
+      // Check if profile.jpg exists, otherwise use fallback
+      const profileImage = document.querySelector('.profile-image');
+      const profileOverlay = document.querySelector('.profile-overlay');
+      
+      const img = new Image();
+      img.onload = function() {
+        // profile.jpg exists, keep current settings
+        console.log('Using profile.jpg');
+      };
+      img.onerror = function() {
+        // profile.jpg doesn't exist, use fallback
+        profileImage.classList.add('fallback');
+        profileOverlay.classList.add('fallback');
+        console.log('Fallback to abdelilah abdellaoui.PNG');
+      };
+      img.src = 'profile.jpg';
     });
   </script>
 </body>
