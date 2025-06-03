@@ -1,28 +1,17 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
+import ErrorBoundary from './components/ErrorBoundary';
+import LoadingSpinner from './components/LoadingSpinner';
+import Navigation from './components/Navigation';
 
-// Context
-import { Web3Provider } from './contexts/Web3Context';
-import { ThemeProvider as CustomThemeProvider } from './contexts/ThemeContext';
-
-// Components
-import Navbar from './components/Navbar/Navbar';
-import LoadingScreen from './components/LoadingScreen/LoadingScreen';
-import ParticleBackground from './components/ParticleBackground/ParticleBackground';
-
-// Pages
-import Home from './pages/Home/Home';
-import About from './pages/About/About';
-import Skills from './pages/Skills/Skills';
-import Projects from './pages/Projects/Projects';
-import NFTGallery from './pages/NFTGallery/NFTGallery';
-import DeFiDashboard from './pages/DeFiDashboard/DeFiDashboard';
-import Contact from './pages/Contact/Contact';
-import ProjectDetail from './pages/ProjectDetail/ProjectDetail';
-import Blog from './pages/Blog/Blog';
-import Analytics from './pages/Analytics/Analytics';
+// Lazy loading des pages
+const Home = lazy(() => import('./pages/Home'));
+const About = lazy(() => import('./pages/About'));
+const Services = lazy(() => import('./pages/Services'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Portfolio = lazy(() => import('./pages/Portfolio'));
 
 // Global Styles
 const GlobalStyle = createGlobalStyle`
@@ -33,11 +22,15 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-    background: ${props => props.theme.background};
-    color: ${props => props.theme.text};
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1e3c72 50%, #2a5298 100%);
+    color: white;
     overflow-x: hidden;
-    transition: all 0.3s ease;
+    min-height: 100vh;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   ::-webkit-scrollbar {
@@ -45,12 +38,16 @@ const GlobalStyle = createGlobalStyle`
   }
 
   ::-webkit-scrollbar-track {
-    background: ${props => props.theme.scrollbarTrack};
+    background: rgba(255, 255, 255, 0.1);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: ${props => props.theme.scrollbarThumb};
+    background: rgba(255, 215, 0, 0.5);
     border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 215, 0, 0.7);
   }
 `;
 
@@ -60,13 +57,28 @@ const AppContainer = styled.div`
 `;
 
 const PageContainer = styled(motion.div)`
-  min-height: calc(100vh - 80px);
-  margin-top: 80px;
+  min-height: 100vh;
   position: relative;
-  z-index: 2;
 `;
 
-// Page transition variants
+// Theme
+const theme = {
+  colors: {
+    primary: '#ffd700',
+    secondary: '#00ff88',
+    accent: '#ff4757',
+    background: 'linear-gradient(135deg, #0a0a0a 0%, #1e3c72 50%, #2a5298 100%)',
+    text: '#ffffff',
+    textSecondary: '#b8b8b8'
+  },
+  breakpoints: {
+    mobile: '768px',
+    tablet: '1024px',
+    desktop: '1200px'
+  }
+};
+
+// Page transitions
 const pageVariants = {
   initial: {
     opacity: 0,
@@ -92,197 +104,107 @@ const pageTransition = {
 };
 
 function App() {
-  const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState('home');
-
-  useEffect(() => {
-    // Simulate loading time
-    setTimeout(() => setLoading(false), 2000);
-  }, []);
-
-  if (loading) {
-    return <LoadingScreen />;
-  }
-
   return (
-    <CustomThemeProvider>
-      <Web3Provider>
-        <ThemeProvider theme={{
-          background: 'linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%)',
-          text: '#ffffff',
-          primary: '#00d4ff',
-          secondary: '#ff6b6b',
-          accent: '#ffd93d',
-          cardBg: 'rgba(255, 255, 255, 0.05)',
-          scrollbarTrack: 'rgba(255, 255, 255, 0.1)',
-          scrollbarThumb: 'rgba(0, 212, 255, 0.5)'
-        }}>
-          <GlobalStyle />
-          <Router>
-            <AppContainer>
-              <ParticleBackground />
-              <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
-              
-              <AnimatePresence mode="wait">
-                <Routes>
-                  <Route 
-                    path="/" 
-                    element={
-                      <PageContainer
-                        key="home"
-                        initial="initial"
-                        animate="in"
-                        exit="out"
-                        variants={pageVariants}
-                        transition={pageTransition}
-                      >
+    <ThemeProvider theme={theme}>
+      <GlobalStyle />
+      <ErrorBoundary>
+        <Router>
+          <AppContainer>
+            <Navigation />
+            <AnimatePresence mode="wait">
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <PageContainer
+                      key="home"
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                      transition={pageTransition}
+                    >
+                      <Suspense fallback={<LoadingSpinner />}>
                         <Home />
-                      </PageContainer>
-                    } 
-                  />
-                  <Route 
-                    path="/about" 
-                    element={
-                      <PageContainer
-                        key="about"
-                        initial="initial"
-                        animate="in"
-                        exit="out"
-                        variants={pageVariants}
-                        transition={pageTransition}
-                      >
+                      </Suspense>
+                    </PageContainer>
+                  }
+                />
+                <Route
+                  path="/about"
+                  element={
+                    <PageContainer
+                      key="about"
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                      transition={pageTransition}
+                    >
+                      <Suspense fallback={<LoadingSpinner />}>
                         <About />
-                      </PageContainer>
-                    } 
-                  />
-                  <Route 
-                    path="/skills" 
-                    element={
-                      <PageContainer
-                        key="skills"
-                        initial="initial"
-                        animate="in"
-                        exit="out"
-                        variants={pageVariants}
-                        transition={pageTransition}
-                      >
-                        <Skills />
-                      </PageContainer>
-                    } 
-                  />
-                  <Route 
-                    path="/projects" 
-                    element={
-                      <PageContainer
-                        key="projects"
-                        initial="initial"
-                        animate="in"
-                        exit="out"
-                        variants={pageVariants}
-                        transition={pageTransition}
-                      >
-                        <Projects />
-                      </PageContainer>
-                    } 
-                  />
-                  <Route 
-                    path="/projects/:id" 
-                    element={
-                      <PageContainer
-                        key="project-detail"
-                        initial="initial"
-                        animate="in"
-                        exit="out"
-                        variants={pageVariants}
-                        transition={pageTransition}
-                      >
-                        <ProjectDetail />
-                      </PageContainer>
-                    } 
-                  />
-                  <Route 
-                    path="/nft" 
-                    element={
-                      <PageContainer
-                        key="nft"
-                        initial="initial"
-                        animate="in"
-                        exit="out"
-                        variants={pageVariants}
-                        transition={pageTransition}
-                      >
-                        <NFTGallery />
-                      </PageContainer>
-                    } 
-                  />
-                  <Route 
-                    path="/defi" 
-                    element={
-                      <PageContainer
-                        key="defi"
-                        initial="initial"
-                        animate="in"
-                        exit="out"
-                        variants={pageVariants}
-                        transition={pageTransition}
-                      >
-                        <DeFiDashboard />
-                      </PageContainer>
-                    } 
-                  />
-                  <Route 
-                    path="/blog" 
-                    element={
-                      <PageContainer
-                        key="blog"
-                        initial="initial"
-                        animate="in"
-                        exit="out"
-                        variants={pageVariants}
-                        transition={pageTransition}
-                      >
-                        <Blog />
-                      </PageContainer>
-                    } 
-                  />
-                  <Route 
-                    path="/analytics" 
-                    element={
-                      <PageContainer
-                        key="analytics"
-                        initial="initial"
-                        animate="in"
-                        exit="out"
-                        variants={pageVariants}
-                        transition={pageTransition}
-                      >
-                        <Analytics />
-                      </PageContainer>
-                    } 
-                  />
-                  <Route 
-                    path="/contact" 
-                    element={
-                      <PageContainer
-                        key="contact"
-                        initial="initial"
-                        animate="in"
-                        exit="out"
-                        variants={pageVariants}
-                        transition={pageTransition}
-                      >
+                      </Suspense>
+                    </PageContainer>
+                  }
+                />
+                <Route
+                  path="/services"
+                  element={
+                    <PageContainer
+                      key="services"
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                      transition={pageTransition}
+                    >
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <Services />
+                      </Suspense>
+                    </PageContainer>
+                  }
+                />
+                <Route
+                  path="/portfolio"
+                  element={
+                    <PageContainer
+                      key="portfolio"
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                      transition={pageTransition}
+                    >
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <Portfolio />
+                      </Suspense>
+                    </PageContainer>
+                  }
+                />
+                <Route
+                  path="/contact"
+                  element={
+                    <PageContainer
+                      key="contact"
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                      transition={pageTransition}
+                    >
+                      <Suspense fallback={<LoadingSpinner />}>
                         <Contact />
-                      </PageContainer>
-                    } 
-                  />
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </AnimatePresence>
-            </AppContainer>
-          </Router>
-        </ThemeProvider>
-      </Web3Provider>
-    </CustomThemeProvider>
+                      </Suspense>
+                    </PageContainer>
+                  }
+                />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </AnimatePresence>
+          </AppContainer>
+        </Router>
+      </ErrorBoundary>
+    </ThemeProvider>
   );
 }
 
