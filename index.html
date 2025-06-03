@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio - Avocat Cybersécurité & Solutions Technologiques</title>
+    <title>Snake 3D Multijoueur - Jeu en Ligne</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <meta name="description" content="Portfolio - Avocat spécialisé en cybersécurité et vendeur de solutions technologiques">
-    <meta name="keywords" content="Avocat, Cybersécurité, Droit numérique, Solutions technologiques, RGPD">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <meta name="description" content="Jeu Snake 3D Multijoueur en ligne - Jouez seul ou avec vos amis">
+    <meta name="keywords" content="Snake 3D, Multijoueur, Jeu en ligne, WebGL, Three.js">
     
     <style>
         /* Critical CSS for loading */
@@ -97,19 +99,222 @@
             background: rgba(0, 212, 255, 0.5);
             border-radius: 4px;
         }
+        
+        /* Game specific styles */
+        .game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1e3c72 50%, #2a5298 100%);
+            overflow: hidden;
+        }
+        
+        .game-ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            color: white;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .game-stats {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 10px;
+        }
+        
+        .players-list {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .menu-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .menu-content {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .menu-title {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ffd700, #00ff88);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #ffd700;
+            color: #000;
+        }
+        
+        .btn-secondary {
+            background: #00ff88;
+            color: #000;
+        }
+        
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .game-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls-info {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        .connection-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .connected {
+            background: #00ff88;
+            color: #000;
+        }
+        
+        .disconnected {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .connecting {
+            background: #ffd700;
+            color: #000;
+        }
     </style>
 </head>
-<body class="cybersecurity-theme">
-    <noscript>Vous devez activer JavaScript pour utiliser cette application.</noscript>
+<body class="game-container">
+    <noscript>Vous devez activer JavaScript pour jouer à ce jeu.</noscript>
     
     <div id="loading-screen">
         <div class="loader"></div>
-        <p style="margin-top: 20px; color: #ffd700;">Chargement du portfolio...</p>
+        <p style="margin-top: 20px; color: #ffd700;">Chargement du jeu Snake 3D...</p>
     </div>
     
-    <div id="root"></div>
+    <!-- Menu Principal -->
+    <div id="main-menu" class="menu-overlay">
+        <div class="menu-content">
+            <h1 class="menu-title">Snake 3D</h1>
+            <p>Jeu multijoueur en ligne</p>
+            <div class="menu-buttons">
+                <button id="single-player-btn" class="btn btn-primary">
+                    <i class="fas fa-user"></i> Solo
+                </button>
+                <button id="multi-player-btn" class="btn btn-secondary">
+                    <i class="fas fa-users"></i> Multijoueur
+                </button>
+                <button id="create-room-btn" class="btn btn-secondary">
+                    <i class="fas fa-plus"></i> Créer une Salle
+                </button>
+                <button id="join-room-btn" class="btn btn-secondary">
+                    <i class="fas fa-sign-in-alt"></i> Rejoindre une Salle
+                </button>
+                <input type="text" id="room-code" placeholder="Code de la salle" style="margin-top: 1rem; padding: 0.5rem; border-radius: 5px; border: none;">
+                <input type="text" id="player-name" placeholder="Votre nom" style="padding: 0.5rem; border-radius: 5px; border: none;">
+            </div>
+        </div>
+    </div>
     
-    <!-- Enhanced error handling -->
+    <!-- Interface de Jeu -->
+    <div id="game-ui" class="game-ui" style="display: none;">
+        <div class="game-stats">
+            <div id="score">Score: 0</div>
+            <div id="length">Longueur: 1</div>
+            <div id="level">Niveau: 1</div>
+        </div>
+        <div class="players-list">
+            <h4>Joueurs connectés:</h4>
+            <div id="players-online"></div>
+        </div>
+    </div>
+    
+    <!-- Statut de Connexion -->
+    <div id="connection-status" class="connection-status disconnected">
+        Déconnecté
+    </div>
+    
+    <!-- Contrôles -->
+    <div class="controls-info">
+        <div><strong>Contrôles:</strong></div>
+        <div>WASD ou Flèches: Diriger</div>
+        <div>Espace: Boost</div>
+        <div>P: Pause</div>
+        <div>Esc: Menu</div>
+    </div>
+    
+    <!-- Canvas du Jeu -->
+    <canvas id="game-canvas" class="game-canvas"></canvas>
+    
+    <!-- Scripts du Jeu -->
+    <script src="js/game.js"></script>
+    <script src="js/multiplayer.js"></script>
+    <script src="js/snake.js"></script>
+    <script src="js/food.js"></script>
+    <script src="js/ui.js"></script>
+    
     <script>
         // Error boundary for React
         window.addEventListener('error', (e) => {
@@ -130,7 +335,7 @@
             document.body.appendChild(errorDiv);
         });
 
-        // Remove loading screen when React loads
+        // Initialize game when everything is loaded
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const loadingScreen = document.getElementById('loading-screen');
@@ -138,6 +343,10 @@
                     loadingScreen.style.opacity = '0';
                     setTimeout(() => {
                         loadingScreen.remove();
+                        // Initialize the game
+                        if (typeof Game !== 'undefined') {
+                            window.game = new Game();
+                        }
                     }, 500);
                 }
             }, 1000);
