@@ -1,849 +1,231 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Abdelilah Abdellaoui | Portfolio</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <style>
-    :root {
-      --primary: #00ff88;
-      --secondary: #ff0054;
-      --dark: #0a0a0a;
-      --darker: #050505;
-      --accent: #00d4ff;
-      --text-light: #e0e0e0;
-      --text-dim: #888;
-      --glow: 0 0 20px currentColor;
-    }
-
-    * { 
-      margin: 0; 
-      padding: 0; 
-      box-sizing: border-box; 
-    }
-
-    body {
-      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-      background: var(--darker);
-      color: var(--text-light);
-      overflow-x: hidden;
-      line-height: 1.6;
-    }
-
-    /* Animated Background */
-    .bg-animation {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -2;
-      background: 
-        linear-gradient(45deg, transparent 24%, rgba(0, 255, 136, 0.03) 25%, rgba(0, 255, 136, 0.03) 26%, transparent 27%, transparent 74%, rgba(0, 255, 136, 0.03) 75%, rgba(0, 255, 136, 0.03) 76%, transparent 77%),
-        linear-gradient(-45deg, transparent 24%, rgba(255, 0, 84, 0.03) 25%, rgba(255, 0, 84, 0.03) 26%, transparent 27%, transparent 74%, rgba(255, 0, 84, 0.03) 75%, rgba(255, 0, 84, 0.03) 76%, transparent 77%);
-      background-size: 50px 50px;
-      animation: bgMove 20s linear infinite;
-    }
-
-    @keyframes bgMove {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(50px, 50px); }
-    }
-
-    /* Profile Image Overlay */
-    .profile-overlay {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 100%;
-      height: 100%;
-      background: url('profile.jpg') no-repeat right center;
-      background-size: contain;
-      opacity: 0.15;
-      z-index: -1;
-      filter: contrast(1.2) brightness(0.8);
-    }
-    
-    /* Header */
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: rgba(10, 10, 10, 0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 2px solid var(--primary);
-      z-index: 1000;
-      padding: 1rem 0;
-    }
-
-    nav {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 2rem;
-    }
-
-    .nav-btn {
-      background: none;
-      border: 2px solid var(--primary);
-      color: var(--primary);
-      padding: 0.7rem 1.5rem;
-      font-family: inherit;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .nav-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: var(--primary);
-      transition: left 0.3s ease;
-      z-index: -1;
-    }
-
-    .nav-btn:hover::before {
-      left: 0;
-    }
-
-    .nav-btn:hover {
-      color: var(--dark);
-      box-shadow: var(--glow);
-    }
-
-    .lang-toggle {
-      border-color: var(--secondary);
-      color: var(--secondary);
-    }
-
-    .lang-toggle::before {
-      background: var(--secondary);
-    }
-
-    /* Main Content */
-    main {
-      margin-top: 100px;
-      min-height: calc(100vh - 100px);
-    }
-
-    .section {
-      display: none;
-      padding: 4rem 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-      opacity: 0;
-      transform: translateY(30px);
-      transition: all 0.6s ease;
-    }
-
-    .section.active {
-      display: block;
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Typography */
-    h1, h2 {
-      color: var(--primary);
-      margin-bottom: 2rem;
-      font-size: 2.5rem;
-      text-shadow: var(--glow);
-      position: relative;
-    }
-
-    h2 {
-      font-size: 2rem;
-      border-bottom: 2px solid var(--accent);
-      padding-bottom: 0.5rem;
-      display: inline-block;
-    }
-
-    /* Profile Section */
-    .profile-hero {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: 4rem;
-      align-items: center;
-      margin-bottom: 3rem;
-    }
-
-    .profile-image {
-      width: 250px;
-      height: 300px;
-      background: url('profile.jpg') no-repeat center;
-      background-size: cover;
-      border: 3px solid var(--primary);
-      border-radius: 15px;
-      box-shadow: 
-        0 0 30px rgba(0, 255, 136, 0.3),
-        inset 0 0 20px rgba(0, 0, 0, 0.5);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .profile-image::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(45deg, transparent 30%, rgba(0, 255, 136, 0.1) 50%, transparent 70%);
-      animation: shimmer 3s infinite;
-    }
-
-    @keyframes shimmer {
-      0%, 100% { transform: translateX(-100%); }
-      50% { transform: translateX(100%); }
-    }
-
-    .profile-text {
-      font-size: 1.2rem;
-      line-height: 1.8;
-      color: var(--text-light);
-    }
-
-    /* Cards Layout */
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-      margin: 2rem 0;
-    }
-
-    .card {
-      background: rgba(20, 20, 20, 0.8);
-      border: 2px solid var(--accent);
-      border-radius: 15px;
-      padding: 2rem;
-      backdrop-filter: blur(5px);
-      transition: all 0.3s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 10px 30px rgba(255, 0, 84, 0.3);
-      border-color: var(--primary);
-    }
-
-    .card h3 {
-      color: var(--accent);
-      margin-bottom: 1rem;
-      font-size: 1.3rem;
-    }
-
-    .card ul {
-      list-style: none;
-    }
-
-    .card li {
-      margin: 0.8rem 0;
-      padding-left: 1.5rem;
-      position: relative;
-    }
-
-    .card li::before {
-      content: '▶';
-      position: absolute;
-      left: 0;
-      color: var(--primary);
-    }
-
-    /* Projects with Interactive Elements */
-    .project-item {
-      background: rgba(15, 15, 15, 0.9);
-      border: 2px solid var(--secondary);
-      border-radius: 10px;
-      padding: 2rem;
-      margin: 2rem 0;
-      transition: all 0.3s ease;
-    }
-
-    .project-item:hover {
-      border-color: var(--primary);
-      box-shadow: 0 5px 20px rgba(255, 0, 84, 0.2);
-    }
-
-    /* Simulation Styles */
-    .simulation {
-      background: rgba(5, 5, 5, 0.95);
-      border: 2px solid var(--secondary);
-      border-radius: 10px;
-      padding: 1.5rem;
-      margin: 1rem 0;
-    }
-
-    .sim-btn {
-      background: linear-gradient(45deg, var(--secondary), #ff3366);
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      border-radius: 25px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-    }
-
-    .sim-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 5px 15px rgba(255, 0, 84, 0.4);
-    }
-
-    /* Chat Simulation */
-    .chat-container {
-      background: rgba(10, 10, 10, 0.95);
-      border: 2px solid var(--accent);
-      border-radius: 15px;
-      padding: 2rem;
-      max-width: 800px;
-      margin: 2rem auto;
-    }
-
-    .chat-display {
-      background: var(--darker);
-      color: var(--text-light);
-      height: 400px;
-      overflow-y: auto;
-      padding: 1.5rem;
-      border: 2px solid var(--primary);
-      border-radius: 10px;
-      margin-bottom: 1rem;
-      font-family: 'Courier New', monospace;
-    }
-
-    .chat-input-area {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .chat-input {
-      flex: 1;
-      background: var(--dark);
-      border: 2px solid var(--accent);
-      color: var(--text-light);
-      padding: 1rem;
-      border-radius: 10px;
-      font-family: inherit;
-    }
-
-    .chat-input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
-    }
-
-    .send-btn {
-      background: var(--primary);
-      color: var(--dark);
-      border: none;
-      padding: 1rem 2rem;
-      border-radius: 10px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .send-btn:hover {
-      background: var(--accent);
-      box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
-    }
-
-    /* Progress Bar */
-    .progress-bar {
-      width: 100%;
-      height: 25px;
-      background: var(--dark);
-      border: 2px solid var(--accent);
-      border-radius: 15px;
-      margin: 1rem 0;
-      overflow: hidden;
-    }
-
-    .progress {
-      height: 100%;
-      background: linear-gradient(90deg, var(--secondary), var(--primary));
-      width: 0%;
-      transition: width 0.3s ease;
-      border-radius: 10px;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .profile-hero {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
-      
-      .profile-image {
-        margin: 0 auto;
-      }
-      
-      nav {
-        padding: 0 1rem;
-      }
-      
-      .nav-btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-      }
-      
-      h1, h2 {
-        font-size: 1.8rem;
-      }
-    }
-
-    /* Glitch Effect */
-    .glitch {
-      animation: glitch-effect 0.5s infinite;
-    }
-
-    @keyframes glitch-effect {
-      0%, 100% { transform: translate(0); }
-      20% { transform: translate(-2px, 2px); }
-      40% { transform: translate(-2px, -2px); }
-      60% { transform: translate(2px, 2px); }
-      80% { transform: translate(2px, -2px); }
-    }
-
-    /* Lock Screen */
-    .lock-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--darker);
-      color: var(--secondary);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 10000;
-      font-size: 2rem;
-      text-align: center;
-      animation: lockScreenPulse 2s infinite;
-    }
-
-    @keyframes lockScreenPulse {
-      0%, 100% { background: var(--darker); }
-      50% { background: #1a0000; }
-    }
-
-    .hidden { display: none !important; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Portfolio - Développeur</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-  <div class="bg-animation"></div>
-  <div class="profile-overlay"></div>
-  
-  <header>
-    <nav>
-      <button class="nav-btn" onclick="showSection('profile')">
-        <i class="fas fa-user"></i> Profil
-      </button>
-      <button class="nav-btn" onclick="showSection('experience')">
-        <i class="fas fa-briefcase"></i> Expérience
-      </button>
-      <button class="nav-btn" onclick="showSection('education')">
-        <i class="fas fa-graduation-cap"></i> Éducation
-      </button>
-      <button class="nav-btn" onclick="showSection('skills')">
-        <i class="fas fa-cogs"></i> Compétences
-      </button>
-      <button class="nav-btn" onclick="showSection('projects')">
-        <i class="fas fa-project-diagram"></i> Projets
-      </button>
-      <button class="nav-btn" onclick="showSection('chat-simulation')">
-        <i class="fas fa-comments"></i> Chat
-      </button>
-      <button class="nav-btn lang-toggle" onclick="toggleLang()">
-        <i class="fas fa-language"></i> EN
-      </button>
-    </nav>
-  </header>
-
-  <main>
-    <section id="profile" class="section active">
-      <div class="profile-hero">
-        <div>
-          <h1 class="fr">Abdelilah Abdellaoui</h1>
-          <h1 class="en hidden">Abdelilah Abdellaoui</h1>
-          <p class="profile-text fr">
-            Étudiant en droit privé et cybersécurité, passionné par l'offensive security, l'OSINT et l'automatisation. 
-            Je combine des compétences juridiques, techniques et créatives pour développer des solutions innovantes 
-            dans le domaine de la sécurité informatique.
-          </p>
-          <p class="profile-text en hidden">
-            Student in private law and cybersecurity, passionate about offensive security, OSINT and automation. 
-            I combine legal, technical and creative skills to develop innovative solutions in the field of cybersecurity.
-          </p>
-        </div>
-        <div class="profile-image"></div>
-      </div>
-    </section>
-
-    <section id="experience" class="section">
-      <h2 class="fr"><i class="fas fa-briefcase"></i> Expérience Professionnelle</h2>
-      <h2 class="en hidden"><i class="fas fa-briefcase"></i> Professional Experience</h2>
-      
-      <div class="cards-grid">
-        <div class="card fr">
-          <h3>Consultant Juridique</h3>
-          <p><strong>08/2023 - Présent</strong></p>
-          <p>Rédaction de plaintes, documents juridiques et conseil en droit privé.</p>
-        </div>
-        <div class="card fr">
-          <h3>SOMETGARD - Stage</h3>
-          <p><strong>10/2022 - 07/2023</strong></p>
-          <p>Comptabilité, gestion administrative et communication d'entreprise.</p>
-        </div>
-        <div class="card fr">
-          <h3>Vente et Télévente</h3>
-          <p><strong>07/2022 - 10/2022</strong></p>
-          <p>Vente directe de produits cosmétiques et télévente pour des services à l'étranger.</p>
-        </div>
-        <div class="card fr">
-          <h3>Aide Vendeur - NADIZ Distribution</h3>
-          <p><strong>01/2022 - 07/2022</strong></p>
-          <p>Appui logistique et gestion des produits dans la région de Midelt.</p>
-        </div>
-        <div class="card en hidden">
-          <h3>Legal Consultant</h3>
-          <p><strong>08/2023 - Present</strong></p>
-          <p>Drafting legal complaints, trial-related documents, and private law consulting.</p>
-        </div>
-        <div class="card en hidden">
-          <h3>SOMETGARD - Internship</h3>
-          <p><strong>10/2022 - 07/2023</strong></p>
-          <p>Accounting, administrative management, and corporate communication.</p>
-        </div>
-        <div class="card en hidden">
-          <h3>Sales & Tele-sales</h3>
-          <p><strong>07/2022 - 10/2022</strong></p>
-          <p>Field sales of cosmetics and tele-sales for international services.</p>
-        </div>
-        <div class="card en hidden">
-          <h3>Sales Assistant – NADIZ Distribution</h3>
-          <p><strong>01/2022 - 07/2022</strong></p>
-          <p>Logistical support and product management in the Midelt region.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="education" class="section">
-      <h2 class="fr"><i class="fas fa-graduation-cap"></i> Éducation</h2>
-      <h2 class="en hidden"><i class="fas fa-graduation-cap"></i> Education</h2>
-      
-      <div class="cards-grid">
-        <div class="card fr">
-          <h3>Licence en Droit Privé</h3>
-          <p><strong>2023 - présent</strong></p>
-          <p>FSJES, Université Moulay Ismail, Meknès.</p>
-        </div>
-        <div class="card fr">
-          <h3>Baccalauréat Libre en Sciences Humaines</h3>
-          <p><strong>2023</strong></p>
-          <p>Formation générale avec mention.</p>
-        </div>
-        <div class="card en hidden">
-          <h3>Bachelor's in Private Law</h3>
-          <p><strong>2023 - Present</strong></p>
-          <p>FSJES, Moulay Ismail University, Meknès.</p>
-        </div>
-        <div class="card en hidden">
-          <h3>Independent Baccalaureate in Human Sciences</h3>
-          <p><strong>2023</strong></p>
-          <p>General education with honors.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="skills" class="section">
-      <h2 class="fr"><i class="fas fa-cogs"></i> Compétences</h2>
-      <h2 class="en hidden"><i class="fas fa-cogs"></i> Skills</h2>
-      
-      <div class="cards-grid">
-        <div class="card fr">
-          <h3>Cybersécurité</h3>
-          <ul>
-            <li>Tests de sécurité via Metasploit</li>
-            <li>Démonstration de ransomware</li>
-            <li>OSINT</li>
-            <li>Ingénierie sociale avancée</li>
-          </ul>
-        </div>
-        <div class="card fr">
-          <h3>Informatique</h3>
-          <ul>
-            <li>OCR automatisé (Adobe Acrobat, Tesseract)</li>
-            <li>Scripts batch</li>
-            <li>Chat via FTP</li>
-            <li>Base de données Access</li>
-          </ul>
-        </div>
-        <div class="card fr">
-          <h3>Juridique</h3>
-          <ul>
-            <li>Droit privé en langue française</li>
-            <li>Rédaction de documents juridiques</li>
-            <li>Connaissances réglementaires</li>
-          </ul>
-        </div>
-        <div class="card fr">
-          <h3>Comptabilité et Gérance</h3>
-          <ul>
-            <li>Expérience en gestion administrative</li>
-            <li>Aide comptable</li>
-          </ul>
-        </div>
-        <div class="card fr">
-          <h3>Créatif</h3>
-          <ul>
-            <li>Génération musicale assistée par IA (FL Studio, BandLab)</li>
-          </ul>
-        </div>
-        <div class="card en hidden">
-          <h3>Cybersecurity</h3>
-          <ul>
-            <li>Browser security tests using Metasploit</li>
-            <li>Ransomware simulation</li>
-            <li>OSINT</li>
-            <li>Advanced social engineering</li>
-          </ul>
-        </div>
-        <div class="card en hidden">
-          <h3>IT</h3>
-          <ul>
-            <li>Automated OCR (Adobe Acrobat, Tesseract)</li>
-            <li>Batch scripting</li>
-            <li>FTP-based chat</li>
-            <li>Access database handling</li>
-          </ul>
-        </div>
-        <div class="card en hidden">
-          <h3>Legal</h3>
-          <ul>
-            <li>Private law in French</li>
-            <li>Legal writing</li>
-            <li>Regulatory knowledge</li>
-          </ul>
-        </div>
-        <div class="card en hidden">
-          <h3>Accounting & Management</h3>
-          <ul>
-            <li>Administrative and accounting experience</li>
-          </ul>
-        </div>
-        <div class="card en hidden">
-          <h3>Creative</h3>
-          <ul>
-            <li>AI-based music generation (FL Studio, BandLab)</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section id="projects" class="section">
-      <h2 class="fr"><i class="fas fa-project-diagram"></i> Projets Techniques</h2>
-      <h2 class="en hidden"><i class="fas fa-project-diagram"></i> Technical Projects</h2>
-      
-      <div class="project-item">
-        <h3 class="fr">🔒 Prototype Ransomware Éducatif</h3>
-        <h3 class="en hidden">🔒 Educational Ransomware Prototype</h3>
-        <p class="fr">Développement d'un ransomware à des fins éducatives pour comprendre les techniques de chiffrement.</p>
-        <p class="en hidden">Educational ransomware development to understand encryption techniques.</p>
-        
-        <div class="simulation">
-          <button class="sim-btn" onclick="startRansomware()">
-            <i class="fas fa-play"></i> Démarrer la Simulation
-          </button>
-          <div class="encryption-screen hidden">
-            <p>🔒 Chiffrement en cours...</p>
-            <div class="progress-bar">
-              <div class="progress"></div>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">Portfolio</div>
+            <ul class="nav-menu">
+                <li><a href="#home">Accueil</a></li>
+                <li><a href="#about">À propos</a></li>
+                <li><a href="#skills">Compétences</a></li>
+                <li><a href="#projects">Projets</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
-            <p class="status">Fichier 1 sur 10</p>
-          </div>
         </div>
-      </div>
+    </nav>
 
-      <div class="project-item">
-        <h3 class="fr">📂 Chat FTP (Batch Script)</h3>
-        <h3 class="en hidden">📂 FTP Chat (Batch Script)</h3>
-        <p class="fr">Création d'un système rudimentaire de messagerie en ligne de commande, utilisant un serveur FTP et des scripts batch.</p>
-        <p class="en hidden">Built a simple command-line chat system using FTP for message exchange and batch scripts.</p>
-      </div>
-
-      <div class="project-item">
-        <h3 class="fr">📄 Extraction OCR Automatisée</h3>
-        <h3 class="en hidden">📄 Automated OCR Extraction</h3>
-        <p class="fr">Mise en œuvre d'un processus combinant OCR et base Access pour extraire des informations depuis des documents scannés.</p>
-        <p class="en hidden">Designed a workflow combining OCR and Access database to extract data from scanned documents.</p>
-      </div>
-
-      <div class="project-item">
-        <h3 class="fr">🔍 Tests Sécurité Navigateur</h3>
-        <h3 class="en hidden">🔍 Browser Security Testing</h3>
-        <p class="fr">Utilisation du framework Metasploit pour analyser les vulnérabilités des navigateurs web en environnement isolé.</p>
-        <p class="en hidden">Used Metasploit in a sandbox environment to detect web browser vulnerabilities.</p>
-      </div>
+    <!-- Section Hero -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Salut, je suis <span class="highlight">Votre Nom</span></h1>
+            <p class="hero-subtitle">Développeur Full Stack passionné</p>
+            <p class="hero-description">Je crée des applications web modernes et performantes</p>
+            <div class="hero-buttons">
+                <a href="#projects" class="btn btn-primary">Voir mes projets</a>
+                <a href="#contact" class="btn btn-secondary">Me contacter</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="image-placeholder">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
     </section>
 
-    <section id="chat-simulation" class="section">
-      <h2 class="fr"><i class="fas fa-comments"></i> Simulation de Chat Sécurisé</h2>
-      <h2 class="en hidden"><i class="fas fa-comments"></i> Secure Chat Simulation</h2>
-      
-      <div class="chat-container">
-        <div id="chatDisplay" class="chat-display"></div>
-        <div class="chat-input-area">
-          <input 
-            type="text" 
-            id="userMessage" 
-            class="chat-input"
-            placeholder="Tapez votre message..."
-            onkeypress="if(event.key==='Enter') sendMessage()"
-          />
-          <button class="send-btn" onclick="sendMessage()">
-            <i class="fas fa-paper-plane"></i> Envoyer
-          </button>
+    <!-- Section À propos -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">À propos de moi</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>Développeur passionné avec plus de 3 ans d'expérience dans le développement web. Je me spécialise dans la création d'applications modernes et performantes.</p>
+                    <p>Mon expertise couvre le développement front-end et back-end, avec une forte expérience en JavaScript, Python, et les technologies web modernes.</p>
+                    <div class="about-stats">
+                        <div class="stat">
+                            <h3>50+</h3>
+                            <p>Projets réalisés</p>
+                        </div>
+                        <div class="stat">
+                            <h3>3+</h3>
+                            <p>Années d'expérience</p>
+                        </div>
+                        <div class="stat">
+                            <h3>20+</h3>
+                            <p>Clients satisfaits</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </section>
-  </main>
 
-  <script>
-    let encryptionProgress = 0;
-    
-    const hackerResponses = [
-      "🔍 Scanning your network...",
-      "🛡️ Firewall bypassed successfully",
-      "🔓 Accessing encrypted files...",
-      "⚡ Running exploit modules...",
-      "🎯 Target acquired, initiating...",
-      "🔥 System compromised! Just kidding 😄",
-      "🕵️ OSINT gathering complete",
-      "💀 Welcome to the dark side...",
-      "🌐 Tracing IP... 127.0.0.1 found!"
-    ];
-
-    function showSection(id) {
-      document.querySelectorAll('.section').forEach(s => {
-        s.classList.remove('active');
-      });
-      
-      setTimeout(() => {
-        document.getElementById(id).classList.add('active');
-      }, 150);
-    }
-    
-    function toggleLang() {
-      document.querySelectorAll('.fr').forEach(e => e.classList.toggle('hidden'));
-      document.querySelectorAll('.en').forEach(e => e.classList.toggle('hidden'));
-      const btn = document.querySelector('.lang-toggle');
-      btn.innerHTML = btn.innerHTML.includes('EN') ? 
-        '<i class="fas fa-language"></i> FR' : 
-        '<i class="fas fa-language"></i> EN';
-    }
-
-    function startRansomware() {
-      const simulation = event.target.closest('.simulation');
-      const button = simulation.querySelector('.sim-btn');
-      const encryptionScreen = simulation.querySelector('.encryption-screen');
-      
-      button.classList.add('hidden');
-      encryptionScreen.classList.remove('hidden');
-      
-      const progressBar = encryptionScreen.querySelector('.progress');
-      const status = encryptionScreen.querySelector('.status');
-      encryptionProgress = 0;
-      
-      const interval = setInterval(() => {
-        encryptionProgress += 10;
-        progressBar.style.width = encryptionProgress + '%';
-        status.textContent = `Fichier ${encryptionProgress / 10} sur 10`;
-
-        document.body.classList.add('glitch');
-        setTimeout(() => document.body.classList.remove('glitch'), 200);
-
-        if (encryptionProgress >= 100) {
-          clearInterval(interval);
-          showLockScreen();
-        }
-      }, 800);
-    }
-
-    function showLockScreen() {
-      const lockScreen = document.createElement('div');
-      lockScreen.className = 'lock-screen';
-      lockScreen.innerHTML = `
-        <div>
-          <i class="fas fa-skull" style="font-size: 4rem; margin-bottom: 2rem;"></i>
-          <h2>🔒 SYSTÈME VERROUILLÉ</h2>
-          <p>Payer 1 BTC pour déverrouiller!</p>
-          <small style="margin-top: 2rem; opacity: 0.7;">
-            (Cliquez n'importe où pour déverrouiller)
-          </small>
+    <!-- Section Compétences -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <h2 class="section-title">Mes Compétences</h2>
+            <div class="skills-grid">
+                <div class="skill-item">
+                    <i class="fab fa-html5"></i>
+                    <h3>HTML/CSS</h3>
+                    <p>Maîtrise avancée</p>
+                </div>
+                <div class="skill-item">
+                    <i class="fab fa-js"></i>
+                    <h3>JavaScript</h3>
+                    <p>ES6+, frameworks modernes</p>
+                </div>
+                <div class="skill-item">
+                    <i class="fab fa-python"></i>
+                    <h3>Python</h3>
+                    <p>Django, Flask, APIs</p>
+                </div>
+                <div class="skill-item">
+                    <i class="fab fa-react"></i>
+                    <h3>React</h3>
+                    <p>Hooks, Redux, Next.js</p>
+                </div>
+                <div class="skill-item">
+                    <i class="fas fa-database"></i>
+                    <h3>Bases de données</h3>
+                    <p>MySQL, PostgreSQL, MongoDB</p>
+                </div>
+                <div class="skill-item">
+                    <i class="fab fa-git-alt"></i>
+                    <h3>Git/GitHub</h3>
+                    <p>Contrôle de version</p>
+                </div>
+            </div>
         </div>
-      `;
-      lockScreen.onclick = () => lockScreen.remove();
-      document.body.appendChild(lockScreen);
-    }
+    </section>
 
-    function sendMessage() {
-      const userMessage = document.getElementById("userMessage").value.trim();
-      if (!userMessage) return;
+    <!-- Section Projets -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2 class="section-title">Mes Projets</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-image">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3>Jeu 3D Shooting</h3>
+                        <p>Jeu de tir 3D développé avec Python et Ursina Engine</p>
+                        <div class="project-tech">
+                            <span>Python</span>
+                            <span>Ursina</span>
+                            <span>3D</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="btn-small">Voir le code</a>
+                            <a href="#" class="btn-small">Démo</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-image">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3>Système d'Email</h3>
+                        <p>API PHP pour l'envoi d'emails avec validation</p>
+                        <div class="project-tech">
+                            <span>PHP</span>
+                            <span>PHPMailer</span>
+                            <span>SMTP</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="btn-small">Voir le code</a>
+                            <a href="#" class="btn-small">Démo</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-image">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="project-content">
+                        <h3>E-commerce App</h3>
+                        <p>Application e-commerce complète avec panier</p>
+                        <div class="project-tech">
+                            <span>React</span>
+                            <span>Node.js</span>
+                            <span>MongoDB</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="btn-small">Voir le code</a>
+                            <a href="#" class="btn-small">Démo</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-      const chatDisplay = document.getElementById("chatDisplay");
-      
-      // User message
-      const userDiv = document.createElement("div");
-      userDiv.style.cssText = "color: var(--accent); margin: 1rem 0; padding: 0.5rem; border-left: 3px solid var(--accent);";
-      userDiv.innerHTML = `<strong>👤 Vous:</strong> ${userMessage}`;
-      chatDisplay.appendChild(userDiv);
+    <!-- Section Contact -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Contactez-moi</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>votre-email@example.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Téléphone</h4>
+                            <p>+33 1 23 45 67 89</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Localisation</h4>
+                            <p>Paris, France</p>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form" id="contactForm">
+                    <input type="text" placeholder="Votre nom" required>
+                    <input type="email" placeholder="Votre email" required>
+                    <textarea placeholder="Votre message" rows="5" required></textarea>
+                    <button type="submit" class="btn btn-primary">Envoyer</button>
+                </form>
+            </div>
+        </div>
+    </section>
 
-      chatDisplay.scrollTop = chatDisplay.scrollHeight;
-      document.getElementById("userMessage").value = "";
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 Votre Nom. Tous droits réservés.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-      // Typing indicator
-      const typingDiv = document.createElement("div");
-      typingDiv.style.cssText = "color: var(--text-dim); margin: 1rem 0; font-style: italic;";
-      typingDiv.innerHTML = `🤖 Hacker frappe...`;
-      chatDisplay.appendChild(typingDiv);
-      chatDisplay.scrollTop = chatDisplay.scrollHeight;
-
-      setTimeout(() => {
-        typingDiv.remove();
-        
-        const hackerDiv = document.createElement("div");
-        hackerDiv.style.cssText = "color: var(--primary); margin: 1rem 0; padding: 0.5rem; border-left: 3px solid var(--primary); background: rgba(0, 255, 136, 0.1);";
-        
-        const randomResponse = hackerResponses[Math.floor(Math.random() * hackerResponses.length)];
-        hackerDiv.innerHTML = `<strong>🕶️ Hacker:</strong> ${randomResponse}`;
-        chatDisplay.appendChild(hackerDiv);
-
-        chatDisplay.scrollTop = chatDisplay.scrollHeight;
-      }, 1500);
-    }
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
-      showSection('profile');
-    });
-  </script>
+    <script src="script.js"></script>
 </body>
 </html>
