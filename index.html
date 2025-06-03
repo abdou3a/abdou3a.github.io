@@ -4,374 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web3 Portfolio - Blockchain Developer</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <meta name="description" content="Portfolio Web3 - Développeur Blockchain spécialisé en DeFi, NFTs et Smart Contracts">
+    <meta name="keywords" content="Web3, Blockchain, DeFi, NFT, Solidity, Ethereum, React">
+    
+    <style>
+        /* Critical CSS for loading */
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 212, 255, 0.3);
+            border-top: 3px solid #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Hide scrollbar for Webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.5);
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
-    <!-- Web3 Connection Modal -->
-    <div id="web3Modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Connect Wallet</h2>
-            <div class="wallet-options">
-                <button class="wallet-btn" data-wallet="metamask">
-                    <i class="fab fa-ethereum"></i>
-                    MetaMask
-                </button>
-                <button class="wallet-btn" data-wallet="walletconnect">
-                    <i class="fas fa-wallet"></i>
-                    WalletConnect
-                </button>
-                <button class="wallet-btn" data-wallet="coinbase">
-                    <i class="fab fa-bitcoin"></i>
-                    Coinbase Wallet
-                </button>
-            </div>
-        </div>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    
+    <div id="loading-screen">
+        <div class="loader"></div>
     </div>
-
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <i class="fab fa-ethereum"></i>
-                Web3 Portfolio
-            </div>
-            <ul class="nav-menu">
-                <li><a href="#home">Accueil</a></li>
-                <li><a href="#about">À propos</a></li>
-                <li><a href="#skills">Compétences</a></li>
-                <li><a href="#projects">Projets</a></li>
-                <li><a href="#nft">NFT Gallery</a></li>
-                <li><a href="#defi">DeFi Tools</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-            <div class="web3-status">
-                <button id="connectWallet" class="btn btn-web3">
-                    <i class="fas fa-wallet"></i>
-                    Connect Wallet
-                </button>
-                <div id="walletInfo" class="wallet-info" style="display: none;">
-                    <div class="wallet-address"></div>
-                    <div class="wallet-balance"></div>
-                </div>
-            </div>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Section Hero -->
-    <section id="home" class="hero">
-        <div class="hero-content">
-            <h1 class="hero-title">Salut, je suis <span class="highlight">Votre Nom</span></h1>
-            <p class="hero-subtitle">Blockchain & Web3 Developer</p>
-            <p class="hero-description">Je construis l'avenir décentralisé avec DeFi, NFTs et Smart Contracts</p>
-            <div class="crypto-ticker">
-                <div class="ticker-item">
-                    <span class="crypto-name">ETH</span>
-                    <span class="crypto-price" id="ethPrice">Loading...</span>
-                </div>
-                <div class="ticker-item">
-                    <span class="crypto-name">BTC</span>
-                    <span class="crypto-price" id="btcPrice">Loading...</span>
-                </div>
-                <div class="ticker-item">
-                    <span class="crypto-name">BNB</span>
-                    <span class="crypto-price" id="bnbPrice">Loading...</span>
-                </div>
-            </div>
-            <div class="hero-buttons">
-                <a href="#projects" class="btn btn-primary">Voir mes projets</a>
-                <a href="#contact" class="btn btn-secondary">Me contacter</a>
-            </div>
-        </div>
-        <div class="hero-image">
-            <div class="image-placeholder">
-                <i class="fas fa-user"></i>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section À propos -->
-    <section id="about" class="about">
-        <div class="container">
-            <h2 class="section-title">À propos de moi</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>Développeur passionné avec plus de 3 ans d'expérience dans le développement web. Je me spécialise dans la création d'applications modernes et performantes.</p>
-                    <p>Mon expertise couvre le développement front-end et back-end, avec une forte expérience en JavaScript, Python, et les technologies web modernes.</p>
-                    <div class="about-stats">
-                        <div class="stat">
-                            <h3>50+</h3>
-                            <p>Projets réalisés</p>
-                        </div>
-                        <div class="stat">
-                            <h3>3+</h3>
-                            <p>Années d'expérience</p>
-                        </div>
-                        <div class="stat">
-                            <h3>20+</h3>
-                            <p>Clients satisfaits</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section Compétences Web3 -->
-    <section id="skills" class="skills">
-        <div class="container">
-            <h2 class="section-title">Mes Compétences Web3</h2>
-            <div class="skills-grid">
-                <div class="skill-item">
-                    <i class="fab fa-ethereum"></i>
-                    <h3>Solidity</h3>
-                    <p>Smart Contracts, DApps</p>
-                </div>
-                <div class="skill-item">
-                    <i class="fas fa-cube"></i>
-                    <h3>Blockchain</h3>
-                    <p>Ethereum, BSC, Polygon</p>
-                </div>
-                <div class="skill-item">
-                    <i class="fas fa-coins"></i>
-                    <h3>DeFi</h3>
-                    <p>DEX, Lending, Staking</p>
-                </div>
-                <div class="skill-item">
-                    <i class="fas fa-palette"></i>
-                    <h3>NFTs</h3>
-                    <p>ERC-721, ERC-1155, Marketplace</p>
-                </div>
-                <div class="skill-item">
-                    <i class="fab fa-js"></i>
-                    <h3>Web3.js/Ethers.js</h3>
-                    <p>Frontend intégration</p>
-                </div>
-                <div class="skill-item">
-                    <i class="fas fa-server"></i>
-                    <h3>IPFS</h3>
-                    <p>Stockage décentralisé</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section Projets Web3 -->
-    <section id="projects" class="projects">
-        <div class="container">
-            <h2 class="section-title">Mes Projets Web3</h2>
-            <div class="projects-grid">
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-exchange-alt"></i>
-                    </div>
-                    <div class="project-content">
-                        <h3>DEX Platform</h3>
-                        <p>Exchange décentralisé avec AMM et farming</p>
-                        <div class="project-tech">
-                            <span>Solidity</span>
-                            <span>React</span>
-                            <span>Web3.js</span>
-                        </div>
-                        <div class="project-stats">
-                            <div class="stat-item">
-                                <span class="stat-value">$2.5M</span>
-                                <span class="stat-label">TVL</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-value">15K</span>
-                                <span class="stat-label">Users</span>
-                            </div>
-                        </div>
-                        <div class="project-links">
-                            <a href="#" class="btn-small">Voir le code</a>
-                            <a href="#" class="btn-small">Démo</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-paint-brush"></i>
-                    </div>
-                    <div class="project-content">
-                        <h3>Crypto Art Gallery</h3>
-                        <p>Galerie d'art numérique avec NFTs sur Ethereum</p>
-                        <div class="project-tech">
-                            <span>Solidity</span>
-                            <span>IPFS</span>
-                            <span>React</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="#" class="btn-small">Voir le code</a>
-                            <a href="#" class="btn-small">Démo</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <div class="project-image">
-                        <i class="fas fa-university"></i>
-                    </div>
-                    <div class="project-content">
-                        <h3>DeFi Lending Platform</h3>
-                        <p>Plateforme de prêt décentralisée avec taux d'intérêt variables</p>
-                        <div class="project-tech">
-                            <span>Solidity</span>
-                            <span>Chainlink</span>
-                            <span>React</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="#" class="btn-small">Voir le code</a>
-                            <a href="#" class="btn-small">Démo</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section NFT Gallery -->
-    <section id="nft" class="nft-gallery">
-        <div class="container">
-            <h2 class="section-title">Ma Collection NFT</h2>
-            <div class="nft-grid" id="nftGrid">
-                <!-- NFTs seront chargés dynamiquement -->
-            </div>
-            <div class="nft-mint">
-                <h3>Minter un NFT exclusif</h3>
-                <div class="mint-controls">
-                    <input type="number" id="mintQuantity" min="1" max="10" value="1">
-                    <button id="mintNFT" class="btn btn-primary">
-                        <i class="fas fa-hammer"></i>
-                        Mint NFT (0.05 ETH)
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section DeFi Tools -->
-    <section id="defi" class="defi-tools">
-        <div class="container">
-            <h2 class="section-title">DeFi Dashboard</h2>
-            <div class="defi-grid">
-                <div class="defi-card">
-                    <h3>Token Swapper</h3>
-                    <div class="swap-interface">
-                        <div class="swap-input">
-                            <input type="number" placeholder="0.0" id="swapAmount">
-                            <select id="tokenFrom">
-                                <option value="ETH">ETH</option>
-                                <option value="USDC">USDC</option>
-                                <option value="USDT">USDT</option>
-                            </select>
-                        </div>
-                        <button class="swap-arrow">⇅</button>
-                        <div class="swap-output">
-                            <input type="number" placeholder="0.0" readonly id="swapResult">
-                            <select id="tokenTo">
-                                <option value="USDC">USDC</option>
-                                <option value="ETH">ETH</option>
-                                <option value="USDT">USDT</option>
-                            </select>
-                        </div>
-                        <button id="executeSwap" class="btn btn-primary">Swap Tokens</button>
-                    </div>
-                </div>
-                <div class="defi-card">
-                    <h3>Staking Pool</h3>
-                    <div class="staking-info">
-                        <div class="apy-display">
-                            <span class="apy-value">125.5%</span>
-                            <span class="apy-label">APY</span>
-                        </div>
-                        <div class="staking-controls">
-                            <input type="number" placeholder="Amount to stake" id="stakeAmount">
-                            <div class="staking-buttons">
-                                <button id="stakeTokens" class="btn btn-success">Stake</button>
-                                <button id="unstakeTokens" class="btn btn-warning">Unstake</button>
-                            </div>
-                        </div>
-                        <div class="rewards-info">
-                            <span>Pending Rewards: <span id="pendingRewards">0.0</span> ETH</span>
-                            <button id="claimRewards" class="btn btn-secondary">Claim</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="defi-card">
-                    <h3>Portfolio Tracker</h3>
-                    <div class="portfolio-stats">
-                        <div class="portfolio-value">
-                            <span class="value-amount" id="portfolioValue">$0.00</span>
-                            <span class="value-change" id="portfolioChange">+0.00%</span>
-                        </div>
-                        <canvas id="portfolioChart" width="300" height="200"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section Contact -->
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2 class="section-title">Contactez-moi</h2>
-            <div class="contact-content">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <h4>Email</h4>
-                            <p>votre-email@example.com</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-phone"></i>
-                        <div>
-                            <h4>Téléphone</h4>
-                            <p>+33 1 23 45 67 89</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div>
-                            <h4>Localisation</h4>
-                            <p>Paris, France</p>
-                        </div>
-                    </div>
-                </div>
-                <form class="contact-form" id="contactForm">
-                    <input type="text" placeholder="Votre nom" required>
-                    <input type="email" placeholder="Votre email" required>
-                    <textarea placeholder="Votre message" rows="5" required></textarea>
-                    <button type="submit" class="btn btn-primary">Envoyer</button>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <p>&copy; 2024 Votre Nom. Tous droits réservés.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-github"></i></a>
-                    <a href="#"><i class="fab fa-linkedin"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <script src="web3-script.js"></script>
-    <script src="script.js"></script>
+    
+    <div id="root"></div>
+    
+    <!-- React will be injected here -->
+    <script>
+        // Remove loading screen when React loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen) {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.remove();
+                    }, 500);
+                }
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
