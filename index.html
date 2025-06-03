@@ -9,139 +9,50 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <meta name="description" content="Jeu Snake 3D Multijoueur en ligne - Jouez seul ou avec vos amis">
     <meta name="keywords" content="Snake 3D, Multijoueur, Jeu en ligne, WebGL, Three.js">
     
     <style>
-        /* Critical CSS for loading */
+        /* Corrected styles */
         body {
             margin: 0;
+            padding: 0;
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+            background: linear-gradient(135deg, #0a0a0a 0%, #1e3c72 50%, #2a5298 100%);
             color: white;
-            overflow-x: hidden;
+            overflow: hidden;
         }
         
-        #loading-screen {
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        #game-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .game-ui {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .menu-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        
-        .cybersecurity-theme {
-            background: linear-gradient(135deg, #0a0a0a 0%, #1e3c72 50%, #2a5298 100%);
-        }
-        
-        .law-accent {
-            color: #ffd700;
-        }
-        
-        .tech-accent {
-            color: #00ff88;
-        }
-        
-        .security-accent {
-            color: #ff4757;
-        }
-        
-        .loader {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(255, 215, 0, 0.3);
-            border-top: 4px solid #ffd700;
-            border-radius: 50%;
-            animation: spin 1.2s linear infinite;
-        }
-        
-        /* Enhanced loading animation */
-        .loader::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 30px;
-            height: 30px;
-            border: 2px solid rgba(0, 255, 136, 0.3);
-            border-top: 2px solid #00ff88;
-            border-radius: 50%;
-            animation: spin-reverse 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        @keyframes spin-reverse {
-            0% { transform: translate(-50%, -50%) rotate(360deg); }
-            100% { transform: translate(-50%, -50%) rotate(0deg); }
-        }
-        
-        /* Hide scrollbar for Webkit browsers */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: rgba(0, 212, 255, 0.5);
-            border-radius: 4px;
-        }
-        
-        /* Game specific styles */
-        .game-container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1e3c72 50%, #2a5298 100%);
-            overflow: hidden;
-        }
-        
-        .game-ui {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            color: white;
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .game-stats {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px;
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-            margin-bottom: 10px;
-        }
-        
-        .players-list {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px;
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .menu-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -167,189 +78,1160 @@
             -webkit-text-fill-color: transparent;
         }
         
-        .menu-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-        
         .btn {
             padding: 1rem 2rem;
+            margin: 0.5rem;
             border: none;
             border-radius: 10px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-        }
-        
-        .btn-primary {
             background: #ffd700;
             color: #000;
         }
         
-        .btn-secondary {
-            background: #00ff88;
-            color: #000;
-        }
-        
-        .btn-danger {
-            background: #ff4757;
-            color: white;
-        }
-        
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        .game-canvas {
-            width: 100%;
-            height: 100%;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
         
         .controls-info {
-            position: absolute;
+            position: fixed;
             bottom: 20px;
             right: 20px;
             background: rgba(0, 0, 0, 0.7);
             padding: 15px;
             border-radius: 10px;
-            color: white;
             font-size: 0.9rem;
+            backdrop-filter: blur(10px);
         }
         
-        .connection-status {
-            position: absolute;
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1e3c72 50%, #2a5298 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 215, 0, 0.3);
+            border-top: 4px solid #ffd700;
+            border-radius: 50%;
+            animation: spin 1.2s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* New styles for account system */
+        .auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+        
+        .auth-content {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            padding: 2rem;
+            border-radius: 15px;
+            color: white;
+            min-width: 350px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .auth-input {
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .auth-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .auth-input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3);
+        }
+        
+        .auth-toggle {
+            text-align: center;
+            margin-top: 1rem;
+            color: #ffd700;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        
+        .user-profile {
+            position: fixed;
             top: 20px;
             right: 20px;
-            padding: 10px 15px;
-            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            z-index: 1500;
+            min-width: 200px;
+        }
+        
+        .achievements-panel {
+            position: fixed;
+            right: 20px;
+            top: 120px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            z-index: 1400;
+            max-height: 300px;
+            overflow-y: auto;
+            min-width: 250px;
+        }
+        
+        .achievement {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .achievement.unlocked {
+            background: rgba(255, 215, 0, 0.2);
+            border-left: 3px solid #ffd700;
+        }
+        
+        .achievement.locked {
+            background: rgba(255, 255, 255, 0.05);
+            opacity: 0.6;
+        }
+        
+        .achievement-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .achievement-info h4 {
+            margin: 0 0 5px 0;
             font-size: 0.9rem;
-            font-weight: 600;
         }
         
-        .connected {
-            background: #00ff88;
+        .achievement-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+        
+        .leaderboard {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            z-index: 1400;
+            max-height: 200px;
+            overflow-y: auto;
+            min-width: 200px;
+        }
+        
+        .smooth-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            z-index: 1400;
+            display: none;
+        }
+        
+        .control-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 215, 0, 0.8);
             color: #000;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            touch-action: manipulation;
         }
         
-        .disconnected {
-            background: #ff4757;
+        .control-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 215, 0, 1);
+        }
+        
+        .control-btn.empty {
+            background: transparent;
+            border: none;
+        }
+        
+        .settings-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            padding: 2rem;
+            border-radius: 15px;
             color: white;
+            z-index: 2500;
+            display: none;
         }
         
-        .connecting {
+        .notification {
+            position: fixed;
+            top: 50px;
+            right: 20px;
             background: #ffd700;
             color: #000;
+            padding: 15px 20px;
+            border-radius: 10px;
+            z-index: 4000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        @media (max-width: 768px) {
+            .smooth-controls {
+                display: block;
+            }
+            
+            .user-profile, .achievements-panel {
+                position: relative;
+                margin: 10px;
+                top: auto;
+                right: auto;
+            }
         }
     </style>
 </head>
-<body class="game-container">
-    <noscript>Vous devez activer JavaScript pour jouer à ce jeu.</noscript>
-    
+<body>
     <div id="loading-screen">
         <div class="loader"></div>
         <p style="margin-top: 20px; color: #ffd700;">Chargement du jeu Snake 3D...</p>
     </div>
     
-    <!-- Menu Principal -->
-    <div id="main-menu" class="menu-overlay">
-        <div class="menu-content">
-            <h1 class="menu-title">Snake 3D</h1>
-            <p>Jeu multijoueur en ligne</p>
-            <div class="menu-buttons">
-                <button id="single-player-btn" class="btn btn-primary">
-                    <i class="fas fa-user"></i> Solo
-                </button>
-                <button id="multi-player-btn" class="btn btn-secondary">
-                    <i class="fas fa-users"></i> Multijoueur
-                </button>
-                <button id="create-room-btn" class="btn btn-secondary">
-                    <i class="fas fa-plus"></i> Créer une Salle
-                </button>
-                <button id="join-room-btn" class="btn btn-secondary">
-                    <i class="fas fa-sign-in-alt"></i> Rejoindre une Salle
-                </button>
-                <input type="text" id="room-code" placeholder="Code de la salle" style="margin-top: 1rem; padding: 0.5rem; border-radius: 5px; border: none;">
-                <input type="text" id="player-name" placeholder="Votre nom" style="padding: 0.5rem; border-radius: 5px; border: none;">
+    <div id="game-container">
+        <!-- Menu Principal -->
+        <div id="main-menu" class="menu-overlay">
+            <div class="menu-content">
+                <h1 class="menu-title">Snake 3D</h1>
+                <p>Jeu multijoueur en ligne</p>
+                <div>
+                    <button id="start-game-btn" class="btn">
+                        <i class="fas fa-play"></i> Commencer
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Interface de Jeu -->
-    <div id="game-ui" class="game-ui" style="display: none;">
-        <div class="game-stats">
+        
+        <!-- Interface de Jeu -->
+        <div id="game-ui" class="game-ui" style="display: none;">
             <div id="score">Score: 0</div>
             <div id="length">Longueur: 1</div>
             <div id="level">Niveau: 1</div>
         </div>
-        <div class="players-list">
-            <h4>Joueurs connectés:</h4>
-            <div id="players-online"></div>
+        
+        <!-- Contrôles -->
+        <div class="controls-info">
+            <div><strong>Contrôles:</strong></div>
+            <div>WASD ou Flèches: Diriger</div>
+            <div>Espace: Pause</div>
+            <div>R: Redémarrer</div>
         </div>
+        
+        <!-- Auth System -->
+        <div id="auth-overlay" class="auth-overlay">
+            <div class="auth-content">
+                <h2 id="auth-title">Connexion</h2>
+                <form id="auth-form" class="auth-form">
+                    <input type="text" id="username" class="auth-input" placeholder="Nom d'utilisateur" required>
+                    <input type="email" id="email" class="auth-input" placeholder="Email" style="display: none;">
+                    <input type="password" id="password" class="auth-input" placeholder="Mot de passe" required>
+                    <button type="submit" class="btn">Se connecter</button>
+                </form>
+                <div id="auth-toggle" class="auth-toggle">Pas de compte ? S'inscrire</div>
+            </div>
+        </div>
+        
+        <!-- User Profile -->
+        <div id="user-profile" class="user-profile" style="display: none;">
+            <div id="user-info">
+                <h3 id="user-name">Joueur</h3>
+                <p>Niveau: <span id="user-level">1</span></p>
+                <p>Score Total: <span id="user-total-score">0</span></p>
+                <p>Parties: <span id="user-games-played">0</span></p>
+            </div>
+            <button id="logout-btn" class="btn" style="margin-top: 10px; padding: 5px 10px; font-size: 0.9rem;">
+                Déconnexion
+            </button>
+            <button id="settings-btn" class="btn" style="margin-top: 5px; padding: 5px 10px; font-size: 0.9rem;">
+                ⚙️ Paramètres
+            </button>
+        </div>
+        
+        <!-- Achievements Panel -->
+        <div id="achievements-panel" class="achievements-panel" style="display: none;">
+            <h4>🏆 Achievements</h4>
+            <div id="achievements-list"></div>
+        </div>
+        
+        <!-- Leaderboard -->
+        <div id="leaderboard" class="leaderboard" style="display: none;">
+            <h4>🥇 Classement</h4>
+            <div id="leaderboard-list"></div>
+        </div>
+        
+        <!-- Mobile Controls -->
+        <div id="smooth-controls" class="smooth-controls">
+            <div class="control-buttons">
+                <div class="control-btn empty"></div>
+                <div class="control-btn" data-direction="up">↑</div>
+                <div class="control-btn empty"></div>
+                <div class="control-btn" data-direction="left">←</div>
+                <div class="control-btn" data-direction="pause">⏸</div>
+                <div class="control-btn" data-direction="right">→</div>
+                <div class="control-btn empty"></div>
+                <div class="control-btn" data-direction="down">↓</div>
+                <div class="control-btn empty"></div>
+            </div>
+            <div style="text-align: center; color: #ffd700; font-size: 0.9rem;">
+                Contrôles tactiles
+            </div>
+        </div>
+        
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="settings-panel">
+            <h3>⚙️ Paramètres</h3>
+            <div style="margin: 20px 0;">
+                <label>Volume des sons:</label>
+                <input type="range" id="volume-slider" min="0" max="100" value="50" style="width: 100%; margin-top: 10px;">
+            </div>
+            <div style="margin: 20px 0;">
+                <label>Vitesse du jeu:</label>
+                <select id="speed-select" style="width: 100%; padding: 8px; margin-top: 10px; border-radius: 5px;">
+                    <option value="slow">Lent</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="fast">Rapide</option>
+                </select>
+            </div>
+            <div style="margin: 20px 0;">
+                <label>
+                    <input type="checkbox" id="particles-toggle" checked> Effets de particules
+                </label>
+            </div>
+            <button id="close-settings" class="btn">Fermer</button>
+        </div>
+        
+        <!-- Notification -->
+        <div id="notification" class="notification"></div>
+        
+        <!-- Canvas du Jeu -->
+        <canvas id="game-canvas"></canvas>
     </div>
-    
-    <!-- Statut de Connexion -->
-    <div id="connection-status" class="connection-status disconnected">
-        Déconnecté
-    </div>
-    
-    <!-- Contrôles -->
-    <div class="controls-info">
-        <div><strong>Contrôles:</strong></div>
-        <div>WASD ou Flèches: Diriger</div>
-        <div>Espace: Boost</div>
-        <div>P: Pause</div>
-        <div>Esc: Menu</div>
-    </div>
-    
-    <!-- Canvas du Jeu -->
-    <canvas id="game-canvas" class="game-canvas"></canvas>
-    
-    <!-- Scripts du Jeu -->
-    <script src="js/game.js"></script>
-    <script src="js/multiplayer.js"></script>
-    <script src="js/snake.js"></script>
-    <script src="js/food.js"></script>
-    <script src="js/ui.js"></script>
     
     <script>
-        // Error boundary for React
+        // Game variables
+        let scene, camera, renderer;
+        let snake = [];
+        let food = null;
+        let direction = { x: 1, z: 0 };
+        let gameRunning = false;
+        let score = 0;
+        let gameSpeed = 200;
+        let lastMoveTime = 0;
+        const gridSize = 1;
+        const boundarySize = 10;
+        
+        // Initialize Three.js
+        function initThreeJS() {
+            const canvas = document.getElementById('game-canvas');
+            const container = document.getElementById('game-container');
+            
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x001122);
+            scene.fog = new THREE.Fog(0x001122, 10, 50);
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 15, 15);
+            camera.lookAt(0, 0, 0);
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 10, 5);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+            
+            // Create game environment
+            createEnvironment();
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+        }
+        
+        function createEnvironment() {
+            // Ground
+            const groundGeometry = new THREE.PlaneGeometry(boundarySize * 2, boundarySize * 2);
+            const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+            
+            // Walls
+            const wallMaterial = new THREE.MeshLambertMaterial({ color: 0x666666 });
+            
+            for (let i = -boundarySize; i <= boundarySize; i++) {
+                // Top and bottom walls
+                const wallTop = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), wallMaterial);
+                wallTop.position.set(i, 1, boundarySize);
+                wallTop.castShadow = true;
+                scene.add(wallTop);
+                
+                const wallBottom = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), wallMaterial);
+                wallBottom.position.set(i, 1, -boundarySize);
+                wallBottom.castShadow = true;
+                scene.add(wallBottom);
+                
+                // Left and right walls
+                if (i !== -boundarySize && i !== boundarySize) {
+                    const wallLeft = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), wallMaterial);
+                    wallLeft.position.set(-boundarySize, 1, i);
+                    wallLeft.castShadow = true;
+                    scene.add(wallLeft);
+                    
+                    const wallRight = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), wallMaterial);
+                    wallRight.position.set(boundarySize, 1, i);
+                    wallRight.castShadow = true;
+                    scene.add(wallRight);
+                }
+            }
+        }
+        
+        function createSnakeSegment(x, z, isHead = false) {
+            const geometry = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+            const material = new THREE.MeshLambertMaterial({ 
+                color: isHead ? 0x00ff00 : 0x00aa00 
+            });
+            const segment = new THREE.Mesh(geometry, material);
+            segment.position.set(x, 0.5, z);
+            segment.castShadow = true;
+            segment.receiveShadow = true;
+            scene.add(segment);
+            return segment;
+        }
+        
+        function createFood() {
+            if (food) {
+                scene.remove(food);
+            }
+            
+            let foodX, foodZ;
+            do {
+                foodX = Math.floor(Math.random() * (boundarySize * 2 - 2)) - boundarySize + 1;
+                foodZ = Math.floor(Math.random() * (boundarySize * 2 - 2)) - boundarySize + 1;
+            } while (isPositionOccupied(foodX, foodZ));
+            
+            const geometry = new THREE.SphereGeometry(0.4, 16, 16);
+            const material = new THREE.MeshLambertMaterial({ 
+                color: 0xffff00,
+                emissive: 0x444400
+            });
+            food = new THREE.Mesh(geometry, material);
+            food.position.set(foodX, 0.5, foodZ);
+            food.castShadow = true;
+            scene.add(food);
+        }
+        
+        function isPositionOccupied(x, z) {
+            return snake.some(segment => 
+                Math.round(segment.position.x) === x && 
+                Math.round(segment.position.z) === z
+            );
+        }
+        
+        function initSnake() {
+            // Clear existing snake
+            snake.forEach(segment => scene.remove(segment));
+            snake = [];
+            
+            // Create initial snake
+            for (let i = 0; i < 3; i++) {
+                snake.push(createSnakeSegment(-i, 0, i === 0));
+            }
+        }
+        
+        function moveSnake() {
+            if (!gameRunning) return;
+            
+            const head = snake[0];
+            const newX = head.position.x + direction.x;
+            const newZ = head.position.z + direction.z;
+            
+            // Check wall collision
+            if (newX <= -boundarySize || newX >= boundarySize || 
+                newZ <= -boundarySize || newZ >= boundarySize) {
+                gameOver();
+                return;
+            }
+            
+            // Check self collision
+            if (isPositionOccupied(newX, newZ)) {
+                gameOver();
+                return;
+            }
+            
+            // Move snake
+            const tail = snake.pop();
+            tail.position.set(newX, 0.5, newZ);
+            
+            // Update material colors
+            snake.forEach((segment, index) => {
+                segment.material.color.setHex(index === 0 ? 0x00aa00 : 0x008800);
+            });
+            tail.material.color.setHex(0x00ff00); // Head color
+            
+            snake.unshift(tail);
+            
+            // Check food collision
+            if (food && Math.round(newX) === Math.round(food.position.x) && 
+                Math.round(newZ) === Math.round(food.position.z)) {
+                // Grow snake
+                const lastSegment = snake[snake.length - 1];
+                snake.push(createSnakeSegment(lastSegment.position.x, lastSegment.position.z));
+                
+                score += 10;
+                updateUI();
+                createFood();
+                
+                // Increase speed slightly
+                gameSpeed = Math.max(100, gameSpeed - 2);
+            }
+        }
+        
+        function gameOver() {
+            gameRunning = false;
+            
+            if (gameSystem.isAuthenticated) {
+                gameSystem.gameEnded(score, snake.length);
+            }
+            
+            setTimeout(() => {
+                alert(`Game Over! Score: ${score}\nPress R to restart`);
+            }, 100);
+        }
+        
+        function restartGame() {
+            score = 0;
+            gameSpeed = 200;
+            direction = { x: 1, z: 0 };
+            gameRunning = true;
+            
+            initSnake();
+            createFood();
+            updateUI();
+            
+            if (gameSystem.isAuthenticated) {
+                gameSystem.showNotification('Nouvelle partie commencée !');
+            }
+        }
+        
+        function updateUI() {
+            document.getElementById('score').textContent = `Score: ${score}`;
+            document.getElementById('length').textContent = `Longueur: ${snake.length}`;
+            document.getElementById('level').textContent = `Niveau: ${Math.floor(score / 50) + 1}`;
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Game loop
+            const currentTime = Date.now();
+            if (currentTime - lastMoveTime > gameSpeed) {
+                moveSnake();
+                lastMoveTime = currentTime;
+            }
+            
+            // Animate food
+            if (food) {
+                food.rotation.y += 0.02;
+                food.position.y = 0.5 + Math.sin(currentTime * 0.003) * 0.1;
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Enhanced Game System with Accounts and Achievements
+        class GameSystem {
+            constructor() {
+                this.currentUser = null;
+                this.isAuthenticated = false;
+                this.achievements = this.initAchievements();
+                this.keysPressed = new Set();
+                this.inputBuffer = [];
+                this.lastInputTime = 0;
+                
+                this.initAuthSystem();
+                this.initControls();
+                this.loadUserData();
+            }
+            
+            initAchievements() {
+                return [
+                    { id: 'first_game', name: 'Premier Pas', description: 'Jouer votre première partie', icon: '🎮', unlocked: false },
+                    { id: 'score_100', name: 'Centurion', description: 'Atteindre 100 points', icon: '💯', unlocked: false },
+                    { id: 'length_10', name: 'Serpent Géant', description: 'Atteindre une longueur de 10', icon: '🐍', unlocked: false },
+                    { id: 'speed_demon', name: 'Démon de Vitesse', description: 'Survivre 60 secondes en mode rapide', icon: '⚡', unlocked: false },
+                    { id: 'perfect_game', name: 'Partie Parfaite', description: 'Terminer un niveau sans collision', icon: '⭐', unlocked: false },
+                    { id: 'streak_5', name: 'Série de Victoires', description: 'Gagner 5 parties d\'affilée', icon: '🔥', unlocked: false }
+                ];
+            }
+            
+            initAuthSystem() {
+                const authOverlay = document.getElementById('auth-overlay');
+                const authForm = document.getElementById('auth-form');
+                const authToggle = document.getElementById('auth-toggle');
+                const authTitle = document.getElementById('auth-title');
+                const emailField = document.getElementById('email');
+                
+                let isLogin = true;
+                
+                authToggle.addEventListener('click', () => {
+                    isLogin = !isLogin;
+                    if (isLogin) {
+                        authTitle.textContent = 'Connexion';
+                        emailField.style.display = 'none';
+                        authForm.querySelector('button').textContent = 'Se connecter';
+                        authToggle.textContent = "Pas de compte ? S'inscrire";
+                    } else {
+                        authTitle.textContent = 'Inscription';
+                        emailField.style.display = 'block';
+                        authForm.querySelector('button').textContent = 'S\'inscrire';
+                        authToggle.textContent = 'Déjà un compte ? Se connecter';
+                    }
+                });
+                
+                authForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const username = document.getElementById('username').value;
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    
+                    if (isLogin) {
+                        this.login(username, password);
+                    } else {
+                        this.register(username, email, password);
+                    }
+                });
+                
+                document.getElementById('logout-btn').addEventListener('click', () => {
+                    this.logout();
+                });
+                
+                document.getElementById('settings-btn').addEventListener('click', () => {
+                    document.getElementById('settings-panel').style.display = 'block';
+                });
+                
+                document.getElementById('close-settings').addEventListener('click', () => {
+                    document.getElementById('settings-panel').style.display = 'none';
+                });
+            }
+            
+            initControls() {
+                // Smooth keyboard controls
+                document.addEventListener('keydown', (event) => {
+                    if (this.keysPressed.has(event.code)) return;
+                    
+                    this.keysPressed.add(event.code);
+                    this.handleInput(event.code);
+                    event.preventDefault();
+                });
+                
+                document.addEventListener('keyup', (event) => {
+                    this.keysPressed.delete(event.code);
+                });
+                
+                // Touch controls
+                const controlButtons = document.querySelectorAll('.control-btn[data-direction]');
+                controlButtons.forEach(btn => {
+                    btn.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        const direction = btn.dataset.direction;
+                        this.handleTouchInput(direction);
+                    });
+                    
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const direction = btn.dataset.direction;
+                        this.handleTouchInput(direction);
+                    });
+                });
+                
+                // Show mobile controls on touch devices
+                if ('ontouchstart' in window) {
+                    document.getElementById('smooth-controls').style.display = 'block';
+                }
+            }
+            
+            handleInput(keyCode) {
+                const currentTime = Date.now();
+                
+                // Debounce rapid inputs
+                if (currentTime - this.lastInputTime < 50) return;
+                this.lastInputTime = currentTime;
+                
+                // Add to input buffer for smooth processing
+                this.inputBuffer.push({
+                    key: keyCode,
+                    time: currentTime
+                });
+                
+                // Keep buffer small
+                if (this.inputBuffer.length > 10) {
+                    this.inputBuffer.shift();
+                }
+                
+                this.processInput(keyCode);
+            }
+            
+            handleTouchInput(direction) {
+                const keyMap = {
+                    'up': 'KeyW',
+                    'down': 'KeyS',
+                    'left': 'KeyA',
+                    'right': 'KeyD',
+                    'pause': 'Space'
+                };
+                
+                if (keyMap[direction]) {
+                    this.handleInput(keyMap[direction]);
+                }
+            }
+            
+            processInput(keyCode) {
+                if (!gameRunning && keyCode !== 'KeyR') return;
+                
+                switch (keyCode) {
+                    case 'ArrowUp':
+                    case 'KeyW':
+                        if (direction.z !== 1) {
+                            direction = { x: 0, z: -1 };
+                            this.addInputFeedback('↑');
+                        }
+                        break;
+                    case 'ArrowDown':
+                    case 'KeyS':
+                        if (direction.z !== -1) {
+                            direction = { x: 0, z: 1 };
+                            this.addInputFeedback('↓');
+                        }
+                        break;
+                    case 'ArrowLeft':
+                    case 'KeyA':
+                        if (direction.x !== 1) {
+                            direction = { x: -1, z: 0 };
+                            this.addInputFeedback('←');
+                        }
+                        break;
+                    case 'ArrowRight':
+                    case 'KeyD':
+                        if (direction.x !== -1) {
+                            direction = { x: 1, z: 0 };
+                            this.addInputFeedback('→');
+                        }
+                        break;
+                    case 'Space':
+                        gameRunning = !gameRunning;
+                        this.addInputFeedback(gameRunning ? '▶' : '⏸');
+                        break;
+                    case 'KeyR':
+                        this.restartGame();
+                        break;
+                }
+            }
+            
+            addInputFeedback(symbol) {
+                // Visual feedback for input
+                const feedback = document.createElement('div');
+                feedback.textContent = symbol;
+                feedback.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-size: 3rem;
+                    color: #ffd700;
+                    pointer-events: none;
+                    z-index: 5000;
+                    animation: inputFeedback 0.3s ease-out forwards;
+                `;
+                
+                document.body.appendChild(feedback);
+                setTimeout(() => feedback.remove(), 300);
+            }
+            
+            register(username, email, password) {
+                // Simulate registration
+                const userData = {
+                    username,
+                    email,
+                    level: 1,
+                    totalScore: 0,
+                    gamesPlayed: 0,
+                    achievements: [],
+                    winStreak: 0,
+                    bestScore: 0
+                };
+                
+                localStorage.setItem(`user_${username}`, JSON.stringify(userData));
+                this.login(username, password);
+                this.showNotification('Compte créé avec succès !');
+            }
+            
+            login(username, password) {
+                // Simulate login
+                const userData = localStorage.getItem(`user_${username}`);
+                
+                if (userData) {
+                    this.currentUser = JSON.parse(userData);
+                    this.isAuthenticated = true;
+                    
+                    document.getElementById('auth-overlay').style.display = 'none';
+                    document.getElementById('user-profile').style.display = 'block';
+                    document.getElementById('achievements-panel').style.display = 'block';
+                    document.getElementById('leaderboard').style.display = 'block';
+                    
+                    this.updateUserProfile();
+                    this.updateAchievements();
+                    this.updateLeaderboard();
+                    
+                    this.showNotification(`Bienvenue, ${username} !`);
+                } else {
+                    this.showNotification('Utilisateur non trouvé !');
+                }
+            }
+            
+            logout() {
+                this.saveUserData();
+                this.currentUser = null;
+                this.isAuthenticated = false;
+                
+                document.getElementById('auth-overlay').style.display = 'flex';
+                document.getElementById('user-profile').style.display = 'none';
+                document.getElementById('achievements-panel').style.display = 'none';
+                document.getElementById('leaderboard').style.display = 'none';
+                
+                this.showNotification('Déconnecté avec succès !');
+            }
+            
+            updateUserProfile() {
+                if (!this.currentUser) return;
+                
+                document.getElementById('user-name').textContent = this.currentUser.username;
+                document.getElementById('user-level').textContent = this.currentUser.level;
+                document.getElementById('user-total-score').textContent = this.currentUser.totalScore;
+                document.getElementById('user-games-played').textContent = this.currentUser.gamesPlayed;
+            }
+            
+            updateAchievements() {
+                const achievementsList = document.getElementById('achievements-list');
+                achievementsList.innerHTML = '';
+                
+                this.achievements.forEach(achievement => {
+                    const isUnlocked = this.currentUser?.achievements?.includes(achievement.id);
+                    
+                    const achievementDiv = document.createElement('div');
+                    achievementDiv.className = `achievement ${isUnlocked ? 'unlocked' : 'locked'}`;
+                    
+                    achievementDiv.innerHTML = `
+                        <div class="achievement-icon">${achievement.icon}</div>
+                        <div class="achievement-info">
+                            <h4>${achievement.name}</h4>
+                            <p>${achievement.description}</p>
+                        </div>
+                    `;
+                    
+                    achievementsList.appendChild(achievementDiv);
+                });
+            }
+            
+            checkAchievements(gameData) {
+                if (!this.currentUser) return;
+                
+                const newAchievements = [];
+                
+                // Check various achievements
+                if (!this.currentUser.achievements.includes('first_game') && this.currentUser.gamesPlayed >= 1) {
+                    newAchievements.push('first_game');
+                }
+                
+                if (!this.currentUser.achievements.includes('score_100') && gameData.score >= 100) {
+                    newAchievements.push('score_100');
+                }
+                
+                if (!this.currentUser.achievements.includes('length_10') && gameData.length >= 10) {
+                    newAchievements.push('length_10');
+                }
+                
+                // Unlock new achievements
+                newAchievements.forEach(achievementId => {
+                    this.unlockAchievement(achievementId);
+                });
+            }
+            
+            unlockAchievement(achievementId) {
+                if (!this.currentUser.achievements.includes(achievementId)) {
+                    this.currentUser.achievements.push(achievementId);
+                    
+                    const achievement = this.achievements.find(a => a.id === achievementId);
+                    if (achievement) {
+                        this.showNotification(`🏆 Achievement Unlocked: ${achievement.name}!`);
+                    }
+                    
+                    this.updateAchievements();
+                    this.saveUserData();
+                }
+            }
+            
+            updateLeaderboard() {
+                const leaderboardList = document.getElementById('leaderboard-list');
+                leaderboardList.innerHTML = '';
+                
+                // Get all users and sort by best score
+                const allUsers = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('user_')) {
+                        const userData = JSON.parse(localStorage.getItem(key));
+                        allUsers.push(userData);
+                    }
+                }
+                
+                allUsers.sort((a, b) => (b.bestScore || 0) - (a.bestScore || 0));
+                
+                allUsers.slice(0, 5).forEach((user, index) => {
+                    const userDiv = document.createElement('div');
+                    userDiv.style.cssText = `
+                        display: flex;
+                        justify-content: space-between;
+                        margin-bottom: 5px;
+                        padding: 5px;
+                        border-radius: 3px;
+                        ${user.username === this.currentUser?.username ? 'background: rgba(255, 215, 0, 0.2);' : ''}
+                    `;
+                    
+                    userDiv.innerHTML = `
+                        <span>${index + 1}. ${user.username}</span>
+                        <span>${user.bestScore || 0}</span>
+                    `;
+                    
+                    leaderboardList.appendChild(userDiv);
+                });
+            }
+            
+            gameEnded(finalScore, gameLength) {
+                if (!this.currentUser) return;
+                
+                this.currentUser.gamesPlayed++;
+                this.currentUser.totalScore += finalScore;
+                
+                if (finalScore > (this.currentUser.bestScore || 0)) {
+                    this.currentUser.bestScore = finalScore;
+                }
+                
+                // Level up based on total score
+                const newLevel = Math.floor(this.currentUser.totalScore / 1000) + 1;
+                if (newLevel > this.currentUser.level) {
+                    this.currentUser.level = newLevel;
+                    this.showNotification(`🎉 Level Up! Niveau ${newLevel}`);
+                }
+                
+                this.checkAchievements({ score: finalScore, length: gameLength });
+                this.updateUserProfile();
+                this.updateLeaderboard();
+                this.saveUserData();
+            }
+            
+            showNotification(message) {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            saveUserData() {
+                if (this.currentUser) {
+                    localStorage.setItem(`user_${this.currentUser.username}`, JSON.stringify(this.currentUser));
+                }
+            }
+            
+            loadUserData() {
+                // Check if there's a saved session
+                const savedUser = localStorage.getItem('currentSession');
+                if (savedUser) {
+                    const userData = localStorage.getItem(`user_${savedUser}`);
+                    if (userData) {
+                        this.currentUser = JSON.parse(userData);
+                        this.isAuthenticated = true;
+                        
+                        document.getElementById('auth-overlay').style.display = 'none';
+                        document.getElementById('user-profile').style.display = 'block';
+                        document.getElementById('achievements-panel').style.display = 'block';
+                        document.getElementById('leaderboard').style.display = 'block';
+                        
+                        this.updateUserProfile();
+                        this.updateAchievements();
+                        this.updateLeaderboard();
+                    }
+                }
+            }
+        }
+        
+        // Add CSS animation for input feedback
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes inputFeedback {
+                0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize game system
+        const gameSystem = new GameSystem();
+        
+        // Event listeners
+        document.addEventListener('keydown', (event) => {
+            if (!gameRunning && event.code !== 'KeyR') return;
+            
+            switch (event.code) {
+                case 'ArrowUp':
+                case 'KeyW':
+                    if (direction.z !== 1) direction = { x: 0, z: -1 };
+                    break;
+                case 'ArrowDown':
+                case 'KeyS':
+                    if (direction.z !== -1) direction = { x: 0, z: 1 };
+                    break;
+                case 'ArrowLeft':
+                case 'KeyA':
+                    if (direction.x !== 1) direction = { x: -1, z: 0 };
+                    break;
+                case 'ArrowRight':
+                case 'KeyD':
+                    if (direction.x !== -1) direction = { x: 1, z: 0 };
+                    break;
+                case 'Space':
+                    gameRunning = !gameRunning;
+                    event.preventDefault();
+                    break;
+                case 'KeyR':
+                    restartGame();
+                    break;
+            }
+        });
+        
+        document.getElementById('start-game-btn').addEventListener('click', () => {
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('game-ui').style.display = 'block';
+            restartGame();
+        });
+        
+        // Initialize game
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'none';
+                initThreeJS();
+                animate();
+            }, 2000);
+        });
+        
+        // Error handling
         window.addEventListener('error', (e) => {
-            console.error('Application Error:', e.error);
-            const errorDiv = document.createElement('div');
-            errorDiv.innerHTML = `
-                <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                           background: rgba(255, 71, 87, 0.9); color: white; padding: 2rem; 
-                           border-radius: 10px; text-align: center; z-index: 10000;">
-                    <h3>Erreur d'application</h3>
-                    <p>Une erreur s'est produite. Veuillez rafraîchir la page.</p>
-                    <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; 
-                           background: white; color: #ff4757; border: none; border-radius: 5px; cursor: pointer;">
+            console.error('Game Error:', e.error);
+            document.getElementById('loading-screen').innerHTML = `
+                <div style="text-align: center; color: #ff4757;">
+                    <h2>Erreur de chargement</h2>
+                    <p>Une erreur s'est produite lors du chargement du jeu.</p>
+                    <button onclick="location.reload()" style="padding: 10px 20px; margin-top: 20px; 
+                           background: #ffd700; color: #000; border: none; border-radius: 5px; cursor: pointer;">
                         Rafraîchir
                     </button>
                 </div>
             `;
-            document.body.appendChild(errorDiv);
-        });
-
-        // Initialize game when everything is loaded
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const loadingScreen = document.getElementById('loading-screen');
-                if (loadingScreen) {
-                    loadingScreen.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingScreen.remove();
-                        // Initialize the game
-                        if (typeof Game !== 'undefined') {
-                            window.game = new Game();
-                        }
-                    }, 500);
-                }
-            }, 1000);
+            document.getElementById('loading-screen').style.display = 'flex';
         });
     </script>
 </body>
