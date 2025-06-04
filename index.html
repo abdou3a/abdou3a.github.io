@@ -437,6 +437,32 @@
             animation: inputFeedback 0.5s ease-out forwards;
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
         }
+        
+        /* Fix settings modal content */
+        .settings-content {
+            display: block;
+            text-align: left;
+            margin: 20px 0;
+        }
+        
+        .settings-row {
+            margin-bottom: 20px;
+        }
+        
+        .settings-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .settings-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
     </style>
 </head>
 <body>
@@ -567,44 +593,43 @@
             </div>
         </div>
         
-        <!-- Settings Modal -->
+        <!-- Settings Modal - Fixed -->
         <div id="settings-modal" class="menu-overlay" style="display: none;">
             <div class="menu-content">
                 <h2>⚙️ Paramètres</h2>
-                <div style="text-align: left; margin: 20px 0;">
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 5px;">🔊 Volume des effets sonores:</label>
-                        <input type="range" id="volume-slider" min="0" max="100" value="50" 
-                               style="width: 100%; margin-top: 5px;">
-                        <div style="text-align: center; color: #ccc; font-size: 0.9rem;">
+                <div class="settings-content">
+                    <div class="settings-row">
+                        <label class="settings-label">🔊 Volume des effets sonores:</label>
+                        <input type="range" id="volume-slider" min="0" max="100" value="50" class="settings-control">
+                        <div style="text-align: center; color: #ccc; font-size: 0.9rem; margin-top: 5px;">
                             <span id="volume-display">50%</span>
                         </div>
                     </div>
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 5px;">🎮 Difficulté:</label>
-                        <select id="difficulty-select" style="width: 100%; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.1); color: white; border: 2px solid rgba(255,255,255,0.2);">
+                    <div class="settings-row">
+                        <label class="settings-label">🎮 Difficulté:</label>
+                        <select id="difficulty-select" class="settings-control">
                             <option value="easy">Facile</option>
                             <option value="normal" selected>Normal</option>
                             <option value="hard">Difficile</option>
                             <option value="extreme">Extrême</option>
                         </select>
                     </div>
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 5px;">🎨 Thème de couleur:</label>
-                        <select id="theme-select" style="width: 100%; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.1); color: white; border: 2px solid rgba(255,255,255,0.2);">
+                    <div class="settings-row">
+                        <label class="settings-label">🎨 Thème de couleur:</label>
+                        <select id="theme-select" class="settings-control">
                             <option value="classic">Classique</option>
                             <option value="neon">Néon</option>
                             <option value="retro">Rétro</option>
                             <option value="ocean">Océan</option>
                         </select>
                     </div>
-                    <div style="margin-bottom: 20px;">
+                    <div class="settings-row">
                         <label>
                             <input type="checkbox" id="particles-toggle" checked style="margin-right: 10px;">
                             ✨ Effets de particules
                         </label>
                     </div>
-                    <div style="margin-bottom: 20px;">
+                    <div class="settings-row">
                         <label>
                             <input type="checkbox" id="auto-save-toggle" checked style="margin-right: 10px;">
                             💾 Sauvegarde automatique
@@ -632,6 +657,7 @@
         // Enhanced Game System with Complete Features
         class SnakeGameOnline {
             constructor() {
+                // Core game properties
                 this.scene = null;
                 this.camera = null;
                 this.renderer = null;
@@ -685,32 +711,69 @@
                     ocean: { snake: 0x0080ff, food: 0xffa500, background: 0x001a33 }
                 };
                 
+                // Initialize
                 this.init();
             }
             
             init() {
-                this.loadSettings();
-                this.showLoading();
-                
-                // Initialize audio
-                this.initAudio();
-                
-                // Simulate server connection and check existing session
-                setTimeout(async () => {
-                    await this.checkExistingSession();
-                    this.hideLoading();
+                try {
+                    this.loadSettings();
+                    this.showLoading();
                     
-                    if (!this.isAuthenticated) {
-                        this.showAuth();
-                    } else {
-                        this.showMainMenu();
-                    }
+                    // Initialize audio
+                    this.initAudio();
                     
-                    this.initAuth();
-                    this.initControls();
-                    this.initMiniMap();
-                    this.initModals();
-                }, 2000);
+                    // Simulate server connection and check existing session
+                    setTimeout(async () => {
+                        try {
+                            await this.checkExistingSession();
+                            this.hideLoading();
+                            
+                            if (!this.isAuthenticated) {
+                                this.showAuth();
+                            } else {
+                                this.showMainMenu();
+                            }
+                            
+                            this.initAuth();
+                            this.initControls();
+                            this.initMiniMap();
+                            this.initModals();
+                        } catch (error) {
+                            console.error('Initialization error:', error);
+                            this.showErrorScreen('Erreur lors de l\'initialisation du jeu');
+                        }
+                    }, 2000);
+                } catch (error) {
+                    console.error('Critical initialization error:', error);
+                    this.showErrorScreen('Erreur critique d\'initialisation');
+                }
+            }
+            
+            showErrorScreen(message) {
+                document.getElementById('loading-screen').innerHTML = `
+                    <div style="text-align: center; color: #ff4757;">
+                        <h2>❌ Erreur d'initialisation</h2>
+                        <p>${message}</p>
+                        <p>Vérifiez votre navigateur et votre connexion.</p>
+                        <button onclick="location.reload()" style="padding: 15px 30px; margin-top: 20px; 
+                               background: #ffd700; color: #000; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
+                            🔄 Réessayer
+                        </button>
+                    </div>
+                `;
+                document.getElementById('loading-screen').style.display = 'flex';
+            }
+            
+            initAchievements() {
+                return [
+                    { id: 'first_game', name: '🎮 Premier Pas', description: 'Jouer votre première partie', unlocked: false },
+                    { id: 'score_100', name: '💯 Centurion', description: 'Atteindre 100 points', unlocked: false },
+                    { id: 'length_10', name: '🐍 Serpent Géant', description: 'Atteindre une longueur de 10', unlocked: false },
+                    { id: 'speed_master', name: '⚡ Maître de Vitesse', description: 'Atteindre le niveau 5', unlocked: false },
+                    { id: 'survivor', name: '🛡️ Survivant', description: 'Jouer pendant 2 minutes', unlocked: false },
+                    { id: 'perfectionist', name: '⭐ Perfectionniste', description: 'Score parfait de 500', unlocked: false }
+                ];
             }
             
             loadSettings() {
@@ -1148,1185 +1211,407 @@
                 return false;
             }
             
-            initAchievements() {
-                return [
-                    { id: 'first_game', name: '🎮 Premier Pas', description: 'Jouer votre première partie', unlocked: false },
-                    { id: 'score_100', name: '💯 Centurion', description: 'Atteindre 100 points', unlocked: false },
-                    { id: 'length_10', name: '🐍 Serpent Géant', description: 'Atteindre une longueur de 10', unlocked: false },
-                    { id: 'speed_master', name: '⚡ Maître de Vitesse', description: 'Atteindre le niveau 5', unlocked: false },
-                    { id: 'survivor', name: '🛡️ Survivant', description: 'Jouer pendant 2 minutes', unlocked: false },
-                    { id: 'perfectionist', name: '⭐ Perfectionniste', description: 'Score parfait de 500', unlocked: false }
-                ];
-            }
-            
-            initModals() {
-                // Leaderboard modal
-                document.getElementById('leaderboard-btn').addEventListener('click', () => {
-                    this.showLeaderboard();
-                });
-                
-                document.getElementById('close-leaderboard').addEventListener('click', () => {
-                    document.getElementById('leaderboard-modal').style.display = 'none';
-                });
-                
-                // Settings modal
-                document.getElementById('settings-btn').addEventListener('click', () => {
-                    this.showSettings();
-                });
-                
-                document.getElementById('close-settings').addEventListener('click', () => {
-                    this.applySettings();
-                    document.getElementById('settings-modal').style.display = 'none';
-                });
-                
-                // Game over modal
-                document.getElementById('restart-game').addEventListener('click', () => {
-                    document.getElementById('game-over-modal').style.display = 'none';
-                    this.startSoloGame();
-                });
-                
-                document.getElementById('back-to-menu').addEventListener('click', () => {
-                    document.getElementById('game-over-modal').style.display = 'none';
-                    this.showMainMenu();
-                    this.hideGameUI();
-                });
-                
-                // Volume slider
-                document.getElementById('volume-slider').addEventListener('input', (e) => {
-                    const volume = e.target.value;
-                    document.getElementById('volume-display').textContent = volume + '%';
-                    this.volume = volume / 100;
-                    
-                    // Test sound
-                    this.playSound('eat');
-                });
-            }
-            
-            showLeaderboard() {
-                document.getElementById('leaderboard-modal').style.display = 'flex';
-                this.updateLeaderboard();
-            }
-            
-            async updateLeaderboard() {
-                const leaderboardList = document.getElementById('leaderboard-list');
-                leaderboardList.innerHTML = '<div style="text-align: center; color: #ccc;">Chargement...</div>';
-                
+            // Database functions
+            async saveToDatabase(userData) {
                 try {
-                    // Get all users and sort by best score
-                    const allUsers = [];
+                    const existingData = JSON.parse(localStorage.getItem('snakeGameDB') || '{}');
+                    existingData[userData.username] = userData;
+                    localStorage.setItem('snakeGameDB', JSON.stringify(existingData));
+                    
+                    // Simulate network delay
+                    await this.delay(200 + Math.random() * 300);
+                    
+                    console.log('Data saved to database:', userData.username);
+                } catch (error) {
+                    console.error('Database save error:', error);
+                    throw error;
+                }
+            }
+            
+            async loadFromDatabase(username) {
+                try {
+                    await this.delay(100 + Math.random() * 200);
+                    
                     const data = JSON.parse(localStorage.getItem('snakeGameDB') || '{}');
-                    
-                    Object.values(data).forEach(user => {
-                        allUsers.push(user);
-                    });
-                    
-                    allUsers.sort((a, b) => (b.bestScore || 0) - (a.bestScore || 0));
-                    
-                    leaderboardList.innerHTML = '';
-                    
-                    if (allUsers.length === 0) {
-                        leaderboardList.innerHTML = '<div style="text-align: center; color: #ccc;">Aucun joueur trouvé</div>';
-                        return;
-                    }
-                    
-                    allUsers.slice(0, 10).forEach((user, index) => {
-                        const isCurrentUser = user.username === this.currentUser?.username;
-                        const medal = index < 3 ? ['🥇', '🥈', '🥉'][index] : `${index + 1}.`;
-                        
-                        const userDiv = document.createElement('div');
-                        userDiv.style.cssText = `
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                            padding: 15px;
-                            margin: 10px 0;
-                            border-radius: 10px;
-                            ${isCurrentUser ? 'background: rgba(255, 215, 0, 0.2); border: 2px solid #ffd700;' : 'background: rgba(255, 255, 255, 0.05);'}
-                            transition: all 0.3s ease;
-                        `;
-                        
-                        userDiv.innerHTML = `
-                            <div style="display: flex; align-items: center;">
-                                <span style="font-size: 1.5rem; margin-right: 15px;">${medal}</span>
-                                <div>
-                                    <div style="font-weight: bold; ${isCurrentUser ? 'color: #ffd700;' : ''}">${user.username}</div>
-                                    <div style="font-size: 0.8rem; color: #ccc;">Niveau ${user.level} • ${user.gamesPlayed} parties</div>
-                                </div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 1.2rem; font-weight: bold;">${user.bestScore || 0}</div>
-                                <div style="font-size: 0.8rem; color: #ccc;">${user.totalScore || 0} total</div>
-                            </div>
-                        `;
-                        
-                        leaderboardList.appendChild(userDiv);
-                    });
-                    
+                    return data[username] || null;
                 } catch (error) {
-                    console.error('Error loading leaderboard:', error);
-                    leaderboardList.innerHTML = '<div style="text-align: center; color: #ff4757;">Erreur de chargement</div>';
+                    console.error('Database load error:', error);
+                    return null;
                 }
             }
             
-            showSettings() {
-                document.getElementById('settings-modal').style.display = 'flex';
-                
-                // Load current settings
-                document.getElementById('volume-slider').value = this.settings.volume;
-                document.getElementById('volume-display').textContent = this.settings.volume + '%';
-                document.getElementById('difficulty-select').value = this.settings.difficulty;
-                document.getElementById('theme-select').value = this.settings.theme;
-                document.getElementById('particles-toggle').checked = this.settings.particles;
-                document.getElementById('auto-save-toggle').checked = this.settings.autoSave;
+            hashPassword(password) {
+                return btoa(password + 'snake3d_salt_2024');
             }
             
-            applySettings() {
-                // Save settings
-                this.settings.volume = parseInt(document.getElementById('volume-slider').value);
-                this.settings.difficulty = document.getElementById('difficulty-select').value;
-                this.settings.theme = document.getElementById('theme-select').value;
-                this.settings.particles = document.getElementById('particles-toggle').checked;
-                this.settings.autoSave = document.getElementById('auto-save-toggle').checked;
+            // Auth functions
+            logout() {
+                localStorage.removeItem('snake3d_session');
+                this.currentUser = null;
+                this.isAuthenticated = false;
+                this.gameInitialized = false;
+                this.gameRunning = false;
                 
-                this.volume = this.settings.volume / 100;
-                this.saveSettings();
+                this.hideMainMenu();
+                this.hideGameUI();
+                document.getElementById('game-canvas').style.display = 'none';
+                document.getElementById('auth-form').reset();
+                this.hideAuthError();
                 
-                // Apply theme if game is running
-                if this.gameInitialized) {
-                    this.applyTheme();
-                }
-                
-                this.showNotification('⚙️ Paramètres sauvegardés !');
+                this.showAuth();
+                this.showNotification('👋 Déconnexion réussie !');
             }
             
-            applyTheme() {
-                const theme = this.themes[this.settings.theme];
-                if (!theme || !this.scene) return;
-                
-                // Update scene background
-                this.scene.background = new THREE.Color(theme.background);
-                
-                // Update snake colors
-                this.snake.forEach((segment, index) => {
-                    segment.material.color.setHex(index === 0 ? theme.snake : theme.snake * 0.8);
-                });
-                
-                // Update food color
-                if (this.food) {
-                    this.food.material.color.setHex(theme.food);
-                }
-            }
-            
-            // Enhanced Authentication System
-            initAuth() {
-                const authForm = document.getElementById('auth-form');
-                const authToggle = document.getElementById('auth-toggle');
-                const authTitle = document.getElementById('auth-title');
-                const emailField = document.getElementById('email');
-                const confirmPasswordField = document.getElementById('confirm-password');
+            setAuthLoading(loading) {
                 const submitBtn = document.getElementById('auth-submit-btn');
+                const form = document.getElementById('auth-form');
                 
-                let isLogin = true;
+                if (loading) {
+                    submitBtn.textContent = '⏳ Traitement...';
+                    submitBtn.disabled = true;
+                    form.style.opacity = '0.7';
+                } else {
+                    const isLogin = document.getElementById('email').style.display === 'none';
+                    submitBtn.textContent = isLogin ? 'Se connecter' : 'Créer le compte';
+                    submitBtn.disabled = false;
+                    form.style.opacity = '1';
+                }
+            }
+            
+            showAuthError(message) {
+                const errorDiv = document.getElementById('auth-error');
+                const errorMessage = document.getElementById('auth-error-message');
                 
-                authToggle.addEventListener('click', () => {
-                    isLogin = !isLogin;
+                errorMessage.textContent = message;
+                errorDiv.style.display = 'block';
+                
+                setTimeout(() => {
                     this.hideAuthError();
-                    
-                    if (isLogin) {
-                        authTitle.textContent = '🎮 Connexion';
-                        emailField.style.display = 'none';
-                        confirmPasswordField.style.display = 'none';
-                        submitBtn.textContent = 'Se connecter';
-                        authToggle.textContent = "Pas de compte ? S'inscrire";
-                    } else {
-                        authTitle.textContent = '📝 Inscription';
-                        emailField.style.display = 'block';
-                        confirmPasswordField.style.display = 'block';
-                        submitBtn.textContent = 'Créer le compte';
-                        authToggle.textContent = 'Déjà un compte ? Se connecter';
-                    }
-                });
-                
-                authForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    
-                    if (this.authAttempts >= this.maxAuthAttempts) {
-                        this.showAuthError('Trop de tentatives. Veuillez rafraîchir la page.');
-                        return;
-                    }
-                    
-                    const username = document.getElementById('username').value.trim();
-                    const email = document.getElementById('email').value.trim();
-                    const password = document.getElementById('password').value;
-                    const confirmPassword = document.getElementById('confirm-password').value;
-                    
-                    // Validation
-                    if (!this.validateInput(username, email, password, confirmPassword, isLogin)) {
-                        return;
-                    }
-                    
-                    this.authAttempts++;
-                    
-                    if (isLogin) {
-                        await this.login(username, password);
-                    } else {
-                        await this.register(username, email, password);
-                    }
-                });
-                
-                // Menu buttons
-                document.getElementById('start-solo-btn').addEventListener('click', () => this.startSoloGame());
-                document.getElementById('start-multi-btn').addEventListener('click', () => this.startMultiGame());
-                document.getElementById('logout-btn').addEventListener('click', () => this.logout());
+                }, 5000);
             }
             
-            validateInput(username, email, password, confirmPassword, isLogin) {
-                // Username validation
-                if (username.length < 3) {
-                    this.showAuthError('Le nom d\'utilisateur doit contenir au moins 3 caractères.');
-                    return false;
+            hideAuthError() {
+                document.getElementById('auth-error').style.display = 'none';
+            }
+            
+            // Game Over
+            gameOver() {
+                this.gameRunning = false;
+                this.playSound('gameOver');
+                
+                if (this.isAuthenticated) {
+                    this.saveGameResult();
                 }
                 
-                if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-                    this.showAuthError('Le nom d\'utilisateur ne peut contenir que des lettres, chiffres et underscores.');
-                    return false;
-                }
-                
-                // Password validation
-                if (password.length < 6) {
-                    this.showAuthError('Le mot de passe doit contenir au moins 6 caractères.');
-                    return false;
-                }
-                
-                if (!isLogin) {
-                    // Email validation for registration
-                    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                        this.showAuthError('Veuillez entrer une adresse email valide.');
-                        return false;
-                    }
-                    
-                    // Confirm password validation
-                    if (password !== confirmPassword) {
-                        this.showAuthError('Les mots de passe ne correspondent pas.');
-                        return false;
-                    }
-                }
-                
-                return true;
+                setTimeout(() => {
+                    this.showGameOverModal();
+                }, 1000);
             }
             
-            async register(username, email, password) {
-                this.showNotification('🔄 Création du compte en cours...');
-                this.setAuthLoading(true);
+            showGameOverModal() {
+                const modal = document.getElementById('game-over-modal');
+                const statsDiv = document.getElementById('game-over-stats');
                 
-                try {
-                    // Check if username already exists
-                    const existingUser = await this.loadFromDatabase(username);
-                    if (existingUser) {
-                        this.showAuthError('Ce nom d\'utilisateur est déjà utilisé.');
-                        this.setAuthLoading(false);
-                        return;
-                    }
-                    
-                    // Simulate API delay
-                    await this.delay(1500);
-                    
-                    const userData = {
-                        id: Date.now() + Math.random(),
-                        username,
-                        email,
-                        password: this.hashPassword(password),
-                        level: 1,
-                        totalScore: 0,
-                        gamesPlayed: 0,
-                        achievements: [],
-                        bestScore: 0,
-                        winStreak: 0,
-                        createdAt: new Date().toISOString(),
-                        lastLogin: new Date().toISOString()
-                    };
-                    
-                    // Save to "database"
-                    await this.saveToDatabase(userData);
-                    
-                    this.showNotification('✅ Compte créé avec succès !');
-                    
-                    // Auto-login after registration
-                    await this.delay(500);
-                    await this.login(username, password);
-                    
-                } catch (error) {
-                    this.showAuthError('Erreur lors de la création du compte. Veuillez réessayer.');
-                    console.error('Registration error:', error);
-                } finally {
-                    this.setAuthLoading(false);
-                }
-            }
-            
-            async login(username, password) {
-                this.showNotification('🔄 Connexion en cours...');
-                this.setAuthLoading(true);
+                const timeElapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                const minutes = Math.floor(timeElapsed / 60);
+                const seconds = timeElapsed % 60;
                 
-                try {
-                    // Simulate API delay
-                    await this.delay(1000);
-                    
-                    const userData = await this.loadFromDatabase(username);
-                    
-                    if (!userData) {
-                        this.showAuthError('Nom d\'utilisateur introuvable.');
-                        this.setAuthLoading(false);
-                        return;
-                    }
-                    
-                    if (userData.password !== this.hashPassword(password)) {
-                        this.showAuthError('Mot de passe incorrect.');
-                        this.setAuthLoading(false);
-                        return;
-                    }
-                    
-                    // Update last login
-                    userData.lastLogin = new Date().toISOString();
-                    await this.saveToDatabase(userData);
-                    
-                    // Save session
-                    localStorage.setItem('snake3d_session', JSON.stringify({
-                        username: userData.username,
-                        userId: userData.id,
-                        loginTime: Date.now()
-                    }));
-                    
-                    this.currentUser = userData;
-                    this.isAuthenticated = true;
-                    this.authAttempts = 0; // Reset attempts on successful login
-                    
-                    this.hideAuth();
-                    this.showMainMenu();
-                    this.updateUserProfile();
-                    this.updateAchievements();
-                    
-                    this.showNotification(`🎉 Connexion réussie ! Bienvenue, ${username}`);
-                    
-                } catch (error) {
-                    this.showAuthError('Erreur de connexion. Veuillez réessayer.');
-                    console.error('Login error:', error);
-                } finally {
-                    this.setAuthLoading(false);
-                }
-            }
-            
-            async checkExistingSession() {
-                const savedSession = localStorage.getItem('snake3d_session');
-                if (savedSession) {
-                    try {
-                        const sessionData = JSON.parse(savedSession);
-                        const userData = await this.loadFromDatabase(sessionData.username);
-                        
-                        if (userData && userData.id === sessionData.userId) {
-                            this.currentUser = userData;
-                            this.isAuthenticated = true;
-                            this.showNotification(`🎉 Session restaurée ! Bienvenue, ${userData.username}`);
-                            return true;
-                        }
-                    } catch (error) {
-                        console.warn('Invalid session data');
-                        localStorage.removeItem('snake3d_session');
-                    }
-                }
-                return false;
-            }
-            
-            initAchievements() {
-                return [
-                    { id: 'first_game', name: '🎮 Premier Pas', description: 'Jouer votre première partie', unlocked: false },
-                    { id: 'score_100', name: '💯 Centurion', description: 'Atteindre 100 points', unlocked: false },
-                    { id: 'length_10', name: '🐍 Serpent Géant', description: 'Atteindre une longueur de 10', unlocked: false },
-                    { id: 'speed_master', name: '⚡ Maître de Vitesse', description: 'Atteindre le niveau 5', unlocked: false },
-                    { id: 'survivor', name: '🛡️ Survivant', description: 'Jouer pendant 2 minutes', unlocked: false },
-                    { id: 'perfectionist', name: '⭐ Perfectionniste', description: 'Score parfait de 500', unlocked: false }
-                ];
-            }
-            
-            initModals() {
-                // Leaderboard modal
-                document.getElementById('leaderboard-btn').addEventListener('click', () => {
-                    this.showLeaderboard();
-                });
-                
-                document.getElementById('close-leaderboard').addEventListener('click', () => {
-                    document.getElementById('leaderboard-modal').style.display = 'none';
-                });
-                
-                // Settings modal
-                document.getElementById('settings-btn').addEventListener('click', () => {
-                    this.showSettings();
-                });
-                
-                document.getElementById('close-settings').addEventListener('click', () => {
-                    this.applySettings();
-                    document.getElementById('settings-modal').style.display = 'none';
-                });
-                
-                // Game over modal
-                document.getElementById('restart-game').addEventListener('click', () => {
-                    document.getElementById('game-over-modal').style.display = 'none';
-                    this.startSoloGame();
-                });
-                
-                document.getElementById('back-to-menu').addEventListener('click', () => {
-                    document.getElementById('game-over-modal').style.display = 'none';
-                    this.showMainMenu();
-                    this.hideGameUI();
-                });
-                
-                // Volume slider
-                document.getElementById('volume-slider').addEventListener('input', (e) => {
-                    const volume = e.target.value;
-                    document.getElementById('volume-display').textContent = volume + '%';
-                    this.volume = volume / 100;
-                    
-                    // Test sound
-                    this.playSound('eat');
-                });
-            }
-            
-            showLeaderboard() {
-                document.getElementById('leaderboard-modal').style.display = 'flex';
-                this.updateLeaderboard();
-            }
-            
-            async updateLeaderboard() {
-                const leaderboardList = document.getElementById('leaderboard-list');
-                leaderboardList.innerHTML = '<div style="text-align: center; color: #ccc;">Chargement...</div>';
-                
-                try {
-                    // Get all users and sort by best score
-                    const allUsers = [];
+                let rank = 'Non classé';
+                if (this.currentUser) {
                     const data = JSON.parse(localStorage.getItem('snakeGameDB') || '{}');
-                    
-                    Object.values(data).forEach(user => {
-                        allUsers.push(user);
-                    });
-                    
-                    allUsers.sort((a, b) => (b.bestScore || 0) - (a.bestScore || 0));
-                    
-                    leaderboardList.innerHTML = '';
-                    
-                    if (allUsers.length === 0) {
-                        leaderboardList.innerHTML = '<div style="text-align: center; color: #ccc;">Aucun joueur trouvé</div>';
-                        return;
-                    }
-                    
-                    allUsers.slice(0, 10).forEach((user, index) => {
-                        const isCurrentUser = user.username === this.currentUser?.username;
-                        const medal = index < 3 ? ['🥇', '🥈', '🥉'][index] : `${index + 1}.`;
-                        
-                        const userDiv = document.createElement('div');
-                        userDiv.style.cssText = `
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                            padding: 15px;
-                            margin: 10px 0;
-                            border-radius: 10px;
-                            ${isCurrentUser ? 'background: rgba(255, 215, 0, 0.2); border: 2px solid #ffd700;' : 'background: rgba(255, 255, 255, 0.05);'}
-                            transition: all 0.3s ease;
-                        `;
-                        
-                        userDiv.innerHTML = `
-                            <div style="display: flex; align-items: center;">
-                                <span style="font-size: 1.5rem; margin-right: 15px;">${medal}</span>
-                                <div>
-                                    <div style="font-weight: bold; ${isCurrentUser ? 'color: #ffd700;' : ''}">${user.username}</div>
-                                    <div style="font-size: 0.8rem; color: #ccc;">Niveau ${user.level} • ${user.gamesPlayed} parties</div>
-                                </div>
+                    const allScores = Object.values(data).map(u => u.bestScore || 0).sort((a, b) => b - a);
+                    const userRank = allScores.indexOf(this.currentUser.bestScore) + 1;
+                    rank = userRank > 0 ? `#${userRank}` : 'Non classé';
+                }
+                
+                statsDiv.innerHTML = `
+                    <div style="text-align: center; margin: 20px 0;">
+                        <div style="font-size: 3rem; margin-bottom: 20px;">🎯 ${this.score}</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left;">
+                            <div>
+                                <strong>📏 Longueur finale:</strong><br>
+                                <span style="color: #ffd700;">${this.snake.length} segments</span>
                             </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 1.2rem; font-weight: bold;">${user.bestScore || 0}</div>
-                                <div style="font-size: 0.8rem; color: #ccc;">${user.totalScore || 0} total</div>
+                            <div>
+                                <strong>⏱️ Temps de jeu:</strong><br>
+                                <span style="color: #ffd700;">${minutes}:${seconds.toString().padStart(2, '0')}</span>
                             </div>
-                        `;
-                        
-                        leaderboardList.appendChild(userDiv);
-                    });
-                    
-                } catch (error) {
-                    console.error('Error loading leaderboard:', error);
-                    leaderboardList.innerHTML = '<div style="text-align: center; color: #ff4757;">Erreur de chargement</div>';
-                }
+                            <div>
+                                <strong>⚡ Niveau atteint:</strong><br>
+                                <span style="color: #ffd700;">${Math.floor(this.score / 100) + 1}</span>
+                            </div>
+                            <div>
+                                <strong>🏆 Classement:</strong><br>
+                                <span style="color: #ffd700;">${rank}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                modal.style.display = 'flex';
             }
             
-            showSettings() {
-                document.getElementById('settings-modal').style.display = 'flex';
-                
-                // Load current settings
-                document.getElementById('volume-slider').value = this.settings.volume;
-                document.getElementById('volume-display').textContent = this.settings.volume + '%';
-                document.getElementById('difficulty-select').value = this.settings.difficulty;
-                document.getElementById('theme-select').value = this.settings.theme;
-                document.getElementById('particles-toggle').checked = this.settings.particles;
-                document.getElementById('auto-save-toggle').checked = this.settings.autoSave;
-            }
-            
-            applySettings() {
-                // Save settings
-                this.settings.volume = parseInt(document.getElementById('volume-slider').value);
-                this.settings.difficulty = document.getElementById('difficulty-select').value;
-                this.settings.theme = document.getElementById('theme-select').value;
-                this.settings.particles = document.getElementById('particles-toggle').checked;
-                this.settings.autoSave = document.getElementById('auto-save-toggle').checked;
-                
-                this.volume = this.settings.volume / 100;
-                this.saveSettings();
-                
-                // Apply theme if game is running
-                if (this.gameInitialized) {
-                    this.applyTheme();
-                }
-                
-                this.showNotification('⚙️ Paramètres sauvegardés !');
-            }
-            
-            applyTheme() {
-                const theme = this.themes[this.settings.theme];
-                if (!theme || !this.scene) return;
-                
-                // Update scene background
-                this.scene.background = new THREE.Color(theme.background);
-                
-                // Update snake colors
-                this.snake.forEach((segment, index) => {
-                    segment.material.color.setHex(index === 0 ? theme.snake : theme.snake * 0.8);
-                });
-                
-                // Update food color
-                if (this.food) {
-                    this.food.material.color.setHex(theme.food);
-                }
-            }
-            
-            // Enhanced Authentication System
-            initAuth() {
-                const authForm = document.getElementById('auth-form');
-                const authToggle = document.getElementById('auth-toggle');
-                const authTitle = document.getElementById('auth-title');
-                const emailField = document.getElementById('email');
-                const confirmPasswordField = document.getElementById('confirm-password');
-                const submitBtn = document.getElementById('auth-submit-btn');
-                
-                let isLogin = true;
-                
-                authToggle.addEventListener('click', () => {
-                    isLogin = !isLogin;
-                    this.hideAuthError();
-                    
-                    if (isLogin) {
-                        authTitle.textContent = '🎮 Connexion';
-                        emailField.style.display = 'none';
-                        confirmPasswordField.style.display = 'none';
-                        submitBtn.textContent = 'Se connecter';
-                        authToggle.textContent = "Pas de compte ? S'inscrire";
-                    } else {
-                        authTitle.textContent = '📝 Inscription';
-                        emailField.style.display = 'block';
-                        confirmPasswordField.style.display = 'block';
-                        submitBtn.textContent = 'Créer le compte';
-                        authToggle.textContent = 'Déjà un compte ? Se connecter';
-                    }
-                });
-                
-                authForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    
-                    if (this.authAttempts >= this.maxAuthAttempts) {
-                        this.showAuthError('Trop de tentatives. Veuillez rafraîchir la page.');
-                        return;
-                    }
-                    
-                    const username = document.getElementById('username').value.trim();
-                    const email = document.getElementById('email').value.trim();
-                    const password = document.getElementById('password').value;
-                    const confirmPassword = document.getElementById('confirm-password').value;
-                    
-                    // Validation
-                    if (!this.validateInput(username, email, password, confirmPassword, isLogin)) {
-                        return;
-                    }
-                    
-                    this.authAttempts++;
-                    
-                    if (isLogin) {
-                        await this.login(username, password);
-                    } else {
-                        await this.register(username, email, password);
-                    }
-                });
-                
-                // Menu buttons
-                document.getElementById('start-solo-btn').addEventListener('click', () => this.startSoloGame());
-                document.getElementById('start-multi-btn').addEventListener('click', () => this.startMultiGame());
-                document.getElementById('logout-btn').addEventListener('click', () => this.logout());
-            }
-            
-            validateInput(username, email, password, confirmPassword, isLogin) {
-                // Username validation
-                if (username.length < 3) {
-                    this.showAuthError('Le nom d\'utilisateur doit contenir au moins 3 caractères.');
-                    return false;
-                }
-                
-                if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-                    this.showAuthError('Le nom d\'utilisateur ne peut contenir que des lettres, chiffres et underscores.');
-                    return false;
-                }
-                
-                // Password validation
-                if (password.length < 6) {
-                    this.showAuthError('Le mot de passe doit contenir au moins 6 caractères.');
-                    return false;
-                }
-                
-                if (!isLogin) {
-                    // Email validation for registration
-                    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                        this.showAuthError('Veuillez entrer une adresse email valide.');
-                        return false;
-                    }
-                    
-                    // Confirm password validation
-                    if (password !== confirmPassword) {
-                        this.showAuthError('Les mots de passe ne correspondent pas.');
-                        return false;
-                    }
-                }
-                
-                return true;
-            }
-            
-            async register(username, email, password) {
-                this.showNotification('🔄 Création du compte en cours...');
-                this.setAuthLoading(true);
+            async saveGameResult() {
+                if (!this.isAuthenticated || !this.currentUser) return;
                 
                 try {
-                    // Check if username already exists
-                    const existingUser = await this.loadFromDatabase(username);
-                    if (existingUser) {
-                        this.showAuthError('Ce nom d\'utilisateur est déjà utilisé.');
-                        this.setAuthLoading(false);
-                        return;
+                    this.currentUser.gamesPlayed++;
+                    this.currentUser.totalScore += this.score;
+                    
+                    if (this.score > this.currentUser.bestScore) {
+                        this.currentUser.bestScore = this.score;
+                        this.showNotification(`🏆 Nouveau record personnel : ${this.score} points !`);
+                        this.playSound('achievement');
                     }
                     
-                    // Simulate API delay
-                    await this.delay(1500);
-                    
-                    const userData = {
-                        id: Date.now() + Math.random(),
-                        username,
-                        email,
-                        password: this.hashPassword(password),
-                        level: 1,
-                        totalScore: 0,
-                        gamesPlayed: 0,
-                        achievements: [],
-                        bestScore: 0,
-                        winStreak: 0,
-                        createdAt: new Date().toISOString(),
-                        lastLogin: new Date().toISOString()
-                    };
-                    
-                    // Save to "database"
-                    await this.saveToDatabase(userData);
-                    
-                    this.showNotification('✅ Compte créé avec succès !');
-                    
-                    // Auto-login after registration
-                    await this.delay(500);
-                    await this.login(username, password);
-                    
-                } catch (error) {
-                    this.showAuthError('Erreur lors de la création du compte. Veuillez réessayer.');
-                    console.error('Registration error:', error);
-                } finally {
-                    this.setAuthLoading(false);
-                }
-            }
-            
-            async login(username, password) {
-                this.showNotification('🔄 Connexion en cours...');
-                this.setAuthLoading(true);
-                
-                try {
-                    // Simulate API delay
-                    await this.delay(1000);
-                    
-                    const userData = await this.loadFromDatabase(username);
-                    
-                    if (!userData) {
-                        this.showAuthError('Nom d\'utilisateur introuvable.');
-                        this.setAuthLoading(false);
-                        return;
+                    const newLevel = Math.floor(this.currentUser.totalScore / 1000) + 1;
+                    if (newLevel > this.currentUser.level) {
+                        this.currentUser.level = newLevel;
+                        this.showNotification(`🎉 Level Up ! Niveau ${newLevel} atteint !`);
+                        this.playSound('levelUp');
                     }
                     
-                    if (userData.password !== this.hashPassword(password)) {
-                        this.showAuthError('Mot de passe incorrect.');
-                        this.setAuthLoading(false);
-                        return;
+                    const gameTime = (Date.now() - this.startTime) / 1000;
+                    if (gameTime >= 120 && !this.currentUser.achievements.includes('survivor')) {
+                        this.unlockAchievement('survivor');
                     }
                     
-                    // Update last login
-                    userData.lastLogin = new Date().toISOString();
-                    await this.saveToDatabase(userData);
-                    
-                    // Save session
-                    localStorage.setItem('snake3d_session', JSON.stringify({
-                        username: userData.username,
-                        userId: userData.id,
-                        loginTime: Date.now()
-                    }));
-                    
-                    this.currentUser = userData;
-                    this.isAuthenticated = true;
-                    this.authAttempts = 0; // Reset attempts on successful login
-                    
-                    this.hideAuth();
-                    this.showMainMenu();
+                    await this.saveToDatabase(this.currentUser);
                     this.updateUserProfile();
+                    
+                } catch (error) {
+                    console.error('Error saving game result:', error);
+                    this.showNotification('⚠️ Erreur lors de la sauvegarde');
+                }
+            }
+            
+            // Achievement system - Complete implementation
+            unlockAchievement(achievementId) {
+                if (!this.currentUser.achievements.includes(achievementId)) {
+                    this.currentUser.achievements.push(achievementId);
+                    
+                    const achievement = this.achievements.find(a => a.id === achievementId);
+                    if (achievement) {
+                        this.showNotification(`🏆 Achievement débloqué : ${achievement.name}!`);
+                        this.playSound('achievement');
+                        this.createCelebrationEffect();
+                    }
+                    
                     this.updateAchievements();
-                    
-                    this.showNotification(`🎉 Connexion réussie ! Bienvenue, ${username}`);
-                    
-                } catch (error) {
-                    this.showAuthError('Erreur de connexion. Veuillez réessayer.');
-                    console.error('Login error:', error);
-                } finally {
-                    this.setAuthLoading(false);
+                    this.saveToDatabase(this.currentUser);
                 }
             }
             
-            async checkExistingSession() {
-                const savedSession = localStorage.getItem('snake3d_session');
-                if (savedSession) {
-                    try {
-                        const sessionData = JSON.parse(savedSession);
-                        const userData = await this.loadFromDatabase(sessionData.username);
+            checkAchievements() {
+                if (!this.currentUser) return;
+                
+                const newAchievements = [];
+                
+                if (!this.currentUser.achievements.includes('first_game') && this.currentUser.gamesPlayed >= 1) {
+                    newAchievements.push('first_game');
+                }
+                
+                if (!this.currentUser.achievements.includes('score_100') && this.score >= 100) {
+                    newAchievements.push('score_100');
+                }
+                
+                if (!this.currentUser.achievements.includes('length_10') && this.snake.length >= 10) {
+                    newAchievements.push('length_10');
+                }
+                
+                if (!this.currentUser.achievements.includes('speed_master') && Math.floor(this.score / 100) + 1 >= 5) {
+                    newAchievements.push('speed_master');
+                }
+                
+                if (!this.currentUser.achievements.includes('perfectionist') && this.score >= 500) {
+                    newAchievements.push('perfectionist');
+                }
+                
+                newAchievements.forEach(id => {
+                    this.unlockAchievement(id);
+                });
+            }
+            
+            createCelebrationEffect() {
+                if (!this.settings.particles || !this.scene) return;
+                
+                const colors = [0xffd700, 0xff4757, 0x00ff88, 0x00d4ff, 0xff00ff];
+                
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        const geometry = new THREE.SphereGeometry(0.1, 6, 6);
+                        const material = new THREE.MeshBasicMaterial({
+                            color: colors[Math.floor(Math.random() * colors.length)],
+                            transparent: true,
+                            opacity: 1
+                        });
                         
-                        if (userData && userData.id === sessionData.userId) {
-                            this.currentUser = userData;
-                            this.isAuthenticated = true;
-                            this.showNotification(`🎉 Session restaurée ! Bienvenue, ${userData.username}`);
-                            return true;
-                        }
-                    } catch (error) {
-                        console.warn('Invalid session data');
-                        localStorage.removeItem('snake3d_session');
-                    }
+                        const firework = new THREE.Mesh(geometry, material);
+                        firework.position.set(
+                            (Math.random() - 0.5) * 20,
+                            Math.random() * 10 + 5,
+                            (Math.random() - 0.5) * 20
+                        );
+                        
+                        firework.velocity = new THREE.Vector3(
+                            (Math.random() - 0.5) * 0.3,
+                            Math.random() * 0.2 + 0.1,
+                            (Math.random() - 0.5) * 0.3
+                        );
+                        
+                        this.scene.add(firework);
+                        
+                        let time = 0;
+                        const animateFirework = () => {
+                            time += 0.016;
+                            
+                            firework.position.add(firework.velocity);
+                            firework.velocity.y -= 0.01;
+                            firework.material.opacity = Math.max(0, 1 - time);
+                            
+                            if (time < 1) {
+                                requestAnimationFrame(animateFirework);
+                            } else {
+                                this.scene.remove(firework);
+                                firework.geometry.dispose();
+                                firework.material.dispose();
+                            }
+                        };
+                        
+                        animateFirework();
+                    }, i * 50);
                 }
-                return false;
             }
             
-            initAchievements() {
-                return [
-                    { id: 'first_game', name: '🎮 Premier Pas', description: 'Jouer votre première partie', unlocked: false },
-                    { id: 'score_100', name: '💯 Centurion', description: 'Atteindre 100 points', unlocked: false },
-                    { id: 'length_10', name: '🐍 Serpent Géant', description: 'Atteindre une longueur de 10', unlocked: false },
-                    { id: 'speed_master', name: '⚡ Maître de Vitesse', description: 'Atteindre le niveau 5', unlocked: false },
-                    { id: 'survivor', name: '🛡️ Survivant', description: 'Jouer pendant 2 minutes', unlocked: false },
-                    { id: 'perfectionist', name: '⭐ Perfectionniste', description: 'Score parfait de 500', unlocked: false }
-                ];
+            // Game Logic - Complete implementation
+            async startSoloGame() {
+                if (!this.isAuthenticated) {
+                    this.showNotification('❌ Veuillez vous connecter d\'abord !');
+                    return;
+                }
+                
+                this.hideMainMenu();
+                document.getElementById('game-canvas').style.display = 'block';
+                
+                if (!this.gameInitialized) {
+                    await this.initThreeJS();
+                    this.gameInitialized = true;
+                }
+                
+                this.showGameUI();
+                this.resetGame();
+                this.gameRunning = true;
+                this.startTime = Date.now();
+                this.animate();
+                this.startPerformanceMonitoring();
+                
+                this.showNotification('🎮 Jeu commencé ! Bonne chance !');
             }
             
-            initModals() {
-                // Leaderboard modal
-                document.getElementById('leaderboard-btn').addEventListener('click', () => {
-                    this.showLeaderboard();
-                });
-                
-                document.getElementById('close-leaderboard').addEventListener('click', () => {
-                    document.getElementById('leaderboard-modal').style.display = 'none';
-                });
-                
-                // Settings modal
-                document.getElementById('settings-btn').addEventListener('click', () => {
-                    this.showSettings();
-                });
-                
-                document.getElementById('close-settings').addEventListener('click', () => {
-                    this.applySettings();
-                    document.getElementById('settings-modal').style.display = 'none';
-                });
-                
-                // Game over modal
-                document.getElementById('restart-game').addEventListener('click', () => {
-                    document.getElementById('game-over-modal').style.display = 'none';
-                    this.startSoloGame();
-                });
-                
-                document.getElementById('back-to-menu').addEventListener('click', () => {
-                    document.getElementById('game-over-modal').style.display = 'none';
-                    this.showMainMenu();
-                    this.hideGameUI();
-                });
-                
-                // Volume slider
-                document.getElementById('volume-slider').addEventListener('input', (e) => {
-                    const volume = e.target.value;
-                    document.getElementById('volume-display').textContent = volume + '%';
-                    this.volume = volume / 100;
-                    
-                    // Test sound
-                    this.playSound('eat');
-                });
+            async startMultiGame() {
+                this.showNotification('🔧 Mode multijoueur bientôt disponible...');
             }
             
-            showLeaderboard() {
-                document.getElementById('leaderboard-modal').style.display = 'flex';
-                this.updateLeaderboard();
-            }
-            
-            async updateLeaderboard() {
-                const leaderboardList = document.getElementById('leaderboard-list');
-                leaderboardList.innerHTML = '<div style="text-align: center; color: #ccc;">Chargement...</div>';
-                
+            async initThreeJS() {
                 try {
-                    // Get all users and sort by best score
-                    const allUsers = [];
-                    const data = JSON.parse(localStorage.getItem('snakeGameDB') || '{}');
+                    const canvas = document.getElementById('game-canvas');
                     
-                    Object.values(data).forEach(user => {
-                        allUsers.push(user);
-                    });
+                    // Scene
+                    this.scene = new THREE.Scene();
+                    this.scene.background = new THREE.Color(this.themes[this.settings.theme].background);
+                    this.scene.fog = new THREE.Fog(this.themes[this.settings.theme].background, 20, 100);
                     
-                    allUsers.sort((a, b) => (b.bestScore || 0) - (a.bestScore || 0));
+                    // Camera
+                    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                    this.camera.position.set(0, 20, 20);
+                    this.camera.lookAt(0, 0, 0);
                     
-                    leaderboardList.innerHTML = '';
+                    // Renderer
+                    this.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                    this.renderer.shadowMap.enabled = true;
+                    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
                     
-                    if (allUsers.length === 0) {
-                        leaderboardList.innerHTML = '<div style="text-align: center; color: #ccc;">Aucun joueur trouvé</div>';
-                        return;
-                    }
+                    // Lighting
+                    const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+                    this.scene.add(ambientLight);
                     
-                    allUsers.slice(0, 10).forEach((user, index) => {
-                        const isCurrentUser = user.username === this.currentUser?.username;
-                        const medal = index < 3 ? ['🥇', '🥈', '🥉'][index] : `${index + 1}.`;
-                        
-                        const userDiv = document.createElement('div');
-                        userDiv.style.cssText = `
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                            padding: 15px;
-                            margin: 10px 0;
-                            border-radius: 10px;
-                            ${isCurrentUser ? 'background: rgba(255, 215, 0, 0.2); border: 2px solid #ffd700;' : 'background: rgba(255, 255, 255, 0.05);'}
-                            transition: all 0.3s ease;
-                        `;
-                        
-                        userDiv.innerHTML = `
-                            <div style="display: flex; align-items: center;">
-                                <span style="font-size: 1.5rem; margin-right: 15px;">${medal}</span>
-                                <div>
-                                    <div style="font-weight: bold; ${isCurrentUser ? 'color: #ffd700;' : ''}">${user.username}</div>
-                                    <div style="font-size: 0.8rem; color: #ccc;">Niveau ${user.level} • ${user.gamesPlayed} parties</div>
-                                </div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 1.2rem; font-weight: bold;">${user.bestScore || 0}</div>
-                                <div style="font-size: 0.8rem; color: #ccc;">${user.totalScore || 0} total</div>
-                            </div>
-                        `;
-                        
-                        leaderboardList.appendChild(userDiv);
-                    });
+                    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+                    directionalLight.position.set(10, 20, 10);
+                    directionalLight.castShadow = true;
+                    directionalLight.shadow.mapSize.width = 2048;
+                    directionalLight.shadow.mapSize.height = 2048;
+                    this.scene.add(directionalLight);
                     
+                    // Environment
+                    this.createEnvironment();
+                    
+                    // Window resize
+                    window.addEventListener('resize', () => this.onWindowResize());
+                    
+                    console.log('Three.js initialized successfully');
                 } catch (error) {
-                    console.error('Error loading leaderboard:', error);
-                    leaderboardList.innerHTML = '<div style="text-align: center; color: #ff4757;">Erreur de chargement</div>';
+                    console.error('Error initializing Three.js:', error);
+                    this.handleError(error, 'ThreeJS');
                 }
             }
             
-            showSettings() {
-                document.getElementById('settings-modal').style.display = 'flex';
+            createEnvironment() {
+                // Ground
+                const groundGeometry = new THREE.PlaneGeometry(this.boundarySize * 2, this.boundarySize * 2);
+                const groundMaterial = new THREE.MeshLambertMaterial({ 
+                    color: 0x2c3e50,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+                ground.rotation.x = -Math.PI / 2;
+                ground.receiveShadow = true;
+                this.scene.add(ground);
                 
-                // Load current settings
-                document.getElementById('volume-slider').value = this.settings.volume;
-                document.getElementById('volume-display').textContent = this.settings.volume + '%';
-                document.getElementById('difficulty-select').value = this.settings.difficulty;
-                document.getElementById('theme-select').value = this.settings.theme;
-                document.getElementById('particles-toggle').checked = this.settings.particles;
-                document.getElementById('auto-save-toggle').checked = this.settings.autoSave;
-            }
-            
-            applySettings() {
-                // Save settings
-                this.settings.volume = parseInt(document.getElementById('volume-slider').value);
-                this.settings.difficulty = document.getElementById('difficulty-select').value;
-                this.settings.theme = document.getElementById('theme-select').value;
-                this.settings.particles = document.getElementById('particles-toggle').checked;
-                this.settings.autoSave = document.getElementById('auto-save-toggle').checked;
+                // Grid
+                const gridHelper = new THREE.GridHelper(this.boundarySize * 2, this.boundarySize * 2, 0x34495e, 0x34495e);
+                this.scene.add(gridHelper);
                 
-                this.volume = this.settings.volume / 100;
-                this.saveSettings();
-                
-                // Apply theme if game is running
-                if (this.gameInitialized) {
-                    this.applyTheme();
-                }
-                
-                this.showNotification('⚙️ Paramètres sauvegardés !');
-            }
-            
-            applyTheme() {
-                const theme = this.themes[this.settings.theme];
-                if (!theme || !this.scene) return;
-                
-                // Update scene background
-                this.scene.background = new THREE.Color(theme.background);
-                
-                // Update snake colors
-                this.snake.forEach((segment, index) => {
-                    segment.material.color.setHex(index === 0 ? theme.snake : theme.snake * 0.8);
+                // Walls
+                const wallMaterial = new THREE.MeshLambertMaterial({ 
+                    color: 0x7f8c8d,
+                    transparent: true,
+                    opacity: 0.8
                 });
                 
-                // Update food color
-                if (this.food) {
-                    this.food.material.color.setHex(theme.food);
-                }
-            }
-            
-            // Enhanced Authentication System
-            initAuth() {
-                const authForm = document.getElementById('auth-form');
-                const authToggle = document.getElementById('auth-toggle');
-                const authTitle = document.getElementById('auth-title');
-                const emailField = document.getElementById('email');
-                const confirmPasswordField = document.getElementById('confirm-password');
-                const submitBtn = document.getElementById('auth-submit-btn');
-                
-                let isLogin = true;
-                
-                authToggle.addEventListener('click', () => {
-                    isLogin = !isLogin;
-                    this.hideAuthError();
+                for (let i = -this.boundarySize; i <= this.boundarySize; i++) {
+                    // Top and bottom walls
+                    const wallTop = new THREE.Mesh(new THREE.BoxGeometry(1, 3, 1), wallMaterial);
+                    wallTop.position.set(i, 1.5, this.boundarySize);
+                    wallTop.castShadow = true;
+                    this.scene.add(wallTop);
                     
-                    if (isLogin) {
-                        authTitle.textContent = '🎮 Connexion';
-                        emailField.style.display = 'none';
-                        confirmPasswordField.style.display = 'none';
-                        submitBtn.textContent = 'Se connecter';
-                        authToggle.textContent = "Pas de compte ? S'inscrire";
-                    } else {
-                        authTitle.textContent = '📝 Inscription';
-                        emailField.style.display = 'block';
-                        confirmPasswordField.style.display = 'block';
-                        submitBtn.textContent = 'Créer le compte';
-                        authToggle.textContent = 'Déjà un compte ? Se connecter';
-                    }
-                });
-                
-                authForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
+                    const wallBottom = new THREE.Mesh(new THREE.BoxGeometry(1, 3, 1), wallMaterial);
+                    wallBottom.position.set(i, 1.5, -this.boundarySize);
+                    wallBottom.castShadow = true;
+                    this.scene.add(wallBottom);
                     
-                    if (this.authAttempts >= this.maxAuthAttempts) {
-                        this.showAuthError('Trop de tentatives. Veuillez rafraîchir la page.');
-                        return;
-                    }
-                    
-                    const username = document.getElementById('username').value.trim();
-                    const email = document.getElementById('email').value.trim();
-                    const password = document.getElementById('password').value;
-                    const confirmPassword = document.getElementById('confirm-password').value;
-                    
-                    // Validation
-                    if (!this.validateInput(username, email, password, confirmPassword, isLogin)) {
-                        return;
-                    }
-                    
-                    this.authAttempts++;
-                    
-                    if (isLogin) {
-                        await this.login(username, password);
-                    } else {
-                        await this.register(username, email, password);
-                    }
-                });
-                
-                // Menu buttons
-                document.getElementById('start-solo-btn').addEventListener('click', () => this.startSoloGame());
-                document.getElementById('start-multi-btn').addEventListener('click', () => this.startMultiGame());
-                document.getElementById('logout-btn').addEventListener('click', () => this.logout());
-            }
-            
-            validateInput(username, email, password, confirmPassword, isLogin) {
-                // Username validation
-                if (username.length < 3) {
-                    this.showAuthError('Le nom d\'utilisateur doit contenir au moins 3 caractères.');
-                    return false;
-                }
-                
-                if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-                    this.showAuthError('Le nom d\'utilisateur ne peut contenir que des lettres, chiffres et underscores.');
-                    return false;
-                }
-                
-                // Password validation
-                if (password.length < 6) {
-                    this.showAuthError('Le mot de passe doit contenir au moins 6 caractères.');
-                    return false;
-                }
-                
-                if (!isLogin) {
-                    // Email validation for registration
-                    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                        this.showAuthError('Veuillez entrer une adresse email valide.');
-                        return false;
-                    }
-                    
-                    // Confirm password validation
-                    if (password !== confirmPassword) {
-                        this.showAuthError('Les mots de passe ne correspondent pas.');
-                        return false;
-                    }
-                }
-                
-                return true;
-            }
-            
-            async register(username, email, password) {
-                this.showNotification('🔄 Création du compte en cours...');
-                this.setAuthLoading(true);
-                
-                try {
-                    // Check if username already exists
-                    const existingUser = await this.loadFromDatabase(username);
-                    if (existingUser) {
-                        this.showAuthError('Ce nom d\'utilisateur est déjà utilisé.');
-                        this.setAuthLoading(false);
-                        return;
-                    }
-                    
-                    // Simulate API delay
-                    await this.delay(1500);
-                    
-                    const userData = {
-                        id: Date.now() + Math.random(),
-                        username,
-                        email,
-                        password: this.hashPassword(password),
-                        level: 1,
-                        totalScore: 0,
-                        gamesPlayed: 0,
-                        achievements: [],
-                        bestScore: 0,
-                        winStreak: 0,
-                        createdAt: new Date().toISOString(),
-                        lastLogin: new Date().toISOString()
-                    };
-                    
-                    // Save to "database"
-                    await this.saveToDatabase(userData);
-                    
-                    this.showNotification('✅ Compte créé avec succès !');
-                    
-                    // Auto-login after registration
-                    await this.delay(500);
-                    await this.login(username, password);
-                    
-                } catch (error) {
-                    this.showAuthError('Erreur lors de la création du compte. Veuillez réessayer.');
-                    console.error('Registration error:', error);
-                } finally {
-                    this.setAuthLoading(false);
-                }
-            }
-            
-            async login(username, password) {
-                this.showNotification('🔄 Connexion en cours...');
-                this.setAuthLoading(true);
-                
-                try {
-                    // Simulate API delay
-                    await this.delay(1000);
-                    
-                    const userData = await this.loadFromDatabase(username);
-                    
-                    if (!userData) {
-                        this.showAuthError('Nom d\'utilisateur introuvable.');
-                        this.setAuthLoading(false);
-                        return;
-                    }
-                    
-                    if (userData.password !== this.hashPassword(password)) {
-                        this.showAuthError('Mot de passe incorrect.');
-                        this.setAuthLoading(false);
-                        return;
-                    }
-                    
-                    // Update last login
-                    userData.lastLogin = new Date().toISOString();
-                    await this.saveToDatabase(userData);
-                    
-                    // Save session
-                    localStorage.setItem('snake3d_session', JSON.stringify({
-                        username: userData.username,
-                        userId: userData.id,
-                        loginTime: Date.now()
-                    }));
-                    
-                    this.currentUser = userData;
-                    this.isAuthenticated = true;
-                    this.authAttempts = 0; // Reset attempts on successful login
-                    
-                    this.hideAuth();
-                    this.showMainMenu();
-                    this.updateUserProfile();
-                    this.updateAchievements();
-                    
-                    this.showNotification(`🎉 Connexion réussie ! Bienvenue, ${username}`);
-                    
-                } catch (error) {
-                    this.showAuthError('Erreur de connexion. Veuillez réessayer.');
-                    console.error('Login error:', error);
-                } finally {
-                    this.setAuthLoading(false);
-                }
-            }
-            
-            async checkExistingSession() {
-                const savedSession = localStorage.getItem('snake3d_session');
-                if (savedSession) {
-                    try {
-                        const sessionData = JSON.parse(savedSession);
-                        const userData = await this.loadFromDatabase(sessionData.username);
+                    // Left and right walls
+                    if (i !== -this.boundarySize && i !== this.boundarySize) {
+                        const wallLeft = new THREE.Mesh(new THREE.BoxGeometry(1, 3, 1), wallMaterial);
+                        wallLeft.position.set(-this.boundarySize, 1.5, i);
+                        wallLeft.castShadow = true;
+                        this.scene.add(wallLeft);
                         
-                        if (userData && userData.id === sessionData.userId) {
-                            this.currentUser = userData;
-                            this.isAuthenticated = true;
-                            this.showNotification(`🎉 Session restaurée ! Bienvenue, ${userData.username}`);
-                            return true;
-                        }
-                    } catch (error) {
-                        console.warn('Invalid session data');
-                        localStorage.removeItem('snake3d_session');
+                        const wallRight = new THREE.Mesh(new THREE.BoxGeometry(1, 3, 1), wallMaterial);
+                        wallRight.position.set(this.boundarySize, 1.5, i);
+                        wallRight.castShadow = true;
+                        this.scene.add(wallRight);
                     }
                 }
-                return false;
             }
             
-            initAchievements() {
-                return [
-                    { id: 'first_game', name: '🎮 Premier Pas', description: 'Jouer votre première partie', unlocked: false },
-                    { id: 'score_100', name: '💯 Centurion', description: 'Atteindre 100 points', unlocked: false },
-                    { id: 'length_10', name: '🐍 Serpent Géant', description: 'Atteindre une longueur de 10', unlocked: false },
-                    { id: 'speed_master', name: '⚡ Maître de Vitesse', description: 'Atteindre le niveau 5', unlocked: false },
-                    { id: 'survivor', name: '🛡️ Survivant', description: 'Jouer pendant 2 minutes', unlocked: false },
-                    { id: 'perfectionist', name: '⭐ Perfectionniste', description: 'Score parfait de 500', unlocked: false }
-                ];
-            }
-            
-            // Game state management
             resetGame() {
                 // Clear existing snake
-                this.snake.forEach(segment => this.scene.remove(segment));
+                if (this.snake.length > 0) {
+                    this.snake.forEach(segment => this.scene.remove(segment));
+                }
                 this.snake = [];
                 
                 // Create initial snake
@@ -2376,7 +1661,6 @@
                 return segment;
             }
             
-            // Enhanced food creation with special foods
             createFood() {
                 if (this.food) {
                     this.scene.remove(this.food);
@@ -2452,10 +1736,11 @@
                 tail.position.set(newX, 0.5, newZ);
                 
                 // Update colors
+                const theme = this.themes[this.settings.theme];
                 this.snake.forEach((segment, index) => {
-                    segment.material.color.setHex(index === 0 ? 0x00cc66 : 0x009944);
+                    segment.material.color.setHex(index === 0 ? theme.snake * 0.8 : theme.snake * 0.6);
                 });
-                tail.material.color.setHex(0x00ff88);
+                tail.material.color.setHex(theme.snake);
                 
                 this.snake.unshift(tail);
                 
@@ -2486,6 +1771,7 @@
             
             collectFood() {
                 const wasSpecial = this.food.isSpecial;
+                const foodPosition = this.food.position.clone();
                 
                 // Grow snake
                 const lastSegment = this.snake[this.snake.length - 1];
@@ -2513,13 +1799,12 @@
                 // Play sound and create particle effect
                 this.playSound('eat');
                 if (this.settings.particles) {
-                    this.createFoodParticles(this.food.position, wasSpecial);
+                    this.createFoodParticles(foodPosition, wasSpecial);
                 }
             }
             
-            // Enhanced particle effects
             createFoodParticles(position, isSpecial = false) {
-                if (!this.settings.particles) return;
+                if (!this.settings.particles || !this.scene) return;
                 
                 const particleCount = isSpecial ? 20 : 10;
                 const particles = [];
@@ -2575,7 +1860,203 @@
                 animateParticles();
             }
             
-            // Enhanced camera movement
+            // Controls
+            initControls() {
+                document.addEventListener('keydown', (event) => {
+                    if (this.keysPressed.has(event.code)) return;
+                    this.keysPressed.add(event.code);
+                    this.handleInput(event.code);
+                    event.preventDefault();
+                });
+                
+                document.addEventListener('keyup', (event) => {
+                    this.keysPressed.delete(event.code);
+                });
+                
+                // Touch controls
+                document.querySelectorAll('.control-btn[data-direction]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        this.handleTouchInput(btn.dataset.direction);
+                    });
+                });
+                
+                // Show mobile controls on touch devices
+                if ('ontouchstart' in window) {
+                    document.getElementById('mobile-controls').style.display = 'block';
+                }
+            }
+            
+            handleInput(keyCode) {
+                if (!this.gameRunning && keyCode !== 'KeyR' && keyCode !== 'Escape') return;
+                
+                switch (keyCode) {
+                    case 'ArrowUp':
+                    case 'KeyW':
+                        if (this.direction.z !== 1) {
+                            this.nextDirection = { x: 0, z: -1 };
+                            this.addInputFeedback('⬆️');
+                        }
+                        break;
+                    case 'ArrowDown':
+                    case 'KeyS':
+                        if (this.direction.z !== -1) {
+                            this.nextDirection = { x: 0, z: 1 };
+                            this.addInputFeedback('⬇️');
+                        }
+                        break;
+                    case 'ArrowLeft':
+                    case 'KeyA':
+                        if (this.direction.x !== 1) {
+                            this.nextDirection = { x: -1, z: 0 };
+                            this.addInputFeedback('⬅️');
+                        }
+                        break;
+                    case 'ArrowRight':
+                    case 'KeyD':
+                        if (this.direction.x !== -1) {
+                            this.nextDirection = { x: 1, z: 0 };
+                            this.addInputFeedback('➡️');
+                        }
+                        break;
+                    case 'Space':
+                        this.gameRunning = !this.gameRunning;
+                        this.addInputFeedback(this.gameRunning ? '▶️' : '⏸️');
+                        if (this.gameRunning) this.animate();
+                        break;
+                    case 'KeyR':
+                        if (!this.gameRunning) {
+                            this.resetGame();
+                            this.gameRunning = true;
+                            this.startTime = Date.now();
+                            this.animate();
+                        }
+                        break;
+                    case 'Escape':
+                        this.gameRunning = false;
+                        this.showMainMenu();
+                        this.hideGameUI();
+                        document.getElementById('game-canvas').style.display = 'none';
+                        break;
+                }
+            }
+            
+            handleTouchInput(direction) {
+                const keyMap = {
+                    'up': 'KeyW',
+                    'down': 'KeyS',
+                    'left': 'KeyA',
+                    'right': 'KeyD',
+                    'pause': 'Space'
+                };
+                
+                if (keyMap[direction]) {
+                    this.handleInput(keyMap[direction]);
+                }
+            }
+            
+            addInputFeedback(symbol) {
+                const feedback = document.createElement('div');
+                feedback.textContent = symbol;
+                feedback.className = 'input-feedback';
+                document.body.appendChild(feedback);
+                
+                setTimeout(() => feedback.remove(), 500);
+            }
+            
+            // Mini-Map
+            initMiniMap() {
+                this.miniMapCanvas = document.getElementById('mini-map-canvas');
+                this.miniMapCtx = this.miniMapCanvas.getContext('2d');
+                this.miniMapScale = 4;
+            }
+            
+            updateMiniMap() {
+                if (!this.miniMapCtx) return;
+                
+                const ctx = this.miniMapCtx;
+                const canvas = this.miniMapCanvas;
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                
+                // Clear
+                ctx.fillStyle = 'rgba(20, 40, 60, 0.9)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Grid
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.lineWidth = 0.5;
+                for (let i = 0; i <= canvas.width; i += this.miniMapScale) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, 0);
+                    ctx.lineTo(i, canvas.height);
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(0, i);
+                    ctx.lineTo(canvas.width, i);
+                    ctx.stroke();
+                }
+                
+                // Boundaries
+                const boundarySize = this.boundarySize * this.miniMapScale;
+                ctx.strokeStyle = '#7f8c8d';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(centerX - boundarySize, centerY - boundarySize, boundarySize * 2, boundarySize * 2);
+                
+                // Food
+                if (this.food) {
+                    const foodX = centerX + (this.food.position.x * this.miniMapScale);
+                    const foodY = centerY + (this.food.position.z * this.miniMapScale);
+                    
+                    ctx.fillStyle = this.food.isSpecial ? '#ff00ff' : '#ffd700';
+                    ctx.beginPath();
+                    ctx.arc(foodX, foodY, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Pulsing effect
+                    const pulseSize = 6 + Math.sin(Date.now() * 0.01) * 2;
+                    ctx.strokeStyle = this.food.isSpecial ? '#ff00ff' : '#ffd700';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.arc(foodX, foodY, pulseSize, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                
+                // Snake
+                if (this.snake.length > 0) {
+                    this.snake.forEach((segment, index) => {
+                        const x = centerX + (segment.position.x * this.miniMapScale);
+                        const y = centerY + (segment.position.z * this.miniMapScale);
+                        
+                        if (index === 0) {
+                            // Head
+                            ctx.fillStyle = '#00ff88';
+                            ctx.beginPath();
+                            ctx.arc(x, y, 5, 0, Math.PI * 2);
+                            ctx.fill();
+                            
+                            // Direction indicator
+                            const dirX = this.direction.x * 8;
+                            const dirZ = this.direction.z * 8;
+                            ctx.strokeStyle = '#00ff88';
+                            ctx.lineWidth = 2;
+                            ctx.beginPath();
+                            ctx.moveTo(x, y);
+                            ctx.lineTo(x + dirX, y + dirZ);
+                            ctx.stroke();
+                        } else {
+                            // Body
+                            const alpha = 1 - (index / this.snake.length) * 0.5;
+                            ctx.fillStyle = `rgba(0, 204, 102, ${alpha})`;
+                            ctx.beginPath();
+                            ctx.arc(x, y, 3, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    });
+                }
+            }
+            
+            // Camera movement
             updateCamera() {
                 if (!this.snake.length || !this.camera) return;
                 
@@ -2591,7 +2072,7 @@
                 this.camera.lookAt(head.position.x, 0, head.position.z);
             }
             
-            // Enhanced game loop with better performance
+            // Game loop
             animate() {
                 if (!this.gameRunning) return;
                 
@@ -2626,7 +2107,53 @@
                 this.renderer.render(this.scene, this.camera);
             }
             
-            // Enhanced window resize handling
+            // UI Management
+            updateGameUI() {
+                document.getElementById('score').textContent = this.score;
+                document.getElementById('length').textContent = this.snake.length;
+                document.getElementById('level').textContent = Math.floor(this.score / 100) + 1;
+                
+                if (this.startTime) {
+                    const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                    const minutes = Math.floor(elapsed / 60);
+                    const seconds = elapsed % 60;
+                    document.getElementById('time').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }
+            
+            updateUserProfile() {
+                if (!this.currentUser) return;
+                
+                document.getElementById('user-name').textContent = this.currentUser.username;
+                document.getElementById('user-level').textContent = this.currentUser.level;
+                document.getElementById('user-total-score').textContent = this.currentUser.totalScore;
+                document.getElementById('user-games-played').textContent = this.currentUser.gamesPlayed;
+                document.getElementById('user-best-score').textContent = this.currentUser.bestScore;
+            }
+            
+            updateAchievements() {
+                const achievementsList = document.getElementById('achievements-list');
+                achievementsList.innerHTML = '';
+                
+                this.achievements.forEach(achievement => {
+                    const isUnlocked = this.currentUser?.achievements?.includes(achievement.id);
+                    
+                    const achievementDiv = document.createElement('div');
+                    achievementDiv.className = `achievement ${isUnlocked ? 'unlocked' : 'locked'}`;
+                    
+                    achievementDiv.innerHTML = `
+                        <div class="achievement-icon">${achievement.name.split(' ')[0]}</div>
+                        <div class="achievement-info">
+                            <h4>${achievement.name.substring(2)}</h4>
+                            <p>${achievement.description}</p>
+                        </div>
+                    `;
+                    
+                    achievementsList.appendChild(achievementDiv);
+                });
+            }
+            
+            // Window resize handling
             onWindowResize() {
                 if (!this.camera || !this.renderer) return;
                 
@@ -2645,7 +2172,7 @@
                 }
             }
             
-            // Enhanced error handling
+            // Error handling
             handleError(error, context = 'Unknown') {
                 console.error(`Error in ${context}:`, error);
                 
@@ -2689,282 +2216,82 @@
                 checkFPS();
             }
             
-            // Database Simulation with better error handling
-            async saveToDatabase(userData) {
-                try {
-                    const existingData = JSON.parse(localStorage.getItem('snakeGameDB') || '{}');
-                    existingData[userData.username] = userData;
-                    localStorage.setItem('snakeGameDB', JSON.stringify(existingData));
-                    
-                    // Simulate network delay and potential failure
-                    await this.delay(200 + Math.random() * 300);
-                    
-                    if (Math.random() < 0.05) { // 5% chance of simulated failure
-                        throw new Error('Simulated network error');
-                    }
-                    
-                    console.log('Data saved to database:', userData.username);
-                } catch (error) {
-                    console.error('Database save error:', error);
-                    throw error;
-                }
+            // UI State Management - Complete implementation
+            showLoading() { 
+                document.getElementById('loading-screen').style.display = 'flex'; 
             }
             
-            async loadFromDatabase(username) {
-                try {
-                    await this.delay(100 + Math.random() * 200);
-                    
-                    const data = JSON.parse(localStorage.getItem('snakeGameDB') || '{}');
-                    return data[username] || null;
-                } catch (error) {
-                    console.error('Database load error:', error);
-                    return null;
-                }
+            hideLoading() { 
+                document.getElementById('loading-screen').style.display = 'none'; 
             }
             
-            hashPassword(password) {
-                // Simple hash for demo - use proper hashing in production
-                return btoa(password + 'snake3d_salt_2024');
+            showAuth() { 
+                document.getElementById('auth-overlay').style.display = 'flex';
+                document.getElementById('username').focus();
             }
             
-            // Game Logic - Only initialize when user is authenticated
-            async startSoloGame() {
-                if (!this.isAuthenticated) {
-                    this.showNotification('❌ Veuillez vous connecter d\'abord !');
-                    return;
-                }
-                
-                this.hideMainMenu();
-                document.getElementById('game-canvas').style.display = 'block';
-                
-                if (!this.gameInitialized) {
-                    await this.initThreeJS();
-                    this.gameInitialized = true;
-                }
-                
-                this.showGameUI();
-                this.resetGame();
-                this.gameRunning = true;
-                this.startTime = Date.now();
-                this.animate();
-                
-                this.showNotification('🎮 Jeu commencé ! Bonne chance !');
+            hideAuth() { 
+                document.getElementById('auth-overlay').style.display = 'none'; 
             }
             
-            async startMultiGame() {
-                if (!this.isAuthenticated) {
-                    this.showNotification('❌ Veuillez vous connecter d\'abord !');
-                    return;
-                }
-                
-                this.showNotification('🔧 Mode multijoueur bientôt disponible...');
+            showMainMenu() { 
+                document.getElementById('main-menu').style.display = 'flex';
+                document.getElementById('user-profile').style.display = 'block';
+                document.getElementById('achievements-panel').style.display = 'block';
+                this.updateUserProfile();
+                this.updateAchievements();
             }
             
-            async initThreeJS() {
-                const canvas = document.getElementById('game-canvas');
-                
-                // Scene
-                this.scene = new THREE.Scene();
-                this.scene.background = new THREE.Color(0x001122);
-                this.scene.fog = new THREE.Fog(0x001122, 20, 100);
-                
-                // Camera
-                this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-                this.camera.position.set(0, 20, 20);
-                this.camera.lookAt(0, 0, 0);
-                
-                // Renderer
-                this.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
-                this.renderer.setSize(window.innerWidth, window.innerHeight);
-                this.renderer.shadowMap.enabled = true;
-                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-                
-                // Lighting
-                const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
-                this.scene.add(ambientLight);
-                
-                const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-                directionalLight.position.set(10, 20, 10);
-                directionalLight.castShadow = true;
-                directionalLight.shadow.mapSize.width = 2048;
-                directionalLight.shadow.mapSize.height = 2048;
-                this.scene.add(directionalLight);
-                
-                // Environment
-                this.createEnvironment();
-                
-                // Window resize
-                window.addEventListener('resize', () => this.onWindowResize());
-                
-                console.log('Three.js initialized successfully');
+            hideMainMenu() { 
+                document.getElementById('main-menu').style.display = 'none';
+                document.getElementById('user-profile').style.display = 'none';
+                document.getElementById('achievements-panel').style.display = 'none';
             }
             
-            createEnvironment() {
-                // Ground
-                const groundGeometry = new THREE.PlaneGeometry(this.boundarySize * 2, this.boundarySize * 2);
-                const groundMaterial = new THREE.MeshLambertMaterial({ 
-                    color: 0x2c3e50,
-                    transparent: true,
-                    opacity: 0.8
-                });
-                const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-                ground.rotation.x = -Math.PI / 2;
-                ground.receiveShadow = true;
-                this.scene.add(ground);
-                
-                // Grid
-                const gridHelper = new THREE.GridHelper(this.boundarySize * 2, this.boundarySize * 2, 0x34495e, 0x34495e);
-                this.scene.add(gridHelper);
-                
-                // Walls
-                const wallMaterial = new THREE.MeshLambertMaterial({ 
-                    color: 0x7f8c8d,
-                    transparent: true,
-                    opacity: 0.8
-                });
-                
-                for (let i = -this.boundarySize; i <= this.boundarySize; i++) {
-                    // Top and bottom walls
-                    const wallTop = new THREE.Mesh(new THREE.BoxGeometry(1, 3, 1), wallMaterial);
-                    wallTop.position.set(i, 1.5, this.boundarySize);
-                    wallTop.castShadow = true;
-                    this.scene.add(wallTop);
-                    
-                    const wallBottom = new THREE.Mesh(new THREE.BoxGeometry(1, 3, 1), wallMaterial);
-                    wallBottom.position.set(i, 1.5, -this.boundarySize);
-                    wallBottom.castShadow = true;
-                    this.scene.add(wallBottom);
-                    
-                    // Left and right walls
-                    if (i !== -this.boundarySize && i !== this.boundarySize) {
-                        const wallLeft = new THREE.Mesh(new THREE.BoxGeometry(1, 3, 1), wallMaterial);
-                        wallLeft.position.set(-this.boundarySize, 1.5, i);
-                        wallLeft.castShadow = true;
-                        this.scene.add(wallLeft);
-                        
-                        const wallRight = new THREE.Mesh(new THREE.BoxGeometry(1, 3, 1), wallMaterial);
-                        wallRight.position.set(this.boundarySize, 1.5, i);
-                        wallRight.castShadow = true;
-                        this.scene.add(wallRight);
-                    }
-                }
+            showGameUI() { 
+                document.getElementById('game-ui').style.display = 'block'; 
             }
             
-            // Enhanced game loop with better performance
-            animate() {
-                if (!this.gameRunning) return;
-                
-                requestAnimationFrame(() => this.animate());
-                
-                const currentTime = Date.now();
-                
-                // Move snake
-                if (currentTime - this.lastMoveTime > this.gameSpeed) {
-                    this.moveSnake();
-                    this.lastMoveTime = currentTime;
-                }
-                
-                // Animate food
-                if (this.food) {
-                    this.food.rotation.y += this.food.isSpecial ? 0.05 : 0.02;
-                    if (this.food.isSpecial) {
-                        this.food.rotation.x += 0.03;
-                    }
-                    const bobAmount = Math.sin(currentTime * (this.food.isSpecial ? 0.005 : 0.003)) * 0.1;
-                    this.food.position.y = 0.5 + bobAmount;
-                }
-                
-                // Update camera
-                this.updateCamera();
-                
-                // Update UI and mini-map
-                this.updateGameUI();
-                this.updateMiniMap();
-                
-                // Render scene
-                this.renderer.render(this.scene, this.camera);
+            hideGameUI() { 
+                document.getElementById('game-ui').style.display = 'none'; 
             }
             
-            // Enhanced window resize handling
-            onWindowResize() {
-                if (!this.camera || !this.renderer) return;
+            showNotification(message) {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.classList.add('show');
                 
-                this.camera.aspect = window.innerWidth / window.innerHeight;
-                this.camera.updateProjectionMatrix();
-                this.renderer.setSize(window.innerWidth, window.innerHeight);
-                
-                // Update mini-map canvas if needed
-                const canvas = this.miniMapCanvas;
-                if (canvas && window.innerWidth < 768) {
-                    canvas.width = 120;
-                    canvas.height = 120;
-                } else if (canvas) {
-                    canvas.width = 180;
-                    canvas.height = 180;
-                }
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
             }
             
-            // Enhanced error handling
-            handleError(error, context = 'Unknown') {
-                console.error(`Error in ${context}:`, error);
-                
-                if (context === 'ThreeJS') {
-                    this.showNotification('⚠️ Erreur graphique détectée');
-                } else if (context === 'Audio') {
-                    console.warn('Audio functionality disabled due to error');
-                    this.volume = 0;
-                } else if (context === 'Database') {
-                    this.showNotification('⚠️ Erreur de sauvegarde');
-                }
-            }
-            
-            // Performance monitoring
-            startPerformanceMonitoring() {
-                this.frameCount = 0;
-                this.lastFPSUpdate = Date.now();
-                
-                const checkFPS = () => {
-                    this.frameCount++;
-                    const now = Date.now();
-                    
-                    if (now - this.lastFPSUpdate >= 1000) {
-                        const fps = this.frameCount;
-                        this.frameCount = 0;
-                        this.lastFPSUpdate = now;
-                        
-                        // Adjust quality based on FPS
-                        if (fps < 30 && this.settings.particles) {
-                            console.warn('Low FPS detected, disabling particles');
-                            this.settings.particles = false;
-                            this.showNotification('⚡ Performances optimisées');
-                        }
-                    }
-                    
-                    if (this.gameRunning) {
-                        requestAnimationFrame(checkFPS);
-                    }
-                };
-                
-                checkFPS();
+            // Utility
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
             }
         }
         
-        // Initialize Game with error handling
+        // Initialize Game with proper error handling
         window.addEventListener('load', () => {
             try {
+                console.log('Initializing Snake 3D Online...');
                 window.game = new SnakeGameOnline();
+                console.log('Game initialized successfully');
             } catch (error) {
                 console.error('Failed to initialize game:', error);
                 document.getElementById('loading-screen').innerHTML = `
                     <div style="text-align: center; color: #ff4757;">
                         <h2>❌ Erreur d'initialisation</h2>
-                        <p>Impossible de démarrer le jeu. Vérifiez votre navigateur.</p>
+                        <p>Impossible de démarrer le jeu.</p>
+                        <p>Détails: ${error.message}</p>
                         <button onclick="location.reload()" style="padding: 15px 30px; margin-top: 20px; 
                                background: #ffd700; color: #000; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
                             🔄 Réessayer
                         </button>
                     </div>
                 `;
+                document.getElementById('loading-screen').style.display = 'flex';
             }
         });
         
@@ -3027,20 +2354,22 @@
             }
         });
         
-        // Error handling
+        // Global error handler
         window.addEventListener('error', (e) => {
-            console.error('Game Error:', e.error);
-            document.getElementById('loading-screen').innerHTML = `
-                <div style="text-align: center; color: #ff4757;">
-                    <h2>❌ Erreur de chargement</h2>
-                    <p>Une erreur s'est produite lors du chargement du jeu.</p>
-                    <button onclick="location.reload()" style="padding: 15px 30px; margin-top: 20px; 
-                           background: #ffd700; color: #000; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
-                        🔄 Rafraîchir
-                    </button>
-                </div>
-            `;
-            document.getElementById('loading-screen').style.display = 'flex';
+            console.error('Runtime Error:', e.error);
+            if (document.getElementById('loading-screen').style.display !== 'flex') {
+                document.getElementById('loading-screen').innerHTML = `
+                    <div style="text-align: center; color: #ff4757;">
+                        <h2>❌ Erreur de fonctionnement</h2>
+                        <p>Une erreur s'est produite pendant le jeu.</p>
+                        <button onclick="location.reload()" style="padding: 15px 30px; margin-top: 20px; 
+                               background: #ffd700; color: #000; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
+                            🔄 Rafraîchir
+                        </button>
+                    </div>
+                `;
+                document.getElementById('loading-screen').style.display = 'flex';
+            }
         });
     </script>
 </body>
