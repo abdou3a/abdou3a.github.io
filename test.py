@@ -1,1 +1,1 @@
-# Fichier supprimé définitivement - non nécessaire pour le jeu Snake 3D
+# Fichier supprimé - ce fichier n'existe plus
