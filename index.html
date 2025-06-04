@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐍 Snake 3D Online - Jeu Multijoueur Avancé</title>
+    <title>🐍 Snake 3D Multijoueur - Simple & Rapide</title>
     <link rel="manifest" href="manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -97,11 +97,11 @@
         
         .menu-content {
             background: linear-gradient(135deg, #1e3c72, #2a5298);
-            padding: 3rem;
+            padding: 2rem;
             border-radius: 20px;
             text-align: center;
             color: white;
-            max-width: 500px;
+            max-width: 400px;
             width: 90%;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
             border: 2px solid rgba(255, 215, 0, 0.3);
@@ -156,71 +156,6 @@
             color: white;
         }
         
-        /* Auth System */
-        .auth-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9500;
-        }
-        
-        .auth-content {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            padding: 2.5rem;
-            border-radius: 20px;
-            color: white;
-            min-width: 400px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-        }
-        
-        .auth-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-        
-        .auth-input {
-            padding: 1rem;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 1rem;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .auth-input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        .auth-input:focus {
-            outline: none;
-            border-color: #ffd700;
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
-        }
-        
-        .auth-toggle {
-            text-align: center;
-            margin-top: 1.5rem;
-            color: #ffd700;
-            cursor: pointer;
-            text-decoration: underline;
-            transition: all 0.3s ease;
-        }
-        
-        .auth-toggle:hover {
-            color: #ffed4e;
-        }
-        
         /* Game UI */
         .game-ui {
             position: fixed;
@@ -241,18 +176,27 @@
             font-weight: 600;
         }
         
-        /* User Profile */
-        .user-profile {
+        /* Players List */
+        .players-list {
             position: fixed;
             top: 20px;
             right: 20px;
             background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
+            padding: 15px;
             border-radius: 15px;
             backdrop-filter: blur(15px);
             z-index: 8000;
-            min-width: 250px;
+            min-width: 200px;
             border: 2px solid rgba(0, 255, 136, 0.3);
+        }
+        
+        .player-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
         }
         
         /* Mini-Map */
@@ -490,43 +434,99 @@
     <div id="loading-screen">
         <div class="loader"></div>
         <h2 class="loading-text">🐍 Initialisation Snake 3D...</h2>
-        <p style="margin-top: 10px; color: #ccc;">Chargement des ressources 3D...</p>
+        <p style="margin-top: 10px; color: #ccc;">Connexion multijoueur...</p>
     </div>
     
     <div id="game-container">
-        <!-- Auth System -->
-        <div id="auth-overlay" class="auth-overlay" style="display: none;">
-            <div class="auth-content">
-                <h2 id="auth-title">🎮 Connexion</h2>
-                <div id="auth-error" style="display: none; background: rgba(255, 71, 87, 0.2); padding: 10px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #ff4757;">
-                    <span id="auth-error-message"></span>
+        <!-- Simplified Main Menu -->
+        <div id="main-menu" class="menu-overlay" style="display: none;">
+            <div class="menu-content">
+                <h1 class="menu-title">🐍 Snake 3D</h1>
+                <p class="menu-subtitle">Multijoueur Simple</p>
+                <div style="margin: 20px 0;">
+                    <input type="text" id="player-name" placeholder="Votre nom" style="padding: 10px; border-radius: 10px; border: none; margin-bottom: 15px; width: 100%; background: rgba(255,255,255,0.1); color: white;">
                 </div>
-                <form id="auth-form" class="auth-form">
-                    <input type="text" id="username" class="auth-input" placeholder="Nom d'utilisateur (min. 3 caractères)" required minlength="3">
-                    <input type="email" id="email" class="auth-input" placeholder="Email valide" style="display: none;">
-                    <input type="password" id="password" class="auth-input" placeholder="Mot de passe (min. 6 caractères)" required minlength="6">
-                    <input type="password" id="confirm-password" class="auth-input" placeholder="Confirmer le mot de passe" style="display: none;">
-                    <button type="submit" class="btn" id="auth-submit-btn">Se connecter</button>
-                </form>
-                <div id="auth-toggle" class="auth-toggle">Pas de compte ? S'inscrire</div>
-                <div id="connection-status" style="margin-top: 15px; text-align: center; color: #00ff88;">
-                    🟢 Serveur connecté
+                <div class="menu-buttons">
+                    <button id="join-game-btn" class="btn">
+                        <i class="fas fa-play"></i> Rejoindre la Partie
+                    </button>
+                    <button id="settings-btn" class="btn btn-secondary">
+                        <i class="fas fa-cog"></i> Paramètres
+                    </button>
                 </div>
             </div>
         </div>
         
-        <!-- Main Menu -->
-        <div id="main-menu" class="menu-overlay" style="display: none;">
+        <!-- Game UI -->
+        <div id="game-ui" class="game-ui" style="display: none;">
+            <div class="game-stat">🎯 Score: <span id="score">0</span></div>
+            <div class="game-stat">📏 Longueur: <span id="length">1</span></div>
+            <div class="game-stat">⏱️ Temps: <span id="time">0:00</span></div>
+            <div class="game-stat">👥 Joueurs: <span id="player-count">1</span></div>
+        </div>
+        
+        <!-- Players List -->
+        <div id="players-list" class="players-list" style="display: none;">
+            <h4>👥 Joueurs Connectés</h4>
+            <div id="players-container"></div>
+        </div>
+        
+        <!-- Mini-Map -->
+        <div id="mini-map" class="mini-map">
+            <div class="mini-map-title">🗺️ Carte</div>
+            <canvas id="mini-map-canvas" width="180" height="180"></canvas>
+        </div>
+        
+        <!-- Controls Info -->
+        <div class="controls-info">
+            <div style="font-weight: bold; margin-bottom: 10px;">🎮 Contrôles:</div>
+            <div class="control-item">⬆️ WASD ou Flèches: Diriger</div>
+            <div class="control-item">⏸️ Espace: Pause</div>
+            <div class="control-item">🔄 R: Redémarrer</div>
+            <div class="control-item">🏠 Echap: Menu</div>
+        </div>
+        
+        <!-- Mobile Controls -->
+        <div id="mobile-controls" class="mobile-controls">
+            <div class="control-grid">
+                <div class="control-btn empty"></div>
+                <div class="control-btn" data-direction="up">⬆️</div>
+                <div class="control-btn empty"></div>
+                <div class="control-btn" data-direction="left">⬅️</div>
+                <div class="control-btn" data-direction="pause">⏸️</div>
+                <div class="control-btn" data-direction="right">➡️</div>
+                <div class="control-btn empty"></div>
+                <div class="control-btn" data-direction="down">⬇️</div>
+                <div class="control-btn empty"></div>
+            </div>
+            <div style="text-align: center; color: #ffd700; font-size: 0.9rem;">
+                Contrôles tactiles
+            </div>
+        </div>
+        
+        <!-- Notification -->
+        <div id="notification" class="notification"></div>
+        
+        <!-- Canvas du Jeu -->
+        <canvas id="game-canvas" style="display: none;"></canvas>
+        
+        <!-- Simplified Settings Modal -->
+        <div id="settings-modal" class="menu-overlay" style="display: none;">
             <div class="menu-content">
-                <h1 class="menu-title">🐍 Snake 3D</h1>
-                <p class="menu-subtitle">Jeu multijoueur en ligne</p>
-                <div class="menu-buttons">
-                    <button id="start-solo-btn" class="btn">
-                        <i class="fas fa-play"></i> Jouer Solo
-                    </button>
-                    <button id="start-multi-btn" class="btn btn-secondary">
-                        <i class="fas fa-users"></i> Multijoueur
-                    </button>
+                <h2>⚙️ Paramètres</h2>
+                <div class="settings-content">
+                    <div class="settings-row">
+                        <label class="settings-label">🎨 Couleur du serpent:</label>
+                        <select id="snake-color-select" class="settings-control">
+                            <option value="green">Vert</option>
+                            <option value="blue">Bleu</option>
+                            <option value="red">Rouge</option>
+                            <option value="purple">Violet</option>
+                            <option value="orange">Orange</option>
+                        </select>
+                    </div>
+                    <div class="settings-row">
+                        <label class="settings-label">🔊 Volume:</label>
                     <button id="leaderboard-btn" class="btn btn-secondary">
                         <i class="fas fa-trophy"></i> Classement
                     </button>

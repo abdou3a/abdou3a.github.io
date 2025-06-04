@@ -1,1 +1,1 @@
-# Fichier supprimé - ce fichier n'existe plus
+# Fichier supprimé définitivement
