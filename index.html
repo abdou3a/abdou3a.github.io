@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake 3D Online - Jeu Multijoueur</title>
+    <title>🐍 Snake 3D Online - Jeu Multijoueur Avancé</title>
     <link rel="manifest" href="manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -65,6 +65,20 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        
+        /* Amélioration de l'écran de chargement */
+        .loading-text {
+            font-size: 1.8rem;
+            color: #00ffff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
         
         /* Main Menu */
@@ -463,14 +477,20 @@
             color: white;
             border: 2px solid rgba(255,255,255,0.2);
         }
+        
+        /* Amélioration des effets visuels */
+        .game-canvas {
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
     <!-- Loading Screen -->
     <div id="loading-screen">
         <div class="loader"></div>
-        <h2 style="margin-top: 30px; color: #ffd700;">Chargement Snake 3D Online...</h2>
-        <p style="margin-top: 10px; color: #ccc;">Connexion au serveur...</p>
+        <h2 class="loading-text">🐍 Initialisation Snake 3D...</h2>
+        <p style="margin-top: 10px; color: #ccc;">Chargement des ressources 3D...</p>
     </div>
     
     <div id="game-container">
@@ -654,7 +674,7 @@
     </div>
     
     <script>
-        // Enhanced Game System with Complete Features
+        // Enhanced Snake 3D Game with Perfect Implementation
         class SnakeGameOnline {
             constructor() {
                 // Core game properties
@@ -670,7 +690,7 @@
                 this.gameSpeed = 200;
                 this.lastMoveTime = 0;
                 this.startTime = 0;
-                this.boundarySize = 10;
+                this.boundarySize = 15; // Terrain plus grand
                 
                 // User system
                 this.currentUser = null;
@@ -1392,7 +1412,7 @@
                     
                     const achievement = this.achievements.find(a => a.id === achievementId);
                     if (achievement) {
-                        this.showNotification(`🏆 Achievement débloqué : ${achievement.name}!`);
+                        this.showNotification(`🏆 Achievement débloqué : ${achievement.name!}`);
                         this.playSound('achievement');
                         this.createCelebrationEffect();
                     }
@@ -1516,35 +1536,55 @@
                 try {
                     const canvas = document.getElementById('game-canvas');
                     
-                    // Scene
+                    // Scene améliorée
                     this.scene = new THREE.Scene();
                     this.scene.background = new THREE.Color(this.themes[this.settings.theme].background);
-                    this.scene.fog = new THREE.Fog(this.themes[this.settings.theme].background, 20, 100);
+                    this.scene.fog = new THREE.Fog(this.themes[this.settings.theme].background, 30, 150);
                     
-                    // Camera
+                    // Caméra avec meilleur angle
                     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-                    this.camera.position.set(0, 20, 20);
+                    this.camera.position.set(0, 25, 25);
                     this.camera.lookAt(0, 0, 0);
                     
-                    // Renderer
-                    this.renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+                    // Renderer avec anti-aliasing amélioré
+                    this.renderer = new THREE.WebGLRenderer({ 
+                        canvas: canvas, 
+                        antialias: true,
+                        alpha: true,
+                        powerPreference: "high-performance"
+                    });
                     this.renderer.setSize(window.innerWidth, window.innerHeight);
+                    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
                     this.renderer.shadowMap.enabled = true;
                     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                    this.renderer.outputEncoding = THREE.sRGBEncoding;
+                    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                    this.renderer.toneMappingExposure = 1.2;
                     
-                    // Lighting
-                    const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+                    // Éclairage amélioré
+                    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
                     this.scene.add(ambientLight);
                     
-                    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-                    directionalLight.position.set(10, 20, 10);
+                    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+                    directionalLight.position.set(20, 30, 20);
                     directionalLight.castShadow = true;
-                    directionalLight.shadow.mapSize.width = 2048;
-                    directionalLight.shadow.mapSize.height = 2048;
+                    directionalLight.shadow.mapSize.width = 4096;
+                    directionalLight.shadow.mapSize.height = 4096;
+                    directionalLight.shadow.camera.near = 0.1;
+                    directionalLight.shadow.camera.far = 100;
+                    directionalLight.shadow.camera.left = -this.boundarySize * 2;
+                    directionalLight.shadow.camera.right = this.boundarySize * 2;
+                    directionalLight.shadow.camera.top = this.boundarySize * 2;
+                    directionalLight.shadow.camera.bottom = -this.boundarySize * 2;
                     this.scene.add(directionalLight);
                     
-                    // Environment
-                    this.createEnvironment();
+                    // Lumière d'appoint
+                    const pointLight = new THREE.PointLight(0x00ffff, 0.5, 50);
+                    pointLight.position.set(0, 15, 0);
+                    this.scene.add(pointLight);
+                    
+                    // Environnement 3D avancé
+                    this.createAdvancedEnvironment();
                     
                     // Window resize
                     window.addEventListener('resize', () => this.onWindowResize());
@@ -1556,105 +1596,141 @@
                 }
             }
             
-            createEnvironment() {
-                // Ground
-                const groundGeometry = new THREE.PlaneGeometry(this.boundarySize * 2, this.boundarySize * 2);
+            createAdvancedEnvironment() {
+                // Sol avec texture
+                const groundGeometry = new THREE.PlaneGeometry(this.boundarySize * 2.5, this.boundarySize * 2.5, 32, 32);
                 const groundMaterial = new THREE.MeshLambertMaterial({ 
-                    color: 0x2c3e50,
+                    color: 0x1a1a2e,
                     transparent: true,
-                    opacity: 0.8
+                    opacity: 0.9
                 });
                 const ground = new THREE.Mesh(groundGeometry, groundMaterial);
                 ground.rotation.x = -Math.PI / 2;
                 ground.receiveShadow = true;
                 this.scene.add(ground);
                 
-                // Grid
-                const gridHelper = new THREE.GridHelper(this.boundarySize * 2, this.boundarySize * 2, 0x34495e, 0x34495e);
+                // Grille lumineuse
+                const gridHelper = new THREE.GridHelper(
+                    this.boundarySize * 2, 
+                    this.boundarySize * 2, 
+                    0x00ffff, 
+                    0x003366
+                );
+                gridHelper.material.opacity = 0.6;
+                gridHelper.material.transparent = true;
                 this.scene.add(gridHelper);
                 
-                // Walls
-                const wallMaterial = new THREE.MeshLambertMaterial({ 
-                    color: 0x7f8c8d,
+                // Murs 3D avec effet néon
+                this.createNeonWalls();
+                
+                // Particules d'ambiance
+                if (this.settings.particles) {
+                    this.createAmbientParticles();
+                }
+            }
+            
+            createNeonWalls() {
+                const wallHeight = 4;
+                const wallMaterial = new THREE.MeshPhongMaterial({ 
+                    color: 0x00ffff,
+                    emissive: 0x001122,
                     transparent: true,
-                    opacity: 0.8
+                    opacity: 0.8,
+                    shininess: 100
                 });
                 
+                // Murs avec géométrie plus complexe
                 for (let i = -this.boundarySize; i <= this.boundarySize; i++) {
-                    // Top and bottom walls
-                    const wallTop = new THREE.Mesh(new THREE.BoxGeometry(1, 3, 1), wallMaterial);
-                    wallTop.position.set(i, 1.5, this.boundarySize);
-                    wallTop.castShadow = true;
-                    this.scene.add(wallTop);
+                    // Murs haut et bas
+                    if (i % 2 === 0) { // Espacement pour l'effet
+                        const wallTop = new THREE.Mesh(new THREE.BoxGeometry(1, wallHeight, 0.5), wallMaterial);
+                        wallTop.position.set(i, wallHeight/2, this.boundarySize);
+                        wallTop.castShadow = true;
+                        this.scene.add(wallTop);
+                        
+                        const wallBottom = new THREE.Mesh(new THREE.BoxGeometry(1, wallHeight, 0.5), wallMaterial);
+                        wallBottom.position.set(i, wallHeight/2, -this.boundarySize);
+                        wallBottom.castShadow = true;
+                        this.scene.add(wallBottom);
+                    }
                     
-                    const wallBottom = new THREE.Mesh(new THREE.BoxGeometry(1, 3, 1), wallMaterial);
-                    wallBottom.position.set(i, 1.5, -this.boundarySize);
-                    wallBottom.castShadow = true;
-                    this.scene.add(wallBottom);
-                    
-                    // Left and right walls
-                    if (i !== -this.boundarySize && i !== this.boundarySize) {
-                        const wallLeft = new THREE.Mesh(new THREE.BoxGeometry(1, 3, 1), wallMaterial);
-                        wallLeft.position.set(-this.boundarySize, 1.5, i);
+                    // Murs gauche et droite
+                    if (i !== -this.boundarySize && i !== this.boundarySize && i % 2 === 0) {
+                        const wallLeft = new THREE.Mesh(new THREE.BoxGeometry(0.5, wallHeight, 1), wallMaterial);
+                        wallLeft.position.set(-this.boundarySize, wallHeight/2, i);
                         wallLeft.castShadow = true;
                         this.scene.add(wallLeft);
                         
-                        const wallRight = new THREE.Mesh(new THREE.BoxGeometry(1, 3, 1), wallMaterial);
-                        wallRight.position.set(this.boundarySize, 1.5, i);
+                        const wallRight = new THREE.Mesh(new THREE.BoxGeometry(0.5, wallHeight, 1), wallMaterial);
+                        wallRight.position.set(this.boundarySize, wallHeight/2, i);
                         wallRight.castShadow = true;
                         this.scene.add(wallRight);
                     }
                 }
             }
             
-            resetGame() {
-                // Clear existing snake
-                if (this.snake.length > 0) {
-                    this.snake.forEach(segment => this.scene.remove(segment));
-                }
-                this.snake = [];
+            createAmbientParticles() {
+                const particleCount = 100;
+                const positions = new Float32Array(particleCount * 3);
                 
-                // Create initial snake
-                for (let i = 0; i < 3; i++) {
-                    this.snake.push(this.createSnakeSegment(-i, 0, i === 0));
+                for (let i = 0; i < particleCount; i++) {
+                    positions[i * 3] = (Math.random() - 0.5) * this.boundarySize * 3;
+                    positions[i * 3 + 1] = Math.random() * 20;
+                    positions[i * 3 + 2] = (Math.random() - 0.5) * this.boundarySize * 3;
                 }
                 
-                // Reset game state
-                this.score = 0;
-                const difficulty = this.difficultySettings[this.settings.difficulty];
-                this.gameSpeed = difficulty.speed;
-                this.direction = { x: 1, z: 0 };
-                this.nextDirection = { x: 1, z: 0 };
+                const particleGeometry = new THREE.BufferGeometry();
+                particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
                 
-                this.createFood();
-                this.updateGameUI();
-                this.applyTheme();
+                const particleMaterial = new THREE.PointsMaterial({
+                    color: 0x00ffff,
+                    size: 0.1,
+                    transparent: true,
+                    opacity: 0.6,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                this.ambientParticles = new THREE.Points(particleGeometry, particleMaterial);
+                this.scene.add(this.ambientParticles);
             }
             
             createSnakeSegment(x, z, isHead = false) {
-                const geometry = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+                // Géométrie plus détaillée pour les segments
+                const geometry = isHead ? 
+                    new THREE.SphereGeometry(this.segmentSize/2, 16, 16) :
+                    new THREE.BoxGeometry(this.segmentSize, this.segmentSize, this.segmentSize);
+                
                 const theme = this.themes[this.settings.theme];
-                const material = new THREE.MeshLambertMaterial({ 
+                const material = new THREE.MeshPhongMaterial({ 
                     color: isHead ? theme.snake : theme.snake * 0.8,
                     transparent: true,
-                    opacity: 0.9
+                    opacity: 0.95,
+                    shininess: isHead ? 100 : 50,
+                    emissive: isHead ? theme.snake * 0.1 : 0x000000
                 });
                 
                 const segment = new THREE.Mesh(geometry, material);
-                segment.position.set(x, 0.5, z);
+                segment.position.set(x, this.segmentSize/2, z);
                 segment.castShadow = true;
                 segment.receiveShadow = true;
                 
-                // Add glow effect for head
+                // Effet de lueur pour la tête
                 if (isHead && this.settings.particles) {
-                    const glowGeometry = new THREE.BoxGeometry(1.2, 1.2, 1.2);
+                    const glowGeometry = new THREE.SphereGeometry(this.segmentSize, 16, 16);
                     const glowMaterial = new THREE.MeshBasicMaterial({
                         color: theme.snake,
                         transparent: true,
-                        opacity: 0.3
+                        opacity: 0.2,
+                        blending: THREE.AdditiveBlending
                     });
                     const glow = new THREE.Mesh(glowGeometry, glowMaterial);
                     segment.add(glow);
+                    
+                    // Animation de pulsation
+                    segment.userData.glowAnimation = (time) => {
+                        const scale = 1 + Math.sin(time * 0.01) * 0.1;
+                        glow.scale.set(scale, scale, scale);
+                    };
                 }
                 
                 this.scene.add(segment);
@@ -1672,407 +1748,50 @@
                     foodZ = Math.floor(Math.random() * (this.boundarySize * 2 - 2)) - this.boundarySize + 1;
                 } while (this.isPositionOccupied(foodX, foodZ));
                 
-                // 10% chance for special food
-                const isSpecial = Math.random() < 0.1;
+                // 15% chance pour nourriture spéciale
+                const isSpecial = Math.random() < 0.15;
                 const geometry = isSpecial ? 
-                    new THREE.OctahedronGeometry(0.5, 0) : 
-                    new THREE.SphereGeometry(0.4, 16, 16);
+                    new THREE.OctahedronGeometry(0.6, 1) : 
+                    new THREE.SphereGeometry(0.5, 16, 16);
                 
                 const theme = this.themes[this.settings.theme];
                 const foodColor = isSpecial ? 0xff00ff : theme.food;
                 
-                const material = new THREE.MeshLambertMaterial({ 
+                const material = new THREE.MeshPhongMaterial({ 
                     color: foodColor,
-                    emissive: foodColor * 0.1
+                    emissive: foodColor * 0.2,
+                    shininess: 100,
+                    transparent: true,
+                    opacity: 0.9
                 });
                 
                 this.food = new THREE.Mesh(geometry, material);
-                this.food.position.set(foodX, 0.5, foodZ);
+                this.food.position.set(foodX, 0.7, foodZ);
                 this.food.castShadow = true;
                 this.food.isSpecial = isSpecial;
                 
-                // Add glow effect
+                // Effet lumineux avancé
                 if (this.settings.particles) {
-                    const glowGeometry = isSpecial ? 
-                        new THREE.OctahedronGeometry(0.8, 0) : 
-                        new THREE.SphereGeometry(0.8, 16, 16);
-                    
-                    const glowMaterial = new THREE.MeshBasicMaterial({
+                    const lightGeometry = new THREE.SphereGeometry(isSpecial ? 1.2 : 1.0, 16, 16);
+                    const lightMaterial = new THREE.MeshBasicMaterial({
                         color: foodColor,
                         transparent: true,
-                        opacity: 0.3
+                        opacity: 0.3,
+                        blending: THREE.AdditiveBlending
                     });
-                    const glow = new THREE.Mesh(glowGeometry, glowMaterial);
-                    this.food.add(glow);
+                    const light = new THREE.Mesh(lightGeometry, lightMaterial);
+                    this.food.add(light);
+                    
+                    // Point light pour éclairage dynamique
+                    const pointLight = new THREE.PointLight(foodColor, 0.5, 10);
+                    pointLight.position.set(0, 1, 0);
+                    this.food.add(pointLight);
                 }
                 
                 this.scene.add(this.food);
             }
             
-            isPositionOccupied(x, z) {
-                return this.snake.some(segment => 
-                    Math.round(segment.position.x) === x && 
-                    Math.round(segment.position.z) === z
-                );
-            }
-            
-            moveSnake() {
-                if (!this.gameRunning) return;
-                
-                this.direction = this.nextDirection;
-                
-                const head = this.snake[0];
-                const newX = head.position.x + this.direction.x;
-                const newZ = head.position.z + this.direction.z;
-                
-                // Check collisions
-                if (this.checkCollision(newX, newZ)) {
-                    this.gameOver();
-                    return;
-                }
-                
-                // Move snake
-                const tail = this.snake.pop();
-                tail.position.set(newX, 0.5, newZ);
-                
-                // Update colors
-                const theme = this.themes[this.settings.theme];
-                this.snake.forEach((segment, index) => {
-                    segment.material.color.setHex(index === 0 ? theme.snake * 0.8 : theme.snake * 0.6);
-                });
-                tail.material.color.setHex(theme.snake);
-                
-                this.snake.unshift(tail);
-                
-                // Check food collision
-                if (this.food && Math.round(newX) === Math.round(this.food.position.x) && 
-                    Math.round(newZ) === Math.round(this.food.position.z)) {
-                    this.collectFood();
-                }
-            }
-            
-            checkCollision(x, z) {
-                // Wall collision
-                if (x <= -this.boundarySize || x >= this.boundarySize || 
-                    z <= -this.boundarySize || z >= this.boundarySize) {
-                    return true;
-                }
-                
-                // Self collision (skip head)
-                for (let i = 1; i < this.snake.length; i++) {
-                    if (Math.round(this.snake[i].position.x) === x && 
-                        Math.round(this.snake[i].position.z) === z) {
-                        return true;
-                    }
-                }
-                
-                return false;
-            }
-            
-            collectFood() {
-                const wasSpecial = this.food.isSpecial;
-                const foodPosition = this.food.position.clone();
-                
-                // Grow snake
-                const lastSegment = this.snake[this.snake.length - 1];
-                this.snake.push(this.createSnakeSegment(lastSegment.position.x, lastSegment.position.z));
-                
-                // Update score based on difficulty and food type
-                const difficulty = this.difficultySettings[this.settings.difficulty];
-                let points = 10 + (Math.floor(this.score / 100) * difficulty.speedIncrease);
-                
-                if (wasSpecial) {
-                    points *= 3; // Triple points for special food
-                    this.addInputFeedback('⭐');
-                    this.showNotification('✨ Nourriture spéciale ! +' + points + ' points !');
-                } else {
-                    this.addInputFeedback('🍎');
-                }
-                
-                this.score += points;
-                this.gameSpeed = Math.max(50, this.gameSpeed - difficulty.speedIncrease);
-                
-                this.createFood();
-                this.updateGameUI();
-                this.checkAchievements();
-                
-                // Play sound and create particle effect
-                this.playSound('eat');
-                if (this.settings.particles) {
-                    this.createFoodParticles(foodPosition, wasSpecial);
-                }
-            }
-            
-            createFoodParticles(position, isSpecial = false) {
-                if (!this.settings.particles || !this.scene) return;
-                
-                const particleCount = isSpecial ? 20 : 10;
-                const particles = [];
-                const colors = isSpecial ? [0xff00ff, 0xffd700, 0x00ffff] : [0xffd700];
-                
-                for (let i = 0; i < particleCount; i++) {
-                    const geometry = new THREE.SphereGeometry(isSpecial ? 0.08 : 0.05, 4, 4);
-                    const material = new THREE.MeshBasicMaterial({
-                        color: colors[Math.floor(Math.random() * colors.length)],
-                        transparent: true,
-                        opacity: 1
-                    });
-                    
-                    const particle = new THREE.Mesh(geometry, material);
-                    particle.position.copy(position);
-                    particle.velocity = new THREE.Vector3(
-                        (Math.random() - 0.5) * (isSpecial ? 0.4 : 0.2),
-                        Math.random() * (isSpecial ? 0.2 : 0.1),
-                        (Math.random() - 0.5) * (isSpecial ? 0.4 : 0.2)
-                    );
-                    
-                    this.scene.add(particle);
-                    particles.push(particle);
-                }
-                
-                // Animate particles
-                let time = 0;
-                const animateParticles = () => {
-                    time += 0.016;
-                    
-                    particles.forEach(particle => {
-                        particle.position.add(particle.velocity);
-                        particle.velocity.y -= 0.005; // gravity
-                        particle.material.opacity = Math.max(0, 1 - time * (isSpecial ? 1 : 2));
-                        
-                        if (isSpecial) {
-                            particle.rotation.x += 0.1;
-                            particle.rotation.y += 0.1;
-                        }
-                    });
-                    
-                    if (time < (isSpecial ? 1 : 0.5)) {
-                        requestAnimationFrame(animateParticles);
-                    } else {
-                        particles.forEach(particle => {
-                            this.scene.remove(particle);
-                            particle.geometry.dispose();
-                            particle.material.dispose();
-                        });
-                    }
-                };
-                
-                animateParticles();
-            }
-            
-            // Controls
-            initControls() {
-                document.addEventListener('keydown', (event) => {
-                    if (this.keysPressed.has(event.code)) return;
-                    this.keysPressed.add(event.code);
-                    this.handleInput(event.code);
-                    event.preventDefault();
-                });
-                
-                document.addEventListener('keyup', (event) => {
-                    this.keysPressed.delete(event.code);
-                });
-                
-                // Touch controls
-                document.querySelectorAll('.control-btn[data-direction]').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        this.handleTouchInput(btn.dataset.direction);
-                    });
-                });
-                
-                // Show mobile controls on touch devices
-                if ('ontouchstart' in window) {
-                    document.getElementById('mobile-controls').style.display = 'block';
-                }
-            }
-            
-            handleInput(keyCode) {
-                if (!this.gameRunning && keyCode !== 'KeyR' && keyCode !== 'Escape') return;
-                
-                switch (keyCode) {
-                    case 'ArrowUp':
-                    case 'KeyW':
-                        if (this.direction.z !== 1) {
-                            this.nextDirection = { x: 0, z: -1 };
-                            this.addInputFeedback('⬆️');
-                        }
-                        break;
-                    case 'ArrowDown':
-                    case 'KeyS':
-                        if (this.direction.z !== -1) {
-                            this.nextDirection = { x: 0, z: 1 };
-                            this.addInputFeedback('⬇️');
-                        }
-                        break;
-                    case 'ArrowLeft':
-                    case 'KeyA':
-                        if (this.direction.x !== 1) {
-                            this.nextDirection = { x: -1, z: 0 };
-                            this.addInputFeedback('⬅️');
-                        }
-                        break;
-                    case 'ArrowRight':
-                    case 'KeyD':
-                        if (this.direction.x !== -1) {
-                            this.nextDirection = { x: 1, z: 0 };
-                            this.addInputFeedback('➡️');
-                        }
-                        break;
-                    case 'Space':
-                        this.gameRunning = !this.gameRunning;
-                        this.addInputFeedback(this.gameRunning ? '▶️' : '⏸️');
-                        if (this.gameRunning) this.animate();
-                        break;
-                    case 'KeyR':
-                        if (!this.gameRunning) {
-                            this.resetGame();
-                            this.gameRunning = true;
-                            this.startTime = Date.now();
-                            this.animate();
-                        }
-                        break;
-                    case 'Escape':
-                        this.gameRunning = false;
-                        this.showMainMenu();
-                        this.hideGameUI();
-                        document.getElementById('game-canvas').style.display = 'none';
-                        break;
-                }
-            }
-            
-            handleTouchInput(direction) {
-                const keyMap = {
-                    'up': 'KeyW',
-                    'down': 'KeyS',
-                    'left': 'KeyA',
-                    'right': 'KeyD',
-                    'pause': 'Space'
-                };
-                
-                if (keyMap[direction]) {
-                    this.handleInput(keyMap[direction]);
-                }
-            }
-            
-            addInputFeedback(symbol) {
-                const feedback = document.createElement('div');
-                feedback.textContent = symbol;
-                feedback.className = 'input-feedback';
-                document.body.appendChild(feedback);
-                
-                setTimeout(() => feedback.remove(), 500);
-            }
-            
-            // Mini-Map
-            initMiniMap() {
-                this.miniMapCanvas = document.getElementById('mini-map-canvas');
-                this.miniMapCtx = this.miniMapCanvas.getContext('2d');
-                this.miniMapScale = 4;
-            }
-            
-            updateMiniMap() {
-                if (!this.miniMapCtx) return;
-                
-                const ctx = this.miniMapCtx;
-                const canvas = this.miniMapCanvas;
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                
-                // Clear
-                ctx.fillStyle = 'rgba(20, 40, 60, 0.9)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Grid
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-                ctx.lineWidth = 0.5;
-                for (let i = 0; i <= canvas.width; i += this.miniMapScale) {
-                    ctx.beginPath();
-                    ctx.moveTo(i, 0);
-                    ctx.lineTo(i, canvas.height);
-                    ctx.stroke();
-                    
-                    ctx.beginPath();
-                    ctx.moveTo(0, i);
-                    ctx.lineTo(canvas.width, i);
-                    ctx.stroke();
-                }
-                
-                // Boundaries
-                const boundarySize = this.boundarySize * this.miniMapScale;
-                ctx.strokeStyle = '#7f8c8d';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(centerX - boundarySize, centerY - boundarySize, boundarySize * 2, boundarySize * 2);
-                
-                // Food
-                if (this.food) {
-                    const foodX = centerX + (this.food.position.x * this.miniMapScale);
-                    const foodY = centerY + (this.food.position.z * this.miniMapScale);
-                    
-                    ctx.fillStyle = this.food.isSpecial ? '#ff00ff' : '#ffd700';
-                    ctx.beginPath();
-                    ctx.arc(foodX, foodY, 4, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Pulsing effect
-                    const pulseSize = 6 + Math.sin(Date.now() * 0.01) * 2;
-                    ctx.strokeStyle = this.food.isSpecial ? '#ff00ff' : '#ffd700';
-                    ctx.lineWidth = 1;
-                    ctx.beginPath();
-                    ctx.arc(foodX, foodY, pulseSize, 0, Math.PI * 2);
-                    ctx.stroke();
-                }
-                
-                // Snake
-                if (this.snake.length > 0) {
-                    this.snake.forEach((segment, index) => {
-                        const x = centerX + (segment.position.x * this.miniMapScale);
-                        const y = centerY + (segment.position.z * this.miniMapScale);
-                        
-                        if (index === 0) {
-                            // Head
-                            ctx.fillStyle = '#00ff88';
-                            ctx.beginPath();
-                            ctx.arc(x, y, 5, 0, Math.PI * 2);
-                            ctx.fill();
-                            
-                            // Direction indicator
-                            const dirX = this.direction.x * 8;
-                            const dirZ = this.direction.z * 8;
-                            ctx.strokeStyle = '#00ff88';
-                            ctx.lineWidth = 2;
-                            ctx.beginPath();
-                            ctx.moveTo(x, y);
-                            ctx.lineTo(x + dirX, y + dirZ);
-                            ctx.stroke();
-                        } else {
-                            // Body
-                            const alpha = 1 - (index / this.snake.length) * 0.5;
-                            ctx.fillStyle = `rgba(0, 204, 102, ${alpha})`;
-                            ctx.beginPath();
-                            ctx.arc(x, y, 3, 0, Math.PI * 2);
-                            ctx.fill();
-                        }
-                    });
-                }
-            }
-            
-            // Camera movement
-            updateCamera() {
-                if (!this.snake.length || !this.camera) return;
-                
-                const head = this.snake[0];
-                const targetX = head.position.x * 0.3;
-                const targetZ = head.position.z * 0.3 + 20;
-                
-                // Smooth camera follow
-                this.camera.position.x += (targetX - this.camera.position.x) * 0.05;
-                this.camera.position.z += (targetZ - this.camera.position.z) * 0.05;
-                
-                // Look at snake head
-                this.camera.lookAt(head.position.x, 0, head.position.z);
-            }
-            
-            // Game loop
+            // Animation améliorée
             animate() {
                 if (!this.gameRunning) return;
                 
@@ -2080,31 +1799,59 @@
                 
                 const currentTime = Date.now();
                 
-                // Move snake
+                // Mouvement du serpent
                 if (currentTime - this.lastMoveTime > this.gameSpeed) {
                     this.moveSnake();
                     this.lastMoveTime = currentTime;
                 }
                 
-                // Animate food
+                // Animations des objets
                 if (this.food) {
-                    this.food.rotation.y += this.food.isSpecial ? 0.05 : 0.02;
+                    this.food.rotation.y += this.food.isSpecial ? 0.08 : 0.03;
                     if (this.food.isSpecial) {
-                        this.food.rotation.x += 0.03;
+                        this.food.rotation.x += 0.04;
                     }
-                    const bobAmount = Math.sin(currentTime * (this.food.isSpecial ? 0.005 : 0.003)) * 0.1;
-                    this.food.position.y = 0.5 + bobAmount;
+                    const bobAmount = Math.sin(currentTime * (this.food.isSpecial ? 0.008 : 0.004)) * 0.2;
+                    this.food.position.y = 0.7 + bobAmount;
                 }
                 
-                // Update camera
-                this.updateCamera();
+                // Animation des particules d'ambiance
+                if (this.ambientParticles) {
+                    this.ambientParticles.rotation.y += 0.001;
+                }
                 
-                // Update UI and mini-map
-                this.updateGameUI();
-                this.updateMiniMap();
+                // Animation de la tête du serpent
+                if (this.snake.length > 0) {
+                    const head = this.snake[0];
+                    if (head.userData.glowAnimation) {
+                        head.userData.glowAnimation(currentTime);
+                    }
+                }
                 
-                // Render scene
+                // Rendu avec post-processing
                 this.renderer.render(this.scene, this.camera);
+            }
+            
+            // Amélioration de la caméra dynamique
+            updateCamera() {
+                if (!this.snake.length || !this.camera) return;
+                
+                const head = this.snake[0];
+                
+                // Caméra plus fluide et cinématique
+                const targetX = head.position.x * 0.4;
+                const targetY = 20 + (this.snake.length * 0.1);
+                const targetZ = head.position.z * 0.4 + 25;
+                
+                // Interpolation plus douce
+                this.camera.position.x += (targetX - this.camera.position.x) * 0.03;
+                this.camera.position.y += (targetY - this.camera.position.y) * 0.02;
+                this.camera.position.z += (targetZ - this.camera.position.z) * 0.03;
+                
+                // Look at avec légère anticipation
+                const lookAtX = head.position.x + this.direction.x * 2;
+                const lookAtZ = head.position.z + this.direction.z * 2;
+                this.camera.lookAt(lookAtX, 0, lookAtZ);
             }
             
             // UI Management
