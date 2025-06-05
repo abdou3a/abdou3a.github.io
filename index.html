@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 AI ID Card Database Extractor</title>
+    <title>🇲🇦 AI CNIE Extractor - Extracteur de Cartes Marocaines</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -43,7 +43,7 @@
             font-size: 2.5rem;
             color: #2c3e50;
             margin-bottom: 10px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #c8102e, #006233);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -465,14 +465,60 @@
             background: rgba(220, 53, 69, 0.2);
             color: #721c24;
         }
+        
+        /* Styles spécialisés pour cartes marocaines */
+        .morocco-flag {
+            display: inline-block;
+            width: 30px;
+            height: 20px;
+            background: linear-gradient(to bottom, #c8102e 0%, #c8102e 100%);
+            border-radius: 3px;
+            margin-right: 10px;
+            position: relative;
+        }
+        
+        .morocco-flag::after {
+            content: "⭐";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #006233;
+            font-size: 12px;
+        }
+        
+        /* Indicateur CNIE valide */
+        .cnie-valid {
+            background: rgba(0, 98, 51, 0.1);
+            border: 2px solid #006233;
+            color: #006233;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+        
+        .cnie-invalid {
+            background: rgba(200, 16, 46, 0.1);
+            border: 2px solid #c8102e;
+            color: #c8102e;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1><i class="fas fa-robot"></i> AI ID Card Database Extractor</h1>
-            <p data-text="subtitle">Extracteur intelligent de données de cartes d'identité avec support multilingue</p>
+            <h1>
+                <span class="morocco-flag"></span>
+                <i class="fas fa-robot"></i> 
+                AI CNIE Extractor
+            </h1>
+            <p data-text="subtitle">Extracteur intelligent de cartes d'identité marocaines (CNIE) avec IA multilingue</p>
         </div>
         
         <!-- Language Selector -->
@@ -522,43 +568,43 @@
         
         <!-- Extracted Data Section -->
         <div class="data-section">
-            <h2><i class="fas fa-database"></i> <span data-text="extracted_data">Données extraites</span></h2>
+            <h2><i class="fas fa-id-card"></i> <span data-text="extracted_data">Données CNIE extraites</span></h2>
             <form class="data-form" id="dataForm">
                 <div class="form-group">
-                    <label class="form-label" data-text="full_name">Nom complet</label>
-                    <input type="text" class="form-input" id="fullName" placeholder="Nom et prénom">
+                    <label class="form-label" data-text="full_name">Nom complet / الاسم الكامل</label>
+                    <input type="text" class="form-input" id="fullName" placeholder="Nom et prénom / الاسم والنسب">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" data-text="id_number">Numéro d'identité</label>
-                    <input type="text" class="form-input" id="idNumber" placeholder="Numéro de carte">
+                    <label class="form-label" data-text="id_number">Numéro CNIE / رقم البطاقة</label>
+                    <input type="text" class="form-input" id="idNumber" placeholder="Ex: A123456789" maxlength="10">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" data-text="birth_date">Date de naissance</label>
+                    <label class="form-label" data-text="birth_date">Date de naissance / تاريخ الازدياد</label>
                     <input type="date" class="form-input" id="birthDate">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" data-text="birth_place">Lieu de naissance</label>
-                    <input type="text" class="form-input" id="birthPlace" placeholder="Ville de naissance">
+                    <label class="form-label" data-text="birth_place">Lieu de naissance / مكان الازدياد</label>
+                    <input type="text" class="form-input" id="birthPlace" placeholder="Ville / المدينة">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" data-text="nationality">Nationalité</label>
-                    <input type="text" class="form-input" id="nationality" placeholder="Nationalité">
+                    <label class="form-label" data-text="nationality">Nationalité / الجنسية</label>
+                    <input type="text" class="form-input" id="nationality" placeholder="Marocaine / مغربية" value="Marocaine">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" data-text="gender">Sexe</label>
+                    <label class="form-label" data-text="gender">Sexe / الجنس</label>
                     <select class="form-input" id="gender">
-                        <option value="">Sélectionner</option>
-                        <option value="M">Masculin</option>
-                        <option value="F">Féminin</option>
+                        <option value="">Sélectionner / اختر</option>
+                        <option value="M">Masculin / ذكر</option>
+                        <option value="F">Féminin / أنثى</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" data-text="expiry_date">Date d'expiration</label>
+                    <label class="form-label" data-text="expiry_date">Date d'expiration / انتهاء الصلاحية</label>
                     <input type="date" class="form-input" id="expiryDate">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" data-text="address">Adresse</label>
-                    <input type="text" class="form-input" id="address" placeholder="Adresse complète">
+                    <label class="form-label" data-text="address">Adresse / العنوان</label>
+                    <input type="text" class="form-input" id="address" placeholder="Adresse complète / العنوان الكامل">
                 </div>
             </form>
             
@@ -582,7 +628,7 @@
         <!-- Database Section -->
         <div class="database-section">
             <div class="database-header">
-                <h2><i class="fas fa-table"></i> <span data-text="database_title">Base de données</span></h2>
+                <h2><i class="fas fa-database"></i> <span data-text="database_title">Base de données CNIE</span></h2>
                 <div class="database-stats">
                     <div class="stat-item">
                         <span data-text="total_records">Total: </span><span id="totalRecords">0</span>
@@ -595,12 +641,12 @@
                 <table class="data-table" id="databaseTable">
                     <thead>
                         <tr>
-                            <th data-text="full_name">Nom complet</th>
-                            <th data-text="id_number">N° Identité</th>
-                            <th data-text="birth_date">Naissance</th>
-                            <th data-text="nationality">Nationalité</th>
-                            <th data-text="gender">Sexe</th>
-                            <th data-text="actions">Actions</th>
+                            <th data-text="full_name">Nom / الاسم</th>
+                            <th data-text="id_number">CNIE / رقم البطاقة</th>
+                            <th data-text="birth_date">Naissance / الولادة</th>
+                            <th data-text="nationality">Nationalité / الجنسية</th>
+                            <th data-text="gender">Sexe / الجنس</th>
+                            <th data-text="actions">Actions / الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="databaseBody">
