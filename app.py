@@ -23,19 +23,43 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 class MoroccanCNIEExtractor:
     def __init__(self):
-        # Configuration Tesseract pour cartes marocaines
-        self.tesseract_config = '--oem 3 --psm 6 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 /-.:أبتثجحخدذرزسشصضطظعغفقكلمنهويءآإؤئة'
+        # Configuration Tesseract améliorée
+        self.tesseract_config = '--oem 3 --psm 6'
         
-        # Patterns spécialisés pour cartes marocaines
+        # Patterns flexibles pour cartes marocaines
         self.patterns = {
             'fr': {
-                'fullName': r'(?:nom\s*et\s*prénom|nom|prénom)\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)',
-                'idNumber': r'(?:n°|num|numéro|carte\s*nationale|cnie)\s*:?\s*([A-Z]{1,2}[0-9]{6,8})',
-                'birthDate': r'(?:né\s*le|naissance|date\s*de\s*naissance)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})',
-                'birthPlace': r'(?:né\s*à|lieu\s*de\s*naissance|à)\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)',
-                'nationality': r'(?:nationalité|marocaine)\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)',
-                'gender': r'(?:sexe)\s*:?\s*([MFmf])',
-                'expiryDate': r'(?:expire\s*le|expiration|valable\s*jusqu|validité)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})'
+                'fullName': [
+                    r'(?:nom\s*et\s*prénom|nom|prénom)\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)',
+                    r'([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ]+(?:\s+[A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ]+){1,4})',
+                    r'TITULAIRE\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)'
+                ],
+                'idNumber': [
+                    r'(?:n°|num|numéro|carte\s*nationale|cnie)\s*:?\s*([A-Z]{1,2}[0-9]{6,8})',
+                    r'([A-Z]{1,2}[0-9]{6,8})',
+                    r'CNIE\s*:?\s*([A-Z]{1,2}[0-9]{6,8})'
+                ],
+                'birthDate': [
+                    r'(?:né\s*le|naissance|date\s*de\s*naissance|né?\s*le?)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})',
+                    r'([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{4})',
+                    r'NAISSANCE\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})'
+                ],
+                'birthPlace': [
+                    r'(?:né\s*à|lieu\s*de\s*naissance|à)\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)',
+                    r'LIEU\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)'
+                ],
+                'nationality': [
+                    r'(?:nationalité|marocaine)\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)',
+                    r'MAROCAINE?'
+                ],
+                'gender': [
+                    r'(?:sexe)\s*:?\s*([MFmf])',
+                    r'(MASCULIN|FEMININ|M|F)'
+                ],
+                'expiryDate': [
+                    r'(?:expire\s*le|expiration|valable\s*jusqu|validité)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})',
+                    r'VALIDITE\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})'
+                ]
             },
             'ar': {
                 'fullName': r'(?:الاسم\s*الكامل|الاسم\s*و\s*النسب|الإسم)\s*:?\s*([\u0600-\u06FF\s]+)',
@@ -170,31 +194,66 @@ class MoroccanCNIEExtractor:
         clean_text = re.sub(r'[^\u0000-\u007F\u0600-\u06FF]', ' ', text)
         clean_text = re.sub(r'\s+', ' ', clean_text).strip()
         
-        print(f"Texte nettoyé: {clean_text}")
+        print(f"Texte nettoyé: {clean_text[:200]}...")
         
         # Utiliser les patterns de la langue spécifiée
         patterns = self.patterns.get(language, self.patterns['fr'])
         
-        # Recherche prioritaire du numéro CNIE
-        cnie_matches = re.findall(r'([A-Z]{1,2}[0-9]{6,8})', clean_text)
-        if cnie_matches:
-            extracted_data['idNumber'] = cnie_matches[0]
+        # Recherche prioritaire du numéro CNIE avec patterns multiples
+        if 'idNumber' in patterns:
+            for pattern in patterns['idNumber']:
+                matches = re.findall(pattern, clean_text, re.IGNORECASE)
+                if matches:
+                    extracted_data['idNumber'] = matches[0]
+                    break
         
-        # Extraction avec patterns
-        for field, pattern in patterns.items():
+        # Extraction avec patterns multiples pour chaque champ
+        for field, pattern_list in patterns.items():
             if field in extracted_data:
                 continue
-                
-            match = re.search(pattern, clean_text, re.IGNORECASE)
-            if match:
-                value = match.group(1).strip()
-                
-                # Formatage selon le type de champ
-                if field in ['birthDate', 'expiryDate']:
-                    value = self.format_moroccan_date(value)
-                elif field == 'fullName':
-                    value = self.format_moroccan_name(value)
-                elif field == 'birthPlace':
+            
+            # Si c'est une liste de patterns, essayer chacun
+            if isinstance(pattern_list, list):
+                for pattern in pattern_list:
+                    match = re.search(pattern, clean_text, re.IGNORECASE)
+                    if match:
+                        value = match.group(1).strip() if match.groups() else match.group(0).strip()
+                        
+                        # Formatage selon le type de champ
+                        if field in ['birthDate', 'expiryDate']:
+                            value = self.format_moroccan_date(value)
+                        elif field == 'fullName':
+                            value = self.format_moroccan_name(value)
+                        elif field == 'birthPlace':
+                            value = self.validate_moroccan_city(value)
+                        elif field == 'nationality':
+                            value = self.standardize_nationality(value, language)
+                        elif field == 'gender':
+                            value = self.format_gender(value)
+                        
+                        if value:
+                            extracted_data[field] = value
+                            break
+            else:
+                # Pattern simple (rétrocompatibilité)
+                match = re.search(pattern_list, clean_text, re.IGNORECASE)
+                if match:
+                    value = match.group(1).strip()
+                    
+                    # Formatage selon le type de champ
+                    if field in ['birthDate', 'expiryDate']:
+                        value = self.format_moroccan_date(value)
+                    elif field == 'fullName':
+                        value = self.format_moroccan_name(value)
+                    elif field == 'birthPlace':
+                        value = self.validate_moroccan_city(value)
+                    elif field == 'nationality':
+                        value = self.standardize_nationality(value, language)
+                    elif field == 'gender':
+                        value = self.format_gender(value)
+                    
+                    if value:
+                        extracted_data[field] = value
                     value = self.validate_moroccan_city(value)
                 elif field == 'nationality':
                     value = self.standardize_nationality(value, language)
@@ -500,6 +559,184 @@ class MoroccanCNIEExtractor:
         except Exception as e:
             print(f"Erreur export: {e}")
             return None
+    
+    def advanced_extraction_fallback(self, text):
+        """Méthode d'extraction avancée avec fallback intelligent"""
+        extracted_data = {}
+        
+        # 1. Extraction agressive des numéros CNIE
+        cnie_patterns = [
+            r'([A-Z]{1,2}[0-9]{6,8})',
+            r'([A-Z][0-9]{6,7})',
+            r'([0-9]{6,8}[A-Z]{1,2})',
+            r'CNIE\s*:?\s*([A-Z0-9]+)',
+            r'ID\s*:?\s*([A-Z0-9]+)'
+        ]
+        
+        for pattern in cnie_patterns:
+            matches = re.findall(pattern, text, re.IGNORECASE)
+            if matches:
+                # Valider que c'est un format CNIE valide
+                for match in matches:
+                    if re.match(r'^[A-Z]{1,2}[0-9]{6,8}$', match):
+                        extracted_data['idNumber'] = match
+                        break
+                if 'idNumber' in extracted_data:
+                    break
+        
+        # 2. Extraction agressive des dates
+        date_patterns = [
+            r'([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{4})',
+            r'([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2})',
+            r'([0-9]{1,2}\s+[0-9]{1,2}\s+[0-9]{4})',
+            r'([0-9]{2,4}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{1,2})'
+        ]
+        
+        all_dates = []
+        for pattern in date_patterns:
+            dates = re.findall(pattern, text)
+            all_dates.extend(dates)
+        
+        # Tri des dates par validité
+        valid_dates = []
+        for date in all_dates:
+            formatted_date = self.format_moroccan_date(date)
+            if formatted_date:
+                valid_dates.append(formatted_date)
+        
+        if valid_dates:
+            if 'birthDate' not in extracted_data:
+                extracted_data['birthDate'] = valid_dates[0]
+            if len(valid_dates) > 1 and 'expiryDate' not in extracted_data:
+                extracted_data['expiryDate'] = valid_dates[1]
+        
+        # 3. Extraction de noms (mots capitalisés consécutifs)
+        name_patterns = [
+            r'([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ][a-záéèêëïîôùûüÿç]+(?:\s+[A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ][a-záéèêëïîôùûüÿç]+){1,4})',
+            r'([A-Z]+(?:\s+[A-Z]+){1,3})',
+            r'([A-Za-z]+(?:\s+[A-Za-z]+){2,4})'
+        ]
+        
+        potential_names = []
+        for pattern in name_patterns:
+            names = re.findall(pattern, text)
+            potential_names.extend(names)
+        
+        # Filtrer les noms valides
+        for name in potential_names:
+            if len(name.split()) >= 2 and len(name) >= 5:
+                # Éviter les mots communs
+                if not any(word.lower() in ['carte', 'nationale', 'identite', 'royaume', 'maroc'] 
+                          for word in name.split()):
+                    if 'fullName' not in extracted_data:
+                        extracted_data['fullName'] = self.format_moroccan_name(name)
+                        break
+        
+        # 4. Détection de villes marocaines
+        if 'birthPlace' not in extracted_data:
+            text_upper = text.upper()
+            for city in self.moroccan_cities:
+                if city.upper() in text_upper:
+                    extracted_data['birthPlace'] = city
+                    break
+        
+        # 5. Détection du genre
+        gender_indicators = {
+            'M': ['MASCULIN', 'MALE', 'M', 'HOMME'],
+            'F': ['FEMININ', 'FEMALE', 'F', 'FEMME']
+        }
+        
+        text_upper = text.upper()
+        for gender, indicators in gender_indicators.items():
+            for indicator in indicators:
+                if indicator in text_upper:
+                    extracted_data['gender'] = gender
+                    break
+            if 'gender' in extracted_data:
+                break
+        
+        return extracted_data
+    
+    def diagnose_extraction_issues(self, image_path):
+        """Diagnostic complet des problèmes d'extraction"""
+        diagnosis = {
+            'image_readable': False,
+            'ocr_working': False,
+            'text_extracted': False,
+            'patterns_working': False,
+            'recommendations': []
+        }
+        
+        try:
+            # Test 1: Image lisible
+            img = Image.open(image_path)
+            diagnosis['image_readable'] = True
+            
+            # Test 2: OCR fonctionne
+            basic_text = pytesseract.image_to_string(img)
+            if basic_text.strip():
+                diagnosis['ocr_working'] = True
+                diagnosis['text_extracted'] = True
+                
+                # Test 3: Patterns fonctionnent
+                test_extraction = self.advanced_extraction_fallback(basic_text)
+                if test_extraction:
+                    diagnosis['patterns_working'] = True
+                else:
+                    diagnosis['recommendations'].append("Améliorer les patterns de reconnaissance")
+            else:
+                diagnosis['recommendations'].append("OCR ne détecte aucun texte - vérifier la qualité de l'image")
+                
+                # Test avec prétraitement
+                processed_img = self.preprocess_image(image_path)
+                processed_text = pytesseract.image_to_string(Image.open(processed_img))
+                if processed_text.strip():
+                    diagnosis['recommendations'].append("Le prétraitement améliore la reconnaissance")
+                
+        except Exception as e:
+            diagnosis['recommendations'].append(f"Erreur technique: {e}")
+        
+        return diagnosis
+
+    def extract_cnie_data(self, image_path):
+        """Fonction principale d'extraction de données CNIE"""
+        try:
+            print(f"🔍 Extraction des données de: {os.path.basename(image_path)}")
+            
+            # 1. Extraction du texte avec OCR
+            text, confidence = self.extract_text_from_image(image_path)
+            print(f"📝 Texte extrait ({confidence:.1f}% confiance): {text[:100]}...")
+            
+            if not text.strip():
+                print("❌ Aucun texte détecté par OCR")
+                return {}
+            
+            # 2. Extraction avec patterns marocains
+            extracted_data = self.extract_moroccan_data(text, 'fr')
+            print(f"🎯 Extraction normale: {len(extracted_data)} champs")
+            
+            # 3. Extraction fallback si peu de données
+            if len(extracted_data) < 3:
+                print("🔄 Utilisation de l'extraction fallback...")
+                fallback_data = self.advanced_extraction_fallback(text)
+                extracted_data.update(fallback_data)
+                print(f"🎯 Après fallback: {len(extracted_data)} champs")
+            
+            # 4. Validation et formatage final
+            final_data = self.validate_moroccan_data(extracted_data)
+            
+            # 5. Sauvegarde en base si données valides
+            if final_data.get('idNumber'):
+                self.save_to_database(final_data)
+                print(f"💾 Données sauvegardées: {final_data.get('idNumber')}")
+            
+            return final_data
+            
+        except Exception as e:
+            print(f"❌ Erreur extraction: {e}")
+            import traceback
+            traceback.print_exc()
+            return {}
 
 # Instance globale
 extractor = MoroccanCNIEExtractor()
@@ -640,6 +877,149 @@ def search_records():
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# Routes API pour tests et diagnostics
+@app.route('/api/test-ocr', methods=['POST'])
+def api_test_ocr():
+    """Test basique de l'OCR"""
+    try:
+        # Créer une image de test
+        from PIL import Image, ImageDraw
+        img = Image.new('RGB', (300, 100), color='white')
+        draw = ImageDraw.Draw(img)
+        draw.text((20, 30), "Test OCR CNIE A123456", fill='black')
+        
+        # Test OCR
+        text = pytesseract.image_to_string(img)
+        
+        return jsonify({
+            'success': True,
+            'text': text.strip(),
+            'length': len(text.strip())
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/test-extraction', methods=['POST'])
+def api_test_extraction():
+    """Test d'extraction avec une image synthétique"""
+    try:
+        extractor = MoroccanCNIEExtractor()
+        
+        # Prendre la première image synthétique
+        synthetic_dir = os.path.join(os.getcwd(), 'synthetic_images')
+        images = [f for f in os.listdir(synthetic_dir) if f.endswith('.png')]
+        
+        if not images:
+            return jsonify({'success': False, 'error': 'Aucune image synthétique trouvée'}), 404
+        
+        test_image = os.path.join(synthetic_dir, images[0])
+        data = extractor.extract_cnie_data(test_image)
+        
+        return jsonify({
+            'success': True,
+            'image': images[0],
+            'data': data,
+            'field_count': len([v for v in data.values() if v])
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/test-multiple', methods=['POST'])
+def api_test_multiple():
+    """Test avec plusieurs images"""
+    try:
+        extractor = MoroccanCNIEExtractor()
+        synthetic_dir = os.path.join(os.getcwd(), 'synthetic_images')
+        images = [f for f in os.listdir(synthetic_dir) if f.endswith('.png')][:5]
+        
+        results = []
+        for img_file in images:
+            try:
+                img_path = os.path.join(synthetic_dir, img_file)
+                data = extractor.extract_cnie_data(img_path)
+                field_count = len([v for v in data.values() if v])
+                
+                results.append({
+                    'file': img_file,
+                    'field_count': field_count,
+                    'data': data,
+                    'success': True
+                })
+            except Exception as e:
+                results.append({
+                    'file': img_file,
+                    'field_count': 0,
+                    'data': {},
+                    'success': False,
+                    'error': str(e)
+                })
+        
+        successful = len([r for r in results if r['success'] and r['field_count'] > 0])
+        
+        return jsonify({
+            'success': True,
+            'results': results,
+            'summary': {
+                'total': len(results),
+                'successful': successful,
+                'success_rate': successful / len(results) * 100 if results else 0
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/list-images')
+def api_list_images():
+    """Liste des images synthétiques disponibles"""
+    try:
+        synthetic_dir = os.path.join(os.getcwd(), 'synthetic_images')
+        images = [f for f in os.listdir(synthetic_dir) if f.endswith('.png')]
+        
+        return jsonify({
+            'success': True,
+            'images': sorted(images)
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/extract-image', methods=['POST'])
+def api_extract_image():
+    """Extraction pour une image spécifique"""
+    try:
+        data = request.get_json()
+        image_name = data.get('image_name')
+        
+        if not image_name:
+            return jsonify({'success': False, 'error': 'Nom d\'image requis'}), 400
+        
+        synthetic_dir = os.path.join(os.getcwd(), 'synthetic_images')
+        image_path = os.path.join(synthetic_dir, image_name)
+        
+        if not os.path.exists(image_path):
+            return jsonify({'success': False, 'error': 'Image non trouvée'}), 404
+        
+        extractor = MoroccanCNIEExtractor()
+        extracted_data = extractor.extract_cnie_data(image_path)
+        
+        return jsonify({
+            'success': True,
+            'image': image_name,
+            'data': extracted_data,
+            'field_count': len([v for v in extracted_data.values() if v])
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/synthetic_images/<filename>')
+def serve_synthetic_image(filename):
+    """Servir les images synthétiques"""
+    return send_file(os.path.join('synthetic_images', filename))
+
+@app.route('/test')
+def test_interface():
+    """Interface de test"""
+    return send_file('test_interface.html')
 
 if __name__ == '__main__':
     # Créer les dossiers nécessaires

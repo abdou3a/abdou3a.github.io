@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Extracteur CNIE - Diagnostic</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #ddd;
+        }
+        .success { border-left-color: #4CAF50; background-color: #f1f8e9; }
+        .error { border-left-color: #f44336; background-color: #ffebee; }
+        .warning { border-left-color: #ff9800; background-color: #fff3e0; }
+        .info { border-left-color: #2196F3; background-color: #e3f2fd; }
+        .test-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background-color: #45a049;
+        }
+        .result-box {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .image-preview {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Test Extracteur CNIE Marocain</h1>
+        
+        <div class="status info">
+            <h3>📋 État du Système</h3>
+            <p>Cette page teste l'extracteur de cartes d'identité marocaines.</p>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Tests Automatiques</h3>
+            <button class="test-button" onclick="testOCR()">Test OCR</button>
+            <button class="test-button" onclick="testExtraction()">Test Extraction</button>
+            <button class="test-button" onclick="testMultipleImages()">Test Multiple Images</button>
+            <button class="test-button" onclick="loadSampleImage()">Charger Image Test</button>
+        </div>
+
+        <div id="results"></div>
+
+        <div class="test-section">
+            <h3>📤 Upload Manuel</h3>
+            <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
+            <div id="uploadResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🖼️ Images Synthétiques Disponibles</h3>
+            <select id="syntheticImages" onchange="loadSelectedImage()">
+                <option value="">Sélectionner une image...</option>
+            </select>
+            <div id="imagePreview"></div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let syntheticImages = [];
+
+        // Fonction pour afficher les résultats
+        function displayResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+
+        // Test OCR basique
+        async function testOCR() {
+            displayResult('🔍 Test OCR en cours...', 'info');
+            
+            try {
+                const response = await fetch('/api/test-ocr', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    displayResult(`✅ OCR fonctionne: ${result.text}`, 'success');
+                } else {
+                    displayResult(`❌ Erreur OCR: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                displayResult(`❌ Erreur réseau: ${error.message}`, 'error');
+            }
+        }
+
+        // Test extraction avec image synthétique
+        async function testExtraction() {
+            displayResult('🎯 Test extraction en cours...', 'info');
+            
+            try {
+                const response = await fetch('/api/test-extraction', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    displayResult(`✅ Extraction réussie:\\n${JSON.stringify(result.data, null, 2)}`, 'success');
+                } else {
+                    displayResult(`❌ Erreur extraction: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                displayResult(`❌ Erreur réseau: ${error.message}`, 'error');
+            }
+        }
+
+        // Test avec plusieurs images
+        async function testMultipleImages() {
+            displayResult('📊 Test multiple images en cours...', 'info');
+            
+            try {
+                const response = await fetch('/api/test-multiple', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    const success = result.results.filter(r => r.field_count > 0).length;
+                    displayResult(`📈 Résultats: ${success}/${result.results.length} réussis`, 'success');
+                    
+                    result.results.forEach(r => {
+                        if (r.field_count > 0) {
+                            displayResult(`✅ ${r.file}: ${r.field_count} champs extraits`, 'info');
+                        } else {
+                            displayResult(`❌ ${r.file}: échec`, 'warning');
+                        }
+                    });
+                } else {
+                    displayResult(`❌ Erreur test multiple: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                displayResult(`❌ Erreur réseau: ${error.message}`, 'error');
+            }
+        }
+
+        // Charger une image synthétique de test
+        function loadSampleImage() {
+            const select = document.getElementById('syntheticImages');
+            if (select.value) {
+                loadSelectedImage();
+            } else {
+                displayResult('📥 Chargement de la liste des images...', 'info');
+                loadSyntheticImagesList();
+            }
+        }
+
+        // Charger la liste des images synthétiques
+        async function loadSyntheticImagesList() {
+            try {
+                const response = await fetch('/api/list-images');
+                if (response.ok) {
+                    const result = await response.json();
+                    const select = document.getElementById('syntheticImages');
+                    
+                    select.innerHTML = '<option value="">Sélectionner une image...</option>';
+                    result.images.forEach(img => {
+                        const option = document.createElement('option');
+                        option.value = img;
+                        option.textContent = img;
+                        select.appendChild(option);
+                    });
+                    
+                    displayResult(`📋 ${result.images.length} images synthétiques trouvées`, 'success');
+                } else {
+                    displayResult('❌ Impossible de charger la liste des images', 'error');
+                }
+            } catch (error) {
+                displayResult(`❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        // Charger l'image sélectionnée
+        async function loadSelectedImage() {
+            const select = document.getElementById('syntheticImages');
+            const imageName = select.value;
+            
+            if (!imageName) return;
+            
+            displayResult(`🖼️ Chargement de ${imageName}...`, 'info');
+            
+            try {
+                // Afficher l'image
+                const preview = document.getElementById('imagePreview');
+                preview.innerHTML = `<img src="/synthetic_images/${imageName}" class="image-preview" alt="${imageName}">`;
+                
+                // Tester l'extraction
+                const response = await fetch('/api/extract-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ image_name: imageName })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    displayResult(`✅ Extraction de ${imageName}:\\n${JSON.stringify(result.data, null, 2)}`, 'success');
+                } else {
+                    displayResult(`❌ Erreur extraction ${imageName}: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                displayResult(`❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        // Gestion d'upload manuel
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            displayResult(`📤 Upload de ${file.name}...`, 'info');
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    displayResult(`✅ Upload et extraction réussis:\\n${JSON.stringify(result.data, null, 2)}`, 'success');
+                } else {
+                    displayResult(`❌ Erreur upload: ${result.error}`, 'error');
+                }
+            })
+            .catch(error => {
+                displayResult(`❌ Erreur upload: ${error.message}`, 'error');
+            });
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            displayResult('🚀 Interface de test chargée', 'success');
+            loadSyntheticImagesList();
+        });
+    </script>
+</body>
+</html>
