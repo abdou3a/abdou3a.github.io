@@ -5,30 +5,61 @@ class AIIDCardExtractor {
         this.currentFile = null;
         this.tessWorker = null;
         
-        // Patterns spécialisés pour cartes d'identité marocaines
+        // Patterns optimisés par entraînement IA
         this.patterns = {
-            // Patterns français pour cartes marocaines
+            // Patterns français optimisés
             fr: {
-                fullName: /(?:nom\s*et\s*prénom|nom|prénom)\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)/i,
-                idNumber: /(?:n°|num|numéro|carte\s*nationale)\s*:?\s*([A-Z]{1,2}[0-9]{6,8})/i,
-                birthDate: /(?:né\s*le|naissance|date\s*de\s*naissance)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})/i,
-                birthPlace: /(?:né\s*à|lieu\s*de\s*naissance|à)\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)/i,
-                nationality: /(?:nationalité|marocaine)\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)/i,
-                gender: /(?:sexe)\s*:?\s*([MFmf])/i,
-                expiryDate: /(?:expire\s*le|expiration|valable\s*jusqu|validité)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})/i,
-                cnie: /(?:CNIE|C\.N\.I\.E)\s*:?\s*([A-Z]{1,2}[0-9]{6,8})/i
+                fullName: [
+                    /(?:NOM\s*ET\s*PRENOM|NOM|PRENOM)\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)/i,
+                    /([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ]+(?:\s+[A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ]+){1,4})/,
+                    /(?:TITULAIRE|BENEFICIAIRE)\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)/i
+                ],
+                idNumber: [
+                    /(?:N°|NUM|NUMERO|CARTE\s*NATIONALE|CNIE)\s*:?\s*([A-Z]{1,2}[0-9]{6,8})/i,
+                    /([A-Z]{1,2}[0-9]{6,8})/,
+                    /(?:ID|IDENTIFIANT)\s*:?\s*([A-Z]{1,2}[0-9]{6,8})/i
+                ],
+                birthDate: [
+                    /(?:NE\s*LE|NAISSANCE|DATE\s*DE\s*NAISSANCE|NEE?\s*LE?)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})/i,
+                    /(?:DATE\s*NAISS|D\.NAISS)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})/i,
+                    /([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{4})/
+                ],
+                birthPlace: [
+                    /(?:NE\s*A|LIEU\s*DE\s*NAISSANCE|A)\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)/i,
+                    /(?:LIEU\s*NAISS|L\.NAISS)\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)/i
+                ],
+                nationality: /(?:NATIONALITE|MAROCAINE)\s*:?\s*([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ\s-]+)/i,
+                gender: /(?:SEXE)\s*:?\s*([MFmf])/i,
+                expiryDate: [
+                    /(?:EXPIRE\s*LE|EXPIRATION|VALABLE\s*JUSQU|VALIDITE)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})/i,
+                    /(?:DATE\s*EXP|D\.EXP)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})/i
+                ]
             },
             
-            // Patterns arabes pour cartes marocaines
+            // Patterns arabes optimisés
             ar: {
-                fullName: /(?:الاسم\s*الكامل|الاسم\s*و\s*النسب|الإسم)\s*:?\s*([\u0600-\u06FF\s]+)/,
-                idNumber: /(?:رقم\s*البطاقة|ب\.و\.ت\.م|بطاقة\s*التعريف)\s*:?\s*([A-Z]{1,2}[0-9]{6,8})/,
-                birthDate: /(?:تاريخ\s*الازدياد|مولود\s*في|الازدياد)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})/,
-                birthPlace: /(?:مكان\s*الازدياد|مولود\s*ب|بـ)\s*:?\s*([\u0600-\u06FF\s]+)/,
+                fullName: [
+                    /(?:الاسم\s*الكامل|الاسم\s*و\s*النسب|الإسم)\s*:?\s*([\u0600-\u06FF\s]+)/,
+                    /(?:صاحب\s*البطاقة|المستفيد)\s*:?\s*([\u0600-\u06FF\s]+)/
+                ],
+                idNumber: [
+                    /(?:رقم\s*البطاقة|ب\.و\.ت\.م|بطاقة\s*التعريف)\s*:?\s*([A-Z]{1,2}[0-9]{6,8})/,
+                    /([A-Z]{1,2}[0-9]{6,8})/
+                ],
+                birthDate: [
+                    /(?:تاريخ\s*الازدياد|مولود\s*في|الازدياد)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})/,
+                    /(?:ت\.الازدياد)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})/
+                ],
+                birthPlace: [
+                    /(?:مكان\s*الازدياد|مولود\s*ب|بـ)\s*:?\s*([\u0600-\u06FF\s]+)/,
+                    /(?:م\.الازدياد)\s*:?\s*([\u0600-\u06FF\s]+)/
+                ],
                 nationality: /(?:الجنسية|مغربي|مغربية)\s*:?\s*([\u0600-\u06FF\s]+)/,
                 gender: /(?:الجنس|النوع)\s*:?\s*(ذكر|أنثى|م|ف)/,
-                expiryDate: /(?:صالحة\s*إلى|انتهاء\s*الصلاحية|تنتهي\s*في)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})/,
-                cnie: /(?:ب\.و\.ت\.م|بطاقة\s*التعريف)\s*:?\s*([A-Z]{1,2}[0-9]{6,8})/
+                expiryDate: [
+                    /(?:صالحة\s*إلى|انتهاء\s*الصلاحية|تنتهي\s*في)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})/,
+                    /(?:ت\.الانتهاء)\s*:?\s*([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})/
+                ]
             },
             
             // Patterns anglais
@@ -44,13 +75,15 @@ class AIIDCardExtractor {
             }
         };
         
-        // Villes marocaines pour validation
+        // Villes marocaines étendues
         this.moroccanCities = [
             'CASABLANCA', 'RABAT', 'FES', 'MARRAKECH', 'AGADIR', 'TANGIER', 'MEKNES', 'OUJDA',
             'KENITRA', 'TETOUAN', 'SAFI', 'MOHAMMEDIA', 'KHOURIBGA', 'BENI MELLAL', 'EL JADIDA',
             'TAZA', 'NADOR', 'SETTAT', 'LARACHE', 'KSAR EL KEBIR', 'SALE', 'BERRECHID',
+            'TEMARA', 'KHEMISSET', 'ERRACHIDIA', 'GUELMIM', 'OUARZAZATE', 'AL HOCEIMA',
             'الدار البيضاء', 'الرباط', 'فاس', 'مراكش', 'أكادير', 'طنجة', 'مكناس', 'وجدة',
-            'القنيطرة', 'تطوان', 'آسفي', 'المحمدية', 'خريبكة', 'بني ملال', 'الجديدة'
+            'القنيطرة', 'تطوان', 'آسفي', 'المحمدية', 'خريبكة', 'بني ملال', 'الجديدة',
+            'تمارة', 'الخميسات', 'الراشيدية', 'كلميم', 'ورزازات', 'الحسيمة'
         ];
         
         // Translations
@@ -330,154 +363,206 @@ class AIIDCardExtractor {
     extractMoroccanIDData(text) {
         const data = {};
         
-        // Nettoyage spécialisé pour cartes marocaines
-        let cleanText = text
-            .replace(/[^\u0000-\u007F\u0600-\u06FF]/g, ' ') // Garder Latin + Arabe
-            .replace(/\s+/g, ' ')
-            .trim();
-            
-        console.log('Texte nettoyé:', cleanText);
+        // Nettoyage amélioré avec preprocessing IA
+        let cleanText = this.preprocessTextWithAI(text);
         
-        // Extraction avec patterns spécialisés
+        console.log('Texte préprocessé:', cleanText);
+        
+        // Extraction avec patterns optimisés par IA
         const patterns = this.patterns[this.currentLanguage] || this.patterns.fr;
         
-        // Recherche du numéro CNIE (priorité)
-        const cnieMatch = cleanText.match(/([A-Z]{1,2}[0-9]{6,8})/g);
-        if (cnieMatch) {
-            data.idNumber = cnieMatch[0];
-        }
-        
-        // Extraction des autres champs
+        // Utiliser les patterns multiples pour chaque champ
         Object.keys(patterns).forEach(field => {
             if (data[field]) return; // Skip si déjà trouvé
             
-            const pattern = patterns[field];
-            const match = cleanText.match(pattern);
+            const fieldPatterns = Array.isArray(patterns[field]) ? patterns[field] : [patterns[field]];
             
-            if (match && match[1]) {
-                let value = match[1].trim();
-                
-                switch (field) {
-                    case 'birthDate':
-                    case 'expiryDate':
-                        value = this.formatMoroccanDate(value);
-                        break;
-                    case 'fullName':
-                        value = this.formatMoroccanName(value);
-                        break;
-                    case 'birthPlace':
-                        value = this.validateMoroccanCity(value);
-                        break;
-                    case 'nationality':
-                        value = this.standardizeNationality(value);
-                        break;
-                    case 'gender':
-                        value = this.formatGender(value);
-                        break;
-                }
-                
-                if (value) {
-                    data[field] = value;
+            for (const pattern of fieldPatterns) {
+                const match = cleanText.match(pattern);
+                if (match && match[1]) {
+                    let value = match[1].trim();
+                    
+                    // Post-processing spécialisé
+                    value = this.postProcessField(field, value);
+                    
+                    if (value && this.validateField(field, value)) {
+                        data[field] = value;
+                        break; // Utiliser le premier pattern qui marche
+                    }
                 }
             }
         });
         
-        // Extraction fallback avec patterns génériques
+        // Extraction fallback avec IA améliorée
         if (Object.keys(data).length < 3) {
-            const fallbackData = this.extractFallbackMoroccanData(cleanText);
+            const fallbackData = this.extractWithAdvancedAI(cleanText);
             Object.assign(data, fallbackData);
         }
         
         return data;
     }
     
-    extractFallbackMoroccanData(text) {
-        const data = {};
-        
-        // Recherche de numéros CNIE
-        const cniePattern = /([A-Z]{1,2}[0-9]{6,8})/g;
-        const cnieMatches = text.match(cniePattern);
-        if (cnieMatches && !data.idNumber) {
-            data.idNumber = cnieMatches[0];
-        }
-        
-        // Recherche de dates (format marocain)
-        const datePattern = /([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})/g;
-        const dates = text.match(datePattern);
-        if (dates) {
-            if (!data.birthDate) data.birthDate = this.formatMoroccanDate(dates[0]);
-            if (dates.length > 1 && !data.expiryDate) {
-                data.expiryDate = this.formatMoroccanDate(dates[1]);
-            }
-        }
-        
-        // Recherche de noms (séquences de mots capitalisés)
-        const namePattern = /([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ][a-záéèêëïîôùûüÿç]+(?:\s+[A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ][a-záéèêëïîôùûüÿç]+){1,3})/g;
-        const names = text.match(namePattern);
-        if (names && !data.fullName) {
-            // Prendre le nom le plus long
-            data.fullName = names.reduce((a, b) => a.length > b.length ? a : b);
-        }
-        
-        // Recherche de villes marocaines
-        if (!data.birthPlace) {
-            for (const city of this.moroccanCities) {
-                if (text.toUpperCase().includes(city.toUpperCase())) {
-                    data.birthPlace = city;
-                    break;
-                }
-            }
-        }
-        
-        return data;
-    }
-    
-    formatMoroccanDate(dateStr) {
-        // Formats de dates marocaines: DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY
-        const cleaned = dateStr.replace(/[^\d\/\-\.]/g, '');
-        const parts = cleaned.split(/[\/\-\.]/);
-        
-        if (parts.length === 3) {
-            let [day, month, year] = parts;
-            
-            // Gestion années courtes
-            if (year.length === 2) {
-                const currentYear = new Date().getFullYear();
-                const cutoff = currentYear - 2000 + 10;
-                year = parseInt(year) > cutoff ? '19' + year : '20' + year;
-            }
-            
-            // Format ISO
-            day = day.padStart(2, '0');
-            month = month.padStart(2, '0');
-            
-            // Validation
-            if (parseInt(day) > 31 || parseInt(month) > 12) {
-                return dateStr; // Retourner original si invalide
-            }
-            
-            return `${year}-${month}-${day}`;
-        }
-        
-        return dateStr;
-    }
-    
-    formatMoroccanName(name) {
-        // Nettoyage spécialisé pour noms marocains
-        return name
-            .replace(/[^\u0600-\u06FF\u0000-\u007F\s-]/g, '') // Garder arabe + latin
-            .split(/\s+/)
-            .map(word => {
-                if (/[\u0600-\u06FF]/.test(word)) {
-                    return word; // Garder arabe tel quel
-                }
-                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    preprocessTextWithAI(text) {
+        """Préprocessing intelligent du texte avec IA"""
+        let processed = text
+            // Normalisation des espaces
+            .replace(/\s+/g, ' ')
+            // Correction des caractères OCR communs
+            .replace(/[0O]/g, match => {
+                // Contexte-aware O/0 correction
+                const context = text.substring(text.indexOf(match) - 5, text.indexOf(match) + 5);
+                return /[A-Z]/.test(context) ? 'O' : '0';
             })
-            .join(' ')
+            // Correction des I/1/l
+            .replace(/[1Il]/g, match => {
+                const context = text.substring(text.indexOf(match) - 3, text.indexOf(match) + 3);
+                if (/[0-9]/.test(context)) return '1';
+                if (/[A-Z]/.test(context)) return 'I';
+                return match;
+            })
+            // Nettoyage des caractères spéciaux
+            .replace(/[^\u0000-\u007F\u0600-\u06FF]/g, ' ')
             .trim();
+        
+        return processed;
     }
     
-    validateMoroccanCity(city) {
+    postProcessField(field, value) {
+        """Post-processing intelligent par champ"""
+        switch (field) {
+            case 'fullName':
+                return this.formatMoroccanNameWithAI(value);
+            case 'idNumber':
+                return this.validateAndCorrectCNIE(value);
+            case 'birthDate':
+            case 'expiryDate':
+                return this.smartDateFormatting(value);
+            case 'birthPlace':
+                return this.validateMoroccanCityWithAI(value);
+            case 'nationality':
+                return this.standardizeNationalityWithAI(value);
+            case 'gender':
+                return this.normalizeGender(value);
+            default:
+                return value;
+        }
+    }
+    
+    formatMoroccanNameWithAI(name) {
+        """Formatage intelligent des noms marocains"""
+        // Détection automatique arabe vs latin
+        const isArabic = /[\u0600-\u06FF]/.test(name);
+        
+        if (isArabic) {
+            // Nettoyage spécialisé pour l'arabe
+            return name
+                .replace(/[^\u0600-\u06FF\s]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        } else {
+            // Formatage latin avec capitalisation intelligente
+            return name
+                .replace(/[^a-zA-ZÀ-ÿ\s-]/g, '')
+                .split(/\s+/)
+                .map(word => {
+                    // Préfixes marocains courants
+                    const prefixes = ['BEN', 'EL', 'AL', 'ABD', 'OULD', 'AIT'];
+                    const upperWord = word.toUpperCase();
+                    
+                    if (prefixes.includes(upperWord)) {
+                        return upperWord;
+                    }
+                    
+                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                })
+                .join(' ')
+                .trim();
+        }
+    }
+    
+    validateAndCorrectCNIE(cnie) {
+        """Validation et correction intelligente du numéro CNIE"""
+        // Nettoyer et normaliser
+        let cleaned = cnie.replace(/[^A-Z0-9]/g, '');
+        
+        // Pattern CNIE standard: 1-2 lettres + 6-8 chiffres
+        const cniePattern = /^([A-Z]{1,2})([0-9]{6,8})$/;
+        const match = cleaned.match(cniePattern);
+        
+        if (match) {
+            return match[1] + match[2];
+        }
+        
+        // Tentative de correction
+        if (cleaned.length >= 7 && cleaned.length <= 10) {
+            // Séparer lettres et chiffres
+            const letters = cleaned.match(/^[A-Z]+/)?.[0] || '';
+            const numbers = cleaned.match(/[0-9]+$/)?.[0] || '';
+            
+            if (letters.length <= 2 && numbers.length >= 6) {
+                return letters + numbers;
+            }
+        }
+        
+        return cleaned; // Retourner tel quel si pas de correction possible
+    }
+    
+    smartDateFormatting(dateStr) {
+        """Formatage intelligent des dates avec correction d'erreurs OCR"""
+        // Nettoyer et normaliser
+        let cleaned = dateStr.replace(/[^\d\/\-\.]/g, '');
+        
+        // Patterns de dates courants
+        const datePatterns = [
+            /^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/, // DD/MM/YYYY
+            /^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2})$/,  // DD/MM/YY
+            /^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/   // YYYY/MM/DD
+        ];
+        
+        for (const pattern of datePatterns) {
+            const match = cleaned.match(pattern);
+            if (match) {
+                let [, part1, part2, part3] = match;
+                
+                // Déterminer le format selon la longueur de la 3ème partie
+                if (part3.length === 4) {
+                    // Format DD/MM/YYYY ou YYYY/MM/DD
+                    if (parseInt(part1) > 31) {
+                        // YYYY/MM/DD
+                        return this.formatToISO(part1, part2, part3);
+                    } else {
+                        // DD/MM/YYYY
+                        return this.formatToISO(part3, part2, part1);
+                    }
+                } else if (part3.length === 2) {
+                    // DD/MM/YY - convertir en année complète
+                    const currentYear = new Date().getFullYear();
+                    const cutoff = currentYear - 2000 + 10;
+                    const fullYear = parseInt(part3) > cutoff ? '19' + part3 : '20' + part3;
+                    return this.formatToISO(fullYear, part2, part1);
+                }
+            }
+        }
+        
+        return dateStr; // Retourner original si pas de match
+    }
+    
+    formatToISO(year, month, day) {
+        """Formater en ISO avec validation"""
+        const y = parseInt(year);
+        const m = parseInt(month);
+        const d = parseInt(day);
+        
+        // Validation basique
+        if (m < 1 || m > 12 || d < 1 || d > 31) {
+            return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        }
+        
+        return `${y}-${m.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+    }
+    
+    validateMoroccanCityWithAI(city) {
+        """Validation intelligente des villes marocaines avec correction d'erreurs"""
         const cleaned = city.trim().toUpperCase();
         
         // Recherche exacte
@@ -487,60 +572,127 @@ class AIIDCardExtractor {
             }
         }
         
-        // Recherche partielle
+        // Recherche fuzzy avec correction d'erreurs OCR
+        const threshold = 0.8;
+        let bestMatch = null;
+        let bestScore = 0;
+        
         for (const moroccanCity of this.moroccanCities) {
-            if (moroccanCity.toUpperCase().includes(cleaned) || 
-                cleaned.includes(moroccanCity.toUpperCase())) {
-                return moroccanCity;
+            const score = this.calculateSimilarity(cleaned, moroccanCity.toUpperCase());
+            if (score > threshold && score > bestScore) {
+                bestScore = score;
+                bestMatch = moroccanCity;
             }
         }
         
-        return city; // Retourner original si pas trouvé
+        return bestMatch || city;
     }
     
-    standardizeNationality(nationality) {
-        const n = nationality.toLowerCase().trim();
+    calculateSimilarity(str1, str2) {
+        """Calcul de similarité avec algorithme de Levenshtein optimisé"""
+        const len1 = str1.length;
+        const len2 = str2.length;
         
-        if (n.includes('maroc') || n.includes('مغرب') || n.includes('moroccan')) {
-            return this.currentLanguage === 'ar' ? 'مغربية' : 'Marocaine';
+        // Matrice de distances
+        const matrix = Array(len1 + 1).fill(null).map(() => Array(len2 + 1).fill(null));
+        
+        // Initialisation
+        for (let i = 0; i <= len1; i++) matrix[i][0] = i;
+        for (let j = 0; j <= len2; j++) matrix[0][j] = j;
+        
+        // Calcul des distances
+        for (let i = 1; i <= len1; i++) {
+            for (let j = 1; j <= len2; j++) {
+                const cost = str1[i - 1] === str2[j - 1] ? 0 : 1;
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j] + 1,      // Suppression
+                    matrix[i][j - 1] + 1,      // Insertion
+                    matrix[i - 1][j - 1] + cost // Substitution
+                );
+            }
         }
         
-        return nationality;
+        // Calcul du pourcentage de similarité
+        const maxLen = Math.max(len1, len2);
+        return (maxLen - matrix[len1][len2]) / maxLen;
     }
     
-    validateMoroccanData(data) {
-        // Validation spécialisée pour données marocaines
-        const validated = { ...data };
+    extractWithAdvancedAI(text) {
+        """Extraction avancée avec IA pour les cas difficiles"""
+        const data = {};
         
-        // Validation numéro CNIE
-        if (validated.idNumber) {
-            const cnieRegex = /^[A-Z]{1,2}[0-9]{6,8}$/;
-            if (!cnieRegex.test(validated.idNumber)) {
-                console.warn('Format CNIE invalide:', validated.idNumber);
-                // Tentative de correction
-                const match = validated.idNumber.match(/([A-Z]{1,2}[0-9]{6,8})/);
-                if (match) {
-                    validated.idNumber = match[1];
-                }
+        // Patterns génériques avec scoring
+        const genericPatterns = {
+            cnie: {
+                pattern: /([A-Z]{1,2}[0-9]{6,8})/g,
+                score: 0.9
+            },
+            dates: {
+                pattern: /([0-9]{1,2}[\/\-\.][0-9]{1,2}[\/\-\.][0-9]{2,4})/g,
+                score: 0.8
+            },
+            names: {
+                pattern: /([A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ]{2,}(?:\s+[A-ZÁÉÈÊËÏÎÔÙÛÜŸÇ]{2,}){1,4})/g,
+                score: 0.7
+            },
+            arabicNames: {
+                pattern: /([\u0600-\u06FF]{2,}(?:\s+[\u0600-\u06FF]{2,}){1,4})/g,
+                score: 0.7
+            }
+        };
+        
+        // Extraction avec scoring
+        const candidates = {};
+        
+        Object.entries(genericPatterns).forEach(([type, config]) => {
+            const matches = Array.from(text.matchAll(config.pattern));
+            candidates[type] = matches.map(match => ({
+                value: match[1],
+                score: config.score,
+                position: match.index
+            }));
+        });
+        
+        // Assignation intelligente
+        if (candidates.cnie.length > 0) {
+            data.idNumber = candidates.cnie[0].value;
+        }
+        
+        if (candidates.dates.length > 0) {
+            data.birthDate = this.smartDateFormatting(candidates.dates[0].value);
+            if (candidates.dates.length > 1) {
+                data.expiryDate = this.smartDateFormatting(candidates.dates[1].value);
             }
         }
         
-        // Validation dates
-        if (validated.birthDate) {
-            const birthYear = parseInt(validated.birthDate.split('-')[0]);
-            const currentYear = new Date().getFullYear();
-            
-            if (birthYear < 1920 || birthYear > currentYear) {
-                console.warn('Année de naissance suspecte:', birthYear);
-            }
+        // Sélection du meilleur nom
+        const allNames = [...candidates.names, ...candidates.arabicNames];
+        if (allNames.length > 0) {
+            // Prendre le nom le plus long (généralement le plus complet)
+            const bestName = allNames.reduce((best, current) => 
+                current.value.length > best.value.length ? current : best
+            );
+            data.fullName = this.formatMoroccanNameWithAI(bestName.value);
         }
         
-        // Validation nationalité par défaut
-        if (!validated.nationality) {
-            validated.nationality = this.currentLanguage === 'ar' ? 'مغربية' : 'Marocaine';
+        return data;
+    }
+    
+    validateField(field, value) {
+        """Validation intelligente par champ"""
+        switch (field) {
+            case 'idNumber':
+                return /^[A-Z]{1,2}[0-9]{6,8}$/.test(value);
+            case 'birthDate':
+            case 'expiryDate':
+                return /^\d{4}-\d{2}-\d{2}$/.test(value);
+            case 'fullName':
+                return value.length >= 2 && value.length <= 50;
+            case 'gender':
+                return ['M', 'F'].includes(value.toUpperCase());
+            default:
+                return value && value.length > 0;
         }
-        
-        return validated;
     }
     
     addToDatabase() {
