@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🇲🇦 AI CNIE Extractor Python</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+        
+        .morocco-gradient {
+            background: linear-gradient(45deg, #c8102e, #006233);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: rgba(118, 75, 162, 0.1);
+            transform: scale(1.02);
+        }
+        
+        .confidence-badge {
+            border-radius: 15px;
+            padding: 5px 15px;
+            font-weight: 600;
+        }
+        
+        .confidence-high {
+            background: rgba(40, 167, 69, 0.2);
+            color: #155724;
+        }
+        
+        .confidence-medium {
+            background: rgba(255, 193, 7, 0.2);
+            color: #856404;
+        }
+        
+        .confidence-low {
+            background: rgba(220, 53, 69, 0.2);
+            color: #721c24;
+        }
+        
+        .btn-morocco {
+            background: linear-gradient(45deg, #c8102e, #006233);
+            border: none;
+            color: white;
+        }
+        
+        .btn-morocco:hover {
+            background: linear-gradient(45deg, #a00e26, #004d29);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h1 class="morocco-gradient mb-3">
+                    <i class="fas fa-robot"></i> AI CNIE Extractor Python
+                </h1>
+                <p class="text-muted">Extracteur intelligent de cartes d'identité marocaines avec IA Python</p>
+            </div>
+        </div>
+        
+        <!-- Language Selector -->
+        <div class="text-center mb-4">
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="language" id="lang-fr" value="fr" checked>
+                <label class="btn btn-outline-light" for="lang-fr">🇫🇷 Français</label>
+                
+                <input type="radio" class="btn-check" name="language" id="lang-ar" value="ar">
+                <label class="btn btn-outline-light" for="lang-ar">🇲🇦 العربية</label>
+                
+                <input type="radio" class="btn-check" name="language" id="lang-en" value="en">
+                <label class="btn btn-outline-light" for="lang-en">🇺🇸 English</label>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Upload Section -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-cloud-upload-alt"></i> Upload CNIE</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-area" id="uploadArea">
+                            <div class="mb-3">
+                                <i class="fas fa-id-card fa-4x text-primary"></i>
+                            </div>
+                            <h6>Cliquez ou glissez votre carte CNIE ici</h6>
+                            <small class="text-muted">Formats: JPG, PNG, PDF (Max: 10MB)</small>
+                        </div>
+                        <input type="file" id="fileInput" accept="image/*,.pdf" style="display: none;">
+                        
+                        <!-- Progress Bar -->
+                        <div class="progress mt-3" id="progressContainer" style="display: none;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 id="progressBar" style="width: 0%"></div>
+                        </div>
+                        
+                        <!-- Status -->
+                        <div id="statusMessage" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Preview Section -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-eye"></i> Aperçu</h5>
+                    </div>
+                    <div class="card-body text-center" id="previewContainer">
+                        <div class="text-muted">
+                            <i class="fas fa-image fa-3x mb-3"></i>
+                            <p>Aucune image sélectionnée</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Extracted Data Form -->
+        <div class="card mb-4" id="dataCard" style="display: none;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-database"></i> Données Extraites</h5>
+                <span id="confidenceBadge" class="confidence-badge"></span>
+            </div>
+            <div class="card-body">
+                <form id="dataForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nom complet / الاسم الكامل</label>
+                            <input type="text" class="form-control" id="fullName" placeholder="Nom et prénom">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Numéro CNIE / رقم البطاقة</label>
+                            <input type="text" class="form-control" id="idNumber" placeholder="Ex: A123456789" maxlength="10">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Date de naissance / تاريخ الازدياد</label>
+                            <input type="date" class="form-control" id="birthDate">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Lieu de naissance / مكان الازدياد</label>
+                            <input type="text" class="form-control" id="birthPlace" placeholder="Ville">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nationalité / الجنسية</label>
+                            <input type="text" class="form-control" id="nationality" value="Marocaine">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Sexe / الجنس</label>
+                            <select class="form-control" id="gender">
+                                <option value="">Sélectionner</option>
+                                <option value="M">Masculin / ذكر</option>
+                                <option value="F">Féminin / أنثى</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Date d'expiration / انتهاء الصلاحية</label>
+                            <input type="date" class="form-control" id="expiryDate">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Adresse / العنوان</label>
+                            <input type="text" class="form-control" id="address" placeholder="Adresse complète">
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- Action Buttons -->
+                <div class="text-center mt-4">
+                    <button class="btn btn-morocco me-2" id="saveBtn">
+                        <i class="fas fa-save"></i> Sauvegarder
+                    </button>
+                    <button class="btn btn-warning me-2" id="clearBtn">
+                        <i class="fas fa-eraser"></i> Effacer
+                    </button>
+                    <button class="btn btn-info" id="exportBtn">
+                        <i class="fas fa-download"></i> Exporter Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Database Table -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-table"></i> Base de Données CNIE</h5>
+                <div>
+                    <span class="badge bg-primary me-2">Total: <span id="totalRecords">0</span></span>
+                    <button class="btn btn-outline-primary btn-sm" id="refreshBtn">
+                        <i class="fas fa-sync"></i> Actualiser
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Search Box -->
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="searchBox" placeholder="🔍 Rechercher...">
+                </div>
+                
+                <!-- Table -->
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Nom / الاسم</th>
+                                <th>CNIE / رقم البطاقة</th>
+                                <th>Naissance / الولادة</th>
+                                <th>Nationalité / الجنسية</th>
+                                <th>Confiance</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordsTable">
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">
+                                    Aucune donnée disponible
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Variables globales
+        let currentConfidence = 0;
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            loadRecords();
+        });
+        
+        function setupEventListeners() {
+            // Upload area
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            
+            uploadArea.addEventListener('click', () => fileInput.click());
+            uploadArea.addEventListener('dragover', handleDragOver);
+            uploadArea.addEventListener('drop', handleDrop);
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // Buttons
+            document.getElementById('saveBtn').addEventListener('click', saveRecord);
+            document.getElementById('clearBtn').addEventListener('click', clearForm);
+            document.getElementById('exportBtn').addEventListener('click', exportExcel);
+            document.getElementById('refreshBtn').addEventListener('click', loadRecords);
+            
+            // Search
+            document.getElementById('searchBox').addEventListener('keyup', searchRecords);
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.style.backgroundColor = 'rgba(118, 75, 162, 0.1)';
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.style.backgroundColor = '';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processFile(files[0]);
+            }
+        }
+        
+        function handleFileSelect(e) {
+            if (e.target.files.length > 0) {
+                processFile(e.target.files[0]);
+            }
+        }
+        
+        async function processFile(file) {
+            // Validation
+            if (file.size > 10 * 1024 * 1024) {
+                showStatus('Fichier trop volumineux (max 10MB)', 'error');
+                return;
+            }
+            
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
+            if (!allowedTypes.includes(file.type)) {
+                showStatus('Format non supporté', 'error');
+                return;
+            }
+            
+            // Afficher preview
+            showPreview(file);
+            
+            // Préparer upload
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('language', getSelectedLanguage());
+            
+            try {
+                showProgress(true);
+                showStatus('Traitement en cours...', 'info');
+                
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    populateForm(result.data, result.confidence);
+                    showStatus('Données extraites avec succès!', 'success');
+                    document.getElementById('dataCard').style.display = 'block';
+                } else {
+                    showStatus('Erreur: ' + result.error, 'error');
+                }
+                
+            } catch (error) {
+                showStatus('Erreur de traitement: ' + error.message, 'error');
+            } finally {
+                showProgress(false);
+            }
+        }
+        
+        function showPreview(file) {
+            const container = document.getElementById('previewContainer');
+            
+            if (file.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.className = 'img-fluid rounded';
+                img.style.maxHeight = '300px';
+                
+                container.innerHTML = '';
+                container.appendChild(img);
+            } else {
+                container.innerHTML = `
+                    <div>
+                        <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                        <p>${file.name}</p>
+                        <small class="text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                    </div>
+                `;
+            }
+        }
+        
+        function populateForm(data, confidence) {
+            currentConfidence = confidence;
+            
+            // Remplir les champs
+            Object.keys(data).forEach(key => {
+                const element = document.getElementById(key);
+                if (element && data[key]) {
+                    element.value = data[key];
+                }
+            });
+            
+            // Afficher confiance
+            const badge = document.getElementById('confidenceBadge');
+            badge.textContent = `${Math.round(confidence)}%`;
+            badge.className = 'confidence-badge ';
+            
+            if (confidence > 80) {
+                badge.className += 'confidence-high';
+            } else if (confidence > 60) {
+                badge.className += 'confidence-medium';
+            } else {
+                badge.className += 'confidence-low';
+            }
+        }
+        
+        async function saveRecord() {
+            const data = {
+                fullName: document.getElementById('fullName').value,
+                idNumber: document.getElementById('idNumber').value,
+                birthDate: document.getElementById('birthDate').value,
+                birthPlace: document.getElementById('birthPlace').value,
+                nationality: document.getElementById('nationality').value,
+                gender: document.getElementById('gender').value,
+                expiryDate: document.getElementById('expiryDate').value,
+                address: document.getElementById('address').value,
+                confidence: currentConfidence
+            };
+            
+            if (!data.fullName || !data.idNumber) {
+                showStatus('Nom et numéro CNIE requis', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus('Enregistrement sauvegardé!', 'success');
+                    clearForm();
+                    loadRecords();
+                } else {
+                    showStatus('Erreur: ' + result.error, 'error');
+                }
+                
+            } catch (error) {
+                showStatus('Erreur de sauvegarde: ' + error.message, 'error');
+            }
+        }
+        
+        function clearForm() {
+            document.getElementById('dataForm').reset();
+            document.getElementById('dataCard').style.display = 'none';
+            document.getElementById('previewContainer').innerHTML = `
+                <div class="text-muted">
+                    <i class="fas fa-image fa-3x mb-3"></i>
+                    <p>Aucune image sélectionnée</p>
+                </div>
+            `;
+            currentConfidence = 0;
+        }
+        
+        async function loadRecords() {
+            try {
+                const response = await fetch('/api/records');
+                const result = await response.json();
+                
+                if (result.records) {
+                    renderRecords(result.records);
+                    document.getElementById('totalRecords').textContent = result.records.length;
+                }
+                
+            } catch (error) {
+                console.error('Erreur chargement:', error);
+            }
+        }
+        
+        function renderRecords(records) {
+            const tbody = document.getElementById('recordsTable');
+            
+            if (records.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            Aucune donnée disponible
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = records.map(record => `
+                <tr>
+                    <td>${record.fullName || '-'}</td>
+                    <td>${record.idNumber || '-'}</td>
+                    <td>${record.birthDate || '-'}</td>
+                    <td>${record.nationality || '-'}</td>
+                    <td>
+                        <span class="badge ${getConfidenceBadgeClass(record.confidence)}">
+                            ${Math.round(record.confidence || 0)}%
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteRecord(${record.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function getConfidenceBadgeClass(confidence) {
+            if (confidence > 80) return 'bg-success';
+            if (confidence > 60) return 'bg-warning';
+            return 'bg-danger';
+        }
+        
+        async function deleteRecord(id) {
+            if (!confirm('Supprimer cet enregistrement ?')) return;
+            
+            try {
+                const response = await fetch(`/api/records/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus('Enregistrement supprimé', 'success');
+                    loadRecords();
+                } else {
+                    showStatus('Erreur: ' + result.error, 'error');
+                }
+                
+            } catch (error) {
+                showStatus('Erreur suppression: ' + error.message, 'error');
+            }
+        }
+        
+        async function exportExcel() {
+            try {
+                const response = await fetch('/api/export');
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `cnie_database_${new Date().toISOString().split('T')[0]}.xlsx`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    
+                    showStatus('Export Excel réussi!', 'success');
+                } else {
+                    showStatus('Aucune donnée à exporter', 'error');
+                }
+                
+            } catch (error) {
+                showStatus('Erreur export: ' + error.message, 'error');
+            }
+        }
+        
+        async function searchRecords() {
+            const query = document.getElementById('searchBox').value;
+            
+            try {
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                const result = await response.json();
+                
+                if (result.records) {
+                    renderRecords(result.records);
+                }
+                
+            } catch (error) {
+                console.error('Erreur recherche:', error);
+            }
+        }
+        
+        function getSelectedLanguage() {
+            const checked = document.querySelector('input[name="language"]:checked');
+            return checked ? checked.value : 'fr';
+        }
+        
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            const alertClass = type === 'success' ? 'alert-success' : 
+                             type === 'error' ? 'alert-danger' : 'alert-info';
+            
+            statusDiv.innerHTML = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 5000);
+        }
+        
+        function showProgress(show) {
+            const container = document.getElementById('progressContainer');
+            const bar = document.getElementById('progressBar');
+            
+            if (show) {
+                container.style.display = 'block';
+                bar.style.width = '100%';
+            } else {
+                setTimeout(() => {
+                    container.style.display = 'none';
+                    bar.style.width = '0%';
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
